@@ -1,41 +1,8 @@
-﻿Build started 27-Sep-13 10:48:10 PM.
+﻿Build started 15-Oct-13 6:35:34 PM.
      1>Project "C:\Users\Abhishek\Desktop\3D_Pacman\3D_Pacman\3D_Pacman.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt main.cpp
          main.cpp
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(121): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(148): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(149): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(171): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(174): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(177): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(180): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(183): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(186): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(200): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(202): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(206): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(222): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(224): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(228): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(242): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(256): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(360): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(385): warning C4305: '=' : truncation from 'double' to 'float'
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(400): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(405): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(434): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(448): warning C4305: '=' : truncation from 'double' to 'float'
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(462): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(467): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(496): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(510): warning C4305: '=' : truncation from 'double' to 'float'
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(524): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(529): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(562): warning C4018: '<' : signed/unsigned mismatch
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(576): warning C4305: '=' : truncation from 'double' to 'float'
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(590): warning C4244: '=' : conversion from 'double' to 'float', possible loss of data
-     1>c:\users\abhishek\desktop\3d_pacman\3d_pacman\main.cpp(595): warning C4018: '<' : signed/unsigned mismatch
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Abhishek\Desktop\3D_Pacman\Debug\3D_Pacman.exe" /INCREMENTAL /NOLOGO OpenGL32.lib glew32.lib freeglut.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\Users\Abhishek\Desktop\3D_Pacman\Debug\3D_Pacman.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\Users\Abhishek\Desktop\3D_Pacman\Debug\3D_Pacman.lib" /MACHINE:X86 Debug\main.obj
          3D_Pacman.vcxproj -> C:\Users\Abhishek\Desktop\3D_Pacman\Debug\3D_Pacman.exe
@@ -43,4 +10,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.65
+Time Elapsed 00:00:02.11
