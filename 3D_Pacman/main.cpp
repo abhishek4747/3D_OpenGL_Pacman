@@ -15,7 +15,7 @@
 
 // RULES: 
 	// Code should be well documented and well formatted
-	// No git push Unless permitted by other team member
+	// Never push the code unless dropbox in the task bar shows a green check
 	// Code should be generic and hack-less
 	// Any line of code should not exceed 80 characters, fold it if does
 	// No warnings during compilation
