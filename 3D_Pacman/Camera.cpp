@@ -1,7 +1,7 @@
 #include "Camera.h"
 
 Camera::Camera(){
-	this->init(0., 0., 0., 0., 0., -5., 0., 1., 0.);
+	this->init(5., 5., 5., 0., 0., 0., 0., 1., 0.);
 }
 
 Camera::Camera(double eyex, double eyey, double eyez, 

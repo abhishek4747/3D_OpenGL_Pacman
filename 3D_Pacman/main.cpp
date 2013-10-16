@@ -13,6 +13,12 @@
 	*
 ******************************************************************************/
 
+// TIPS:
+	// Esc,q,Q to Quit
+	// F5 to restart the program
+	// Arrow Keys to control Camera
+	// Drag Mouse to change direction of camera
+
 // RULES: 
 	// Code should be well documented and well formatted
 	// Never push the code unless dropbox in the task bar shows a green check
@@ -40,9 +46,175 @@
 // includes all common headers
 #include "Headers.h" 
 #include "Camera.h"
+#include "Functions.h"
 
 // Global Variables
 Camera *cam;
+bool keyStates[256];// = new bool[256];
+bool keySpecialStates[256]; // = new bool[256]; // Create an array of boolean values of length 256 (0-255) 
+bool SHIFT = false, ALT = false, CTRL = false;
+
+
+void keyOperations (void) {  
+	if (keyStates['q'] || keyStates['Q'] || keyStates[27]){
+		exit(0);
+	}
+	if(keyStates['0']){
+		cam->eyez += 0.1f;
+	}else if(keyStates['.']){
+		cam->eyez -= 0.1f;
+	}
+	
+	if(keyStates['-']){
+		cam->eyey += exp(cam->eyey/100.f)/100.f;
+	}else if(keyStates['+']){
+		cam->eyey -= exp(cam->eyey/100.f)/100.f;
+	}
+
+
+	if (keyStates['1']) { 
+		
+	}else if (keyStates['2']) { 
+		
+	}
+
+	if(keyStates['o']){
+		size_t h = 0;
+		
+	} 
+	if(keyStates['i']){
+		size_t h = 1;
+		
+	}
+
+	if (keyStates['h']){
+		keyStates['h'] = false;
+		cout<<cam->eyex<<" "<<cam->eyey<<" "<<cam->eyez<<endl; 
+	}
+	if (keyStates['g']){
+		keyStates['g'] = false;
+		
+	}
+
+	if (keyStates['s']){
+		keyStates['s'] = false;
+		
+	}
+
+	if (keyStates['p']){
+		keyStates['p'] = false;
+		
+	}else if (keyStates['l']){
+		keyStates['l'] = false;
+		
+	}
+	if (keyStates['u']){
+		keyStates['u'] = false;
+		
+	}else if (keyStates['k']){
+		keyStates['k'] = false;
+		
+	}
+
+	if (keyStates['j']){
+		keyStates['j']=false;
+		size_t u = 1;
+		
+	}
+
+	if (keyStates[';']){
+		keyStates[';']=false;
+		size_t u = 0;
+		
+	}
+
+	if (keyStates['m']){
+		keyStates['m']=false;
+		size_t u = 1;
+		
+	}
+
+	if (keyStates['/']){
+		keyStates['/']=false;
+		size_t u = 0;
+		
+	}
+} 
+
+void keySpecialOperations(void) {  
+	double deg = 5.;
+	if (keySpecialStates[GLUT_KEY_LEFT]) { // If the left arrow key has been pressed  
+		double x = cam->eyex;
+		double z = cam->eyez;
+		cam->eyex = x*cos(degreeToRadian(deg)) - z*sin(degreeToRadian(deg));
+		cam->eyez = x*sin(degreeToRadian(deg)) + z*cos(degreeToRadian(deg));
+	}
+	if (keySpecialStates[GLUT_KEY_RIGHT]) { // If the left arrow key has been pressed  
+		deg = -deg;
+		double x = cam->eyex;
+		double z = cam->eyez;
+		cam->eyex = x*cos(degreeToRadian(deg)) - z*sin(degreeToRadian(deg));
+		cam->eyez = x*sin(degreeToRadian(deg)) + z*cos(degreeToRadian(deg));
+	}
+	if (keySpecialStates[GLUT_KEY_UP]) { // If the left arrow key has been pressed  
+		cam->eyex /= 1.01f;
+		cam->eyey /= 1.01f;
+		cam->eyez /= 1.01f;
+	}
+	if (keySpecialStates[GLUT_KEY_DOWN]) { // If the left arrow key has been pressed  
+		cam->eyex *= 1.01f;
+		cam->eyey *= 1.01f;
+		cam->eyez *= 1.01f;
+	}
+
+	if (keySpecialStates[GLUT_KEY_F5] || keySpecialStates[GLUT_KEY_F6]){
+		if (keySpecialStates[GLUT_KEY_F6]){
+		
+			keySpecialStates[GLUT_KEY_F6] = false;
+		}
+		keySpecialStates[GLUT_KEY_F5] = false;
+		
+	}
+
+	if (keySpecialStates[GLUT_KEY_F7]){
+		keySpecialStates[GLUT_KEY_F7] = false;
+		
+	}else if (keySpecialStates[GLUT_KEY_F8]){
+		keySpecialStates[GLUT_KEY_F8] = false;
+		
+	}
+}
+
+void keyPressed (unsigned char key, int x, int y) {  
+	keyStates[key] = true; // Set the state of the current key to pressed 
+	if (glutGetModifiers() & GLUT_ACTIVE_SHIFT){
+		SHIFT = true;
+	}else {
+		SHIFT = false;
+	}
+	if (glutGetModifiers() & GLUT_ACTIVE_CTRL){
+		CTRL = true;
+	}else {
+		CTRL = false;
+	}
+	if (glutGetModifiers() & GLUT_ACTIVE_ALT){
+		ALT = true;
+	}else {
+		ALT = false;
+	}
+}  
+
+void keyUp (unsigned char key, int x, int y) {  
+	keyStates[key] = false; // Set the state of the current key to not pressed  
+}
+
+void keySpecial (int key, int x, int y) {
+	keySpecialStates[key] = true;
+} 
+
+void keySpecialUp (int key, int x, int y) {  
+	keySpecialStates[key] = false;
+}
 
 void reshape (int width, int height) {  
 	// Set our viewport to the size of our window
@@ -66,6 +238,10 @@ void reshape (int width, int height) {
 }
 
 void display (void) {
+	// KeyBoard Operations
+	keyOperations();
+	keySpecialOperations();
+
 	// Background Color: Black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
@@ -104,7 +280,17 @@ int main(int argc, char** argv){
 	// Set Triggers
 	glutDisplayFunc(display);
 	glutIdleFunc(display);
-	//glutReshapeFunc(reshape);
+	glutReshapeFunc(reshape);
+	
+	// KeyBoard Triggers
+	glutKeyboardFunc(keyPressed); // Tell GLUT to use the method "keyPressed" for key presses  
+	glutKeyboardUpFunc(keyUp); // Tell GLUT to use the method "keyUp" for key up events    
+	glutSpecialFunc(keySpecial); // Tell GLUT to use the method "keySpecial" for special key presses  
+	glutSpecialUpFunc(keySpecialUp); // Tell GLUT to use the method "keySpecialUp" for special up key events  
+
+	
+
+
 
 	// Start Main Loop
 	glutMainLoop();   
