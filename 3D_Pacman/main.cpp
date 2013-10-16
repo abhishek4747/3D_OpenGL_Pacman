@@ -62,16 +62,19 @@ void reshape (int width, int height) {
 	glMatrixMode(GL_MODELVIEW);   
 }
 
-void display (void) {  
+void display (void) {
 	// Background Color: Black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity(); 
-	gluLookAt (0., 0., 0., 0.0, -5., 0., 0., 1., 0.);
-	glColor3f(1.0, 0.5, 0.0);
+	gluLookAt(0, 0, 0, 0.0, 0.0, -5.0, 0.0, 1.0, 0.0);
+
+	// Solid Cylinder
+	glColor3f(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.2, 1.0, 10, 10);
-	// A white colored mesh 
+	
+	// A white colored mesh
 	glColor3f(1.0, 1.0, 1.0);
 	glBegin(GL_LINES);
 	for (GLfloat i = -2.5; i <= 2.5; i += 0.25) {
@@ -79,7 +82,7 @@ void display (void) {
 		glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
 	}
 	glEnd();
-
+	
 	glutSwapBuffers();  
 }
 
@@ -99,7 +102,7 @@ int main(int argc, char** argv){
 	// Set Triggers
 	glutDisplayFunc(display);
 	glutIdleFunc(display);
-	glutReshapeFunc(reshape);
+	//glutReshapeFunc(reshape);
 
 	// Start Main Loop
 	glutMainLoop();   
