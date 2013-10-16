@@ -39,7 +39,10 @@
 
 // includes all common headers
 #include "Headers.h" 
+#include "Camera.h"
 
+// Global Variables
+Camera *cam;
 
 void reshape (int width, int height) {  
 	// Set our viewport to the size of our window
@@ -68,8 +71,7 @@ void display (void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity(); 
-	gluLookAt(0, 0, 0, 0.0, 0.0, -5.0, 0.0, 1.0, 0.0);
-
+	gluLookAt(cam->eyex, cam->eyey, cam->eyez, cam->centerx, cam->centery, cam->centerz, cam->upx, cam->upy, cam->upz);
 	// Solid Cylinder
 	glColor3f(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.2, 1.0, 10, 10);
@@ -87,7 +89,7 @@ void display (void) {
 }
 
 int main(int argc, char** argv){
-
+	cam = new Camera();
 	// Initialise Glut Variables
 	glutInit(&argc, argv);
 	glutInitDisplayMode (GLUT_DOUBLE| GLUT_RGBA | GLUT_DEPTH); 
