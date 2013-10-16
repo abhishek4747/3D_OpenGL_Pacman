@@ -65,7 +65,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Functions.cpp" />
+    <ClCompile Include="Ghost.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="Maze.cpp" />
+    <ClCompile Include="Pac.cpp" />
+    <ClCompile Include="Screen.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Camera.h" />
+    <ClInclude Include="Functions.h" />
+    <ClInclude Include="Ghost.h" />
+    <ClInclude Include="Headers.h" />
+    <ClInclude Include="Maze.h" />
+    <ClInclude Include="Pac.h" />
+    <ClInclude Include="Screen.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
