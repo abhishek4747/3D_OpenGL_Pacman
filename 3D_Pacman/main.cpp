@@ -48,10 +48,12 @@
 #include "Camera.h"
 #include "Functions.h"
 #include "Pac.h"
+#include "Maze.h"
 
 // Global Variables
 Camera *cam;
 Pac *pacman;
+Maze *maze;
 bool keyStates[256];// = new bool[256];
 bool keySpecialStates[256]; // = new bool[256]; // Create an array of boolean values of length 256 (0-255) 
 bool SHIFT = false, ALT = false, CTRL = false;
@@ -255,14 +257,9 @@ void display (void) {
 	glColor3f(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.2, 1.0, 10, 10);
 	
-	// A white colored mesh
-	glColor3f(1.0, 1.0, 1.0);
-	glBegin(GL_LINES);
-	for (GLfloat i = -2.5; i <= 2.5; i += 0.25) {
-		glVertex3f(i, 0, 2.5); glVertex3f(i, 0, -2.5);
-		glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
+	if (maze){
+		maze->draw();
 	}
-	glEnd();
 	if (pacman){
 		pacman->moveForward();
 		pacman->draw();
@@ -274,7 +271,8 @@ void display (void) {
 
 int main(int argc, char** argv){
 	cam = new Camera();
-	pacman = new Pac();
+	maze = new Maze();
+	pacman = new Pac(maze);
 	// Initialise Glut Variables
 	glutInit(&argc, argv);
 	glutInitDisplayMode (GLUT_DOUBLE| GLUT_RGBA | GLUT_DEPTH); 

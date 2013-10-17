@@ -8,11 +8,24 @@ Pac::Pac(){
 	dim.push_back(.2f);
 	string shape("sphere");
 	color4 col(0.,1.,1.);
-	this->init(pos, or, ver, shape, dim, .01, col);
+	Maze *maze = new Maze();
+	this->init(pos, or, ver, shape, dim, .01f, col, maze);
 }
 
-Pac::Pac(vf position, vf orientn, vf vertical, string shape, vf dimentions, double speed, color4 color){
-	this->init(position, orientn, vertical, shape, dimentions, speed, color);
+Pac::Pac(Maze *maze){
+	vf pos, or, ver, dim;
+	pos.push_back(0.f), pos.push_back(0.f), pos.push_back(0.f);
+	or.push_back(0.f),  or.push_back(0.f),  or.push_back(-1.f);
+	ver.push_back(0.f), ver.push_back(1.f), ver.push_back(0.f);
+	dim.push_back(.2f);
+	string shape("sphere");
+	color4 col(0.,1.,1.);
+	this->init(pos, or, ver, shape, dim, .1f, col, maze);
+
+}
+
+Pac::Pac(vf position, vf orientn, vf vertical, string shape, vf dimentions, float speed, color4 color, Maze *maze){
+	this->init(position, orientn, vertical, shape, dimentions, speed, color, maze);
 }
 
 void Pac::draw(){
@@ -27,19 +40,34 @@ void Pac::draw(){
 }
 
 void Pac::moveForward(){
-	double mag = magnitue(this->orientn);
-	for (size_t i = 0; i < this->position.size(); i++){
-		this->position[i] += this->orientn[i]*this->speed/mag;
+	float mag = magnitue(this->orientn);
+	float newPos[3];
+	bool canMove = true;
+	for (size_t i = 0; i < 3; i++){
+		newPos[i] = this->position[i]+this->orientn[i]*this->speed/mag;
+		canMove &= (newPos[i]>= -this->maze->size[i]/2 && newPos[i]<= this->maze->size[i]/2);
 	}
+	
+	if (canMove){
+		for (size_t i = 0; i < 3; i++){
+			this->position[i] = newPos[i];
+		}
+	}else{
+		this->moveLeft();
+	}
+}
+
+void Pac::moveLeft(){
 	
 }
 
 Pac::~Pac(){
 }
 
-void Pac::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions, double speed, color4 color){
+void Pac::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze){
 	this->position = position, this->orientn = orientn, this->vertical = orientn;
 	this->shape = shape, this->dimentions = dimentions;
 	this->speed = speed;
 	this->color = color;
+	this->maze = maze;
 }

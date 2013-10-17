@@ -1,23 +1,27 @@
 #include "Headers.h"
 #include "Functions.h"
+#include "Maze.h"
 
 class Pac{
+public:
 	vf position;			// Position
 	vf orientn;				// Orientation
 	vf vertical;			// Vertical vector
 	string shape;
 	vf dimentions;			// dimentions
-	double speed;
+	float speed;
 	color4 color; 
+	Maze *maze;
 
-public:
 	Pac();
-	Pac(vf position, vf orientn, vf vertical, string shape,	vf dimentions, double speed, color4 color);
+	Pac(Maze *maze);
+	Pac(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze);
 	void draw();
 	void moveForward();
+	void moveLeft();
 	~Pac();
 
 private:
-	void init(vf position, vf orientn, vf vertical, string shape, vf dimentions, double speed, color4 color);
+	void init(vf position, vf orientn, vf vertical, string shape, vf dimentions, float speed, color4 color, Maze *maze);
 
 };
