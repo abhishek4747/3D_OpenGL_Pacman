@@ -30,7 +30,7 @@
 // TODO: Before Mid Evaluation
 	// Create Start Screen - simple in start i.e. press enter to start game
 	// Create Maze
-	// Camera Movement Controls
+	// Camera Movement Controls with Mouse
 	// Create Ghost .obj
 	// Create Pac	.obj
 	// Movement
@@ -47,9 +47,11 @@
 #include "Headers.h" 
 #include "Camera.h"
 #include "Functions.h"
+#include "Pac.h"
 
 // Global Variables
 Camera *cam;
+Pac *pacman;
 bool keyStates[256];// = new bool[256];
 bool keySpecialStates[256]; // = new bool[256]; // Create an array of boolean values of length 256 (0-255) 
 bool SHIFT = false, ALT = false, CTRL = false;
@@ -246,6 +248,7 @@ void display (void) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
 	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
 	glLoadIdentity(); 
 	gluLookAt(cam->eyex, cam->eyey, cam->eyez, cam->centerx, cam->centery, cam->centerz, cam->upx, cam->upy, cam->upz);
 	// Solid Cylinder
@@ -260,12 +263,18 @@ void display (void) {
 		glVertex3f(2.5, 0, i); glVertex3f(-2.5, 0, i);
 	}
 	glEnd();
+	if (pacman){
+		pacman->moveForward();
+		pacman->draw();
+	}
+	glPopMatrix();
 	
 	glutSwapBuffers();  
 }
 
 int main(int argc, char** argv){
 	cam = new Camera();
+	pacman = new Pac();
 	// Initialise Glut Variables
 	glutInit(&argc, argv);
 	glutInitDisplayMode (GLUT_DOUBLE| GLUT_RGBA | GLUT_DEPTH); 
