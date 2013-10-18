@@ -69,6 +69,32 @@ void keyOperations (void) {
 		cam->eyez -= 0.1f;
 	}
 	
+	double deg = 5.;
+	if (keyStates['a'] || keyStates['A']) { // If the left arrow key has been pressed  
+		double x = cam->eyex;
+		double z = cam->eyez;
+		cam->eyex = x*cos(degreeToRadian(deg)) - z*sin(degreeToRadian(deg));
+		cam->eyez = x*sin(degreeToRadian(deg)) + z*cos(degreeToRadian(deg));
+	}
+	if (keyStates['d'] || keyStates['D']) { // If the right arrow key has been pressed  
+		deg = -deg;
+		double x = cam->eyex;
+		double z = cam->eyez;
+		cam->eyex = x*cos(degreeToRadian(deg)) - z*sin(degreeToRadian(deg));
+		cam->eyez = x*sin(degreeToRadian(deg)) + z*cos(degreeToRadian(deg));
+	}
+	if (keyStates['w'] || keyStates['W']) { // If the up arrow key has been pressed  
+		cam->eyex /= 1.01f;
+		cam->eyey /= 1.01f;
+		cam->eyez /= 1.01f;
+	}
+	if (keyStates['s'] || keyStates['S']) { // If the left arrow key has been pressed  
+		cam->eyex *= 1.01f;
+		cam->eyey *= 1.01f;
+		cam->eyez *= 1.01f;
+	}
+
+
 	if(keyStates['-']){
 		cam->eyey += exp(cam->eyey/100.f)/100.f;
 	}else if(keyStates['+']){
@@ -146,29 +172,22 @@ void keyOperations (void) {
 } 
 
 void keySpecialOperations(void) {  
-	double deg = 5.;
 	if (keySpecialStates[GLUT_KEY_LEFT]) { // If the left arrow key has been pressed  
-		double x = cam->eyex;
-		double z = cam->eyez;
-		cam->eyex = x*cos(degreeToRadian(deg)) - z*sin(degreeToRadian(deg));
-		cam->eyez = x*sin(degreeToRadian(deg)) + z*cos(degreeToRadian(deg));
+		keySpecialStates[GLUT_KEY_LEFT] = false;
+		pacman->moveLeft();
+
 	}
-	if (keySpecialStates[GLUT_KEY_RIGHT]) { // If the left arrow key has been pressed  
-		deg = -deg;
-		double x = cam->eyex;
-		double z = cam->eyez;
-		cam->eyex = x*cos(degreeToRadian(deg)) - z*sin(degreeToRadian(deg));
-		cam->eyez = x*sin(degreeToRadian(deg)) + z*cos(degreeToRadian(deg));
+	if (keySpecialStates[GLUT_KEY_RIGHT]) { // If the right arrow key has been pressed  
+		keySpecialStates[GLUT_KEY_RIGHT] = false;
+		pacman->moveRight();
 	}
-	if (keySpecialStates[GLUT_KEY_UP]) { // If the left arrow key has been pressed  
-		cam->eyex /= 1.01f;
-		cam->eyey /= 1.01f;
-		cam->eyez /= 1.01f;
+	if (keySpecialStates[GLUT_KEY_UP]) { // If the up arrow key has been pressed  
+		keySpecialStates[GLUT_KEY_UP] = false;
+		pacman->moveForward();
 	}
-	if (keySpecialStates[GLUT_KEY_DOWN]) { // If the left arrow key has been pressed  
-		cam->eyex *= 1.01f;
-		cam->eyey *= 1.01f;
-		cam->eyez *= 1.01f;
+	if (keySpecialStates[GLUT_KEY_DOWN]) { // If the down arrow key has been pressed  
+		keySpecialStates[GLUT_KEY_DOWN] = false;
+		pacman->moveBack();
 	}
 
 	if (keySpecialStates[GLUT_KEY_F5] || keySpecialStates[GLUT_KEY_F6]){
@@ -270,6 +289,7 @@ void display (void) {
 }
 
 int main(int argc, char** argv){
+	fInit();
 	cam = new Camera();
 	maze = new Maze();
 	pacman = new Pac(maze);

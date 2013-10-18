@@ -9,7 +9,7 @@ public:
 	vf vertical;			// Vertical vector
 	string shape;
 	vf dimentions;			// dimentions
-	float speed;
+	float speed, angle;
 	color4 color; 
 	Maze *maze;
 
@@ -19,6 +19,8 @@ public:
 	void draw();
 	void moveForward();
 	void moveLeft();
+	void moveRight();
+	void moveBack();
 	~Pac();
 
 private:

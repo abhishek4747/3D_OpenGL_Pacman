@@ -31,10 +31,12 @@ Pac::Pac(vf position, vf orientn, vf vertical, string shape, vf dimentions, floa
 void Pac::draw(){
 	glPushMatrix();
 	glTranslatef(this->position[0], this->position[1], this->position[2]);
+	//glRotatef(this->angle, this->orientn[0], this->orientn[1], this->orientn[2]);
 	glColor4f(this->color.r, this->color.g, this->color.b, this->color.a);
 	if (this->shape=="sphere"){
 		glutSolidSphere(this->dimentions[0], 32, 32);
 	}
+	//glRotatef(-this->angle, this->orientn[0], this->orientn[1], this->orientn[2]);
 	glTranslatef(-this->position[0], -this->position[1], -this->position[2]);
 	glPopMatrix();
 }
@@ -52,22 +54,29 @@ void Pac::moveForward(){
 		for (size_t i = 0; i < 3; i++){
 			this->position[i] = newPos[i];
 		}
-	}else{
-		this->moveLeft();
 	}
 }
 
 void Pac::moveLeft(){
-	
+	orientn = rotateaboutaxisbyangle(orientn,origin,vertical,90.f);
+}
+
+void Pac::moveRight(){
+	orientn = rotateaboutaxisbyangle(orientn,origin,vertical,-90.f);
+}
+
+void Pac::moveBack(){
+	orientn = rotateaboutaxisbyangle(orientn,origin,vertical,180.f);
 }
 
 Pac::~Pac(){
 }
 
 void Pac::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze){
-	this->position = position, this->orientn = orientn, this->vertical = orientn;
+	this->position = position, this->orientn = orientn, this->vertical = vertical;
 	this->shape = shape, this->dimentions = dimentions;
 	this->speed = speed;
 	this->color = color;
 	this->maze = maze;
+	this->angle = 0.f;
 }
