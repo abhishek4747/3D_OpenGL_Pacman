@@ -58,15 +58,30 @@ void Pac::moveForward(){
 }
 
 void Pac::moveLeft(){
-	orientn = rotateaboutaxisbyangle(orientn,origin,vertical,90.f);
+	moving = true;
+	for (int i = 0; i < 90; i++){
+		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,1.f);
+		Sleep(1);
+	}
+	moving = false;
 }
 
 void Pac::moveRight(){
-	orientn = rotateaboutaxisbyangle(orientn,origin,vertical,-90.f);
+	moving = true;
+	for (int i = 0; i < 90; i++){
+		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,-1.f);
+		Sleep(1);
+	}
+	moving = false;
 }
 
 void Pac::moveBack(){
-	orientn = rotateaboutaxisbyangle(orientn,origin,vertical,180.f);
+	moving = true;
+	for (int i = 0; i < 180; i++){
+		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,1.f);
+		Sleep(1);
+	}
+	moving = false;
 }
 
 Pac::~Pac(){
@@ -79,4 +94,5 @@ void Pac::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions
 	this->color = color;
 	this->maze = maze;
 	this->angle = 0.f;
+	this->moving = false;
 }

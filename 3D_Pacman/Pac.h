@@ -12,6 +12,7 @@ public:
 	float speed, angle;
 	color4 color; 
 	Maze *maze;
+	bool moving;
 
 	Pac();
 	Pac(Maze *maze);

@@ -52,7 +52,7 @@
 
 // Global Variables
 Camera *cam;
-string cameratype = "top";
+string cameratype = "follow";
 Pac *pacman;
 Maze *maze;
 bool keyStates[256];// = new bool[256];
@@ -180,20 +180,31 @@ void keySpecialOperations(void) {
 	if (cameratype=="follow"){
 		if (keySpecialStates[GLUT_KEY_LEFT]) { // If the left arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_LEFT] = false;
-			pacman->moveLeft();
-
+			if (!pacman->moving){
+				thread t1(&Pac::moveLeft,pacman);		
+				t1.detach();
+			}
 		}
 		if (keySpecialStates[GLUT_KEY_RIGHT]) { // If the right arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_RIGHT] = false;
-			pacman->moveRight();
+			if (!pacman->moving){
+				thread t1(&Pac::moveRight,pacman);		
+				t1.detach();
+			}
 		}
 		if (keySpecialStates[GLUT_KEY_UP]) { // If the up arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_UP] = false;
-			pacman->moveForward();
+			if (!pacman->moving){
+				thread t1(&Pac::moveForward,pacman);		
+				t1.detach();
+			}
 		}
 		if (keySpecialStates[GLUT_KEY_DOWN]) { // If the down arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_DOWN] = false;
-			pacman->moveBack();
+			if (!pacman->moving){
+				thread t1(&Pac::moveBack,pacman);		
+				t1.detach();
+			}
 		}
 	}else{
 		if (keySpecialStates[GLUT_KEY_LEFT]) { // If the left arrow key has been pressed  
@@ -308,12 +319,12 @@ void display (void) {
 	}else if (cameratype=="top"){
 		gluLookAt(0.,maze->size[0],maze->size[2],0.,0.,0.,0.,1.,0.);
 	}else if (cameratype=="follow"){
-		gluLookAt(pacman->position[0]-pacman->orientn[0],
-			pacman->position[1]-pacman->orientn[1]+max(maze->size[0],maze->size[2])/10.f,
-			pacman->position[2]-pacman->orientn[2],
+		gluLookAt(pacman->position[0]-3*pacman->orientn[0],
+			pacman->position[1]-3*pacman->orientn[1]+max(maze->size[0],maze->size[2])/5.f,
+			pacman->position[2]-3*pacman->orientn[2],
 			pacman->position[0],pacman->position[1],pacman->position[2],0.,1.,0.);
 	}else{
-		gluLookAt(0.,max(maze->size[0],maze->size[2]),0.,0.,0.,0.,0.,0.,1.);
+		gluLookAt(0.,max(maze->size[0],maze->size[2]),0.,0.,0.,0.,0.,0.,-1.);
 	}
 	
 	// Solid Cylinder
@@ -324,7 +335,7 @@ void display (void) {
 		maze->draw();
 	}
 	if (pacman){
-		pacman->moveForward();
+		if (!pacman->moving) pacman->moveForward();
 		pacman->draw();
 	}
 	glPopMatrix();
