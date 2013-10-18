@@ -131,11 +131,6 @@ void keyOperations (void) {
 		
 	}
 
-	if (keyStates['s']){
-		keyStates['s'] = false;
-		
-	}
-
 	if (keyStates['p']){
 		keyStates['p'] = false;
 		

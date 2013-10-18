@@ -59,28 +59,34 @@ void Pac::moveForward(){
 
 void Pac::moveLeft(){
 	moving = true;
+	vf fin = rotateaboutaxisbyangle(orientn,origin,vertical,90.f);
 	for (int i = 0; i < 90; i++){
 		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,1.f);
 		Sleep(1);
 	}
+	orientn = fin;
 	moving = false;
 }
 
 void Pac::moveRight(){
 	moving = true;
+	vf fin = rotateaboutaxisbyangle(orientn,origin,vertical,-90.f);
 	for (int i = 0; i < 90; i++){
 		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,-1.f);
 		Sleep(1);
 	}
+	orientn = fin;
 	moving = false;
 }
 
 void Pac::moveBack(){
 	moving = true;
+	vf fin = rotateaboutaxisbyangle(orientn,origin,vertical,180.f);
 	for (int i = 0; i < 180; i++){
 		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,1.f);
 		Sleep(1);
 	}
+	orientn = fin;
 	moving = false;
 }
 
