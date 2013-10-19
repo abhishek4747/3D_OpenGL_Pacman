@@ -1,15 +1,8 @@
 #include "Pac.h"
 
 Pac::Pac(){
-	vf pos, or, ver, dim;
-	pos.push_back(0.f), pos.push_back(0.f), pos.push_back(0.f);
-	or.push_back(0.f),  or.push_back(0.f),  or.push_back(-1.f);
-	ver.push_back(0.f), ver.push_back(1.f), ver.push_back(0.f);
-	dim.push_back(.2f);
-	string shape("sphere");
-	color4 col(0.,1.,1.);
-	Maze *maze = new Maze();
-	this->init(pos, or, ver, shape, dim, .01f, col, maze);
+	Agent::Agent();
+	this->maze = new Maze();
 }
 
 Pac::Pac(Maze *maze){
@@ -17,7 +10,7 @@ Pac::Pac(Maze *maze){
 	pos.push_back(0.f), pos.push_back(0.f), pos.push_back(0.f);
 	or.push_back(0.f),  or.push_back(0.f),  or.push_back(-1.f);
 	ver.push_back(0.f), ver.push_back(1.f), ver.push_back(0.f);
-	dim.push_back(.2f);
+	dim.push_back(.1f);
 	string shape("sphere");
 	color4 col(0.,1.,1.);
 	this->init(pos, or, ver, shape, dim, .05f, col, maze);	
@@ -38,7 +31,6 @@ void Pac::draw(){
 	
 	if (this->shape=="sphere"){
 		//glutSolidSphere(this->dimentions[0], 32, 32);
-
 		vf initialv;
 		initialv.push_back(1.f);initialv.push_back(0.f);initialv.push_back(0.f);
 		mtx.lock();
@@ -134,51 +126,11 @@ void Pac::moveForward(){
 	}
 }
 
-void Pac::moveLeft(){
-	moving = true;
-	moveSomewhere(90.f,3);
-	moving = false;
-}
-
-void Pac::moveRight(){
-	moving = true;
-	moveSomewhere(90.f,3,-1.f);
-	moving = false;
-}
-
-void Pac::moveBack(){
-	moving = true;
-	moveSomewhere(180.f,3);
-	moving = false;
-}
-
-Pac::~Pac(){
-}
-
-void Pac::moveSomewhere(float totaldegree, int fast, float direction){
-	mtx.lock();
-	vf fin = rotateaboutaxisbyangle(orientn,origin,vertical,totaldegree*direction);
-	mtx.unlock();
-	for (int i = 0; i < totaldegree/fast; i++){
-		mtx.lock();
-		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,fast*direction);
-		mtx.unlock();
-		Sleep(1*fast);
-	}
-	mtx.lock();
-	orientn = fin;
-	mtx.unlock();	
-	for (int i = 0; i < 3; i++){
-		position[i] = static_cast<float>(static_cast<int>(position[i]+0.5f));
-	}
-}
-
 void Pac::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze){
 	this->position = position, this->orientn = orientn, this->vertical = vertical;
 	this->shape = shape, this->dimentions = dimentions;
 	this->speed = speed;
 	this->color = color;
 	this->maze = maze;
-	this->angle = 0.f;
 	this->moving = false;
 }
