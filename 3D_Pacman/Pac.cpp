@@ -41,9 +41,13 @@ void Pac::draw(){
 
 		vf initialv;
 		initialv.push_back(1.f);initialv.push_back(0.f);initialv.push_back(0.f);
+		mtx.lock();
 		float ang = anglebw(orientn,initialv);
+		mtx.unlock();
 		cout<<ang<<endl;
+		mtx.lock();
 		glRotatef(-90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
+		mtx.unlock();
 		glRotatef(ang,this->vertical[0],this->vertical[1],this->vertical[2]);
 		for(int j = -q; j < q; j++){
 			// One latitudinal triangle strip.
@@ -66,12 +70,15 @@ void Pac::draw(){
 			glEnd();
 		}
 		glRotatef(-ang,this->vertical[0],this->vertical[1],this->vertical[2]);
+		mtx.lock();
 		glRotatef(90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
-
+		mtx.unlock();
 		float R2 = 7*R/8;
 		float dist = 100.f;
+		mtx.lock();
 		glTranslatef(this->orientn[0]/dist, this->orientn[1]/dist,this->orientn[2]/dist);
 		glRotatef(-90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
+		mtx.unlock();
 		glRotatef(ang,this->vertical[0],this->vertical[1],this->vertical[2]);
 		for(int j = -q; j < q; j++){
 			// One latitudinal triangle strip.
@@ -92,8 +99,10 @@ void Pac::draw(){
 			glEnd();
 		}
 		glRotatef(-ang,this->vertical[0],this->vertical[1],this->vertical[2]);
+		mtx.lock();
 		glRotatef(90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
 		glTranslatef(-this->orientn[0]/dist, -this->orientn[1]/dist, -this->orientn[2]/dist);		
+		mtx.unlock();
 	}
 	if (mouthOpening){
 		mouth *= 2;
@@ -108,11 +117,15 @@ void Pac::draw(){
 }
 
 void Pac::moveForward(){
+	mtx.lock();
 	float mag = magnitue(this->orientn);
+	mtx.unlock();
 	float newPos[3];
 	bool canMove = true;
 	for (size_t i = 0; i < 3; i++){
+		mtx.lock();
 		newPos[i] = this->position[i]+this->orientn[i]*this->speed/mag;
+		mtx.unlock();
 		canMove &= (newPos[i]>= -this->maze->size[i]/2 && newPos[i]<= this->maze->size[i]/2);
 	}
 	if (canMove){
@@ -136,7 +149,7 @@ void Pac::moveRight(){
 
 void Pac::moveBack(){
 	moving = true;
-	moveSomewhere(180.f,3,1.f);
+	moveSomewhere(180.f,3);
 	moving = false;
 }
 
@@ -146,12 +159,18 @@ Pac::~Pac(){
 void Pac::moveSomewhere(float totaldegree, int fast, float direction){
 	mtx.lock();
 	vf fin = rotateaboutaxisbyangle(orientn,origin,vertical,totaldegree*direction);
-	for (int i = 0; i < 90/fast; i++){
+	mtx.unlock();
+	for (int i = 0; i < totaldegree/fast; i++){
+		mtx.lock();
 		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,fast*direction);
+		mtx.unlock();
 		Sleep(1*fast);
 	}
+	mtx.lock();
 	orientn = fin;
 	mtx.unlock();
+
+	
 }
 
 void Pac::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze){
