@@ -277,7 +277,8 @@ void display (void) {
 	glutSolidCylinder(0.2, 1.0, 10, 10);
 	
 	if (maze){
-		maze->draw();
+		//maze->draw();
+		maze->mazeReader("TheGameMatrix.txt");
 	}
 	if (pacman){
 		pacman->moveForward();

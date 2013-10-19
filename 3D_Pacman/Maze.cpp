@@ -1,9 +1,42 @@
 #include "Maze.h"
 
+/*
+Maze is defined in "TheGameMatrix.txt".
+First Line- Length Width
+w- wall, p- path with pellets, e- empty path
+g- ghosts place, warp gates- using nos.
+b- boost pellets
+*/
+
 Maze::Maze(){
 	vf size;
 	size.push_back(10.f), size.push_back(static_cast<float>(INT_MAX)),size.push_back(15.f);
 	this->init(size);
+}
+
+void Maze::mazeReader(string filename){
+	ifstream mazeInf;
+	string dimension;
+	int length; int width;
+
+	mazeInf.open(filename);
+
+	getline(mazeInf, dimension);
+	stringstream lwSS(dimension);
+
+	lwSS >> length >> width;
+
+	glPushMatrix();
+
+	glTranslatef(this->position[0], this->position[1], this->position[2]);
+	glRotatef(90, 1.0, 0.0, 0.0);
+	glColor3f(0.0, 0.0, 1.0);
+	
+	glRectd(-width/2, -length/2, width/2, length/2);
+
+	glTranslatef(-this->position[0], -this->position[1], -this->position[2]);
+	glRotatef(-90, 1.0, 0.0, 0.0);
+	glPopMatrix();
 }
 
 void Maze::draw(){

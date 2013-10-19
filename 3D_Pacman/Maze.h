@@ -16,6 +16,7 @@ public:
 
 	Maze();
 	void draw();
+	void mazeReader(string filename);
 	~Maze();
 
 private:
