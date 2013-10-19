@@ -48,7 +48,8 @@ void Pac::draw(){
 		for(int j = -q; j < q; j++){
 			// One latitudinal triangle strip.
 			glBegin(GL_TRIANGLE_STRIP);
-				glColor4f(pink.r,pink.g,pink.b,pink.a);
+				//glColor4f(pink.r,pink.g,pink.b,pink.a);
+				glColor4f(yellow.r,yellow.g,yellow.b,yellow.a);
 				glVertex3f(0.f,0.f,0.f);
 				for(int i = p/mouth; i <= (mouth-1)*p/mouth; i++){
 					glColor4f(yellow.r,yellow.g,yellow.b,yellow.a);
@@ -59,13 +60,40 @@ void Pac::draw(){
 								R * sin( (float)j/q * PI/2.0 ),
 								R * cos( (float)j/q * PI/2.0 ) * sin( 2.0 * (float)i/p * PI ) );         
 					}
-				glColor4f(purple.r,purple.g,purple.b,purple.a);
+				glColor4f(yellow.r,yellow.g,yellow.b,yellow.a);
+				//glColor4f(purple.r,purple.g,purple.b,purple.a);
 				glVertex3f(0.f,0.f,0.f);
 			glEnd();
 		}
 		glRotatef(-ang,this->vertical[0],this->vertical[1],this->vertical[2]);
 		glRotatef(90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
-		
+
+		float R2 = 7*R/8;
+		float dist = 100.f;
+		glTranslatef(this->orientn[0]/dist, this->orientn[1]/dist,this->orientn[2]/dist);
+		glRotatef(-90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
+		glRotatef(ang,this->vertical[0],this->vertical[1],this->vertical[2]);
+		for(int j = -q; j < q; j++){
+			// One latitudinal triangle strip.
+			glBegin(GL_TRIANGLE_STRIP);
+				glColor4f(red.r,red.g,red.b,red.a);
+				glVertex3f(0.f,0.f,0.f);
+				for(int i = p/mouth; i <= (mouth-1)*p/mouth; i++){
+					glColor4f(red.r,red.g,red.b,red.a);
+					glVertex3d( R2 * cos( (float)(j+1)/q * PI/2.0 ) * cos( 2.0 * (float)i/p * PI ),
+								R2 * sin( (float)(j+1)/q * PI/2.0 ),
+								R2 * cos( (float)(j+1)/q * PI/2.0 ) * sin( 2.0 * (float)i/p * PI ) );
+					glVertex3d( R2 * cos( (float)j/q * PI/2.0 ) * cos( 2.0 * (float)i/p * PI ),
+								R2 * sin( (float)j/q * PI/2.0 ),
+								R2 * cos( (float)j/q * PI/2.0 ) * sin( 2.0 * (float)i/p * PI ) );         
+					}
+				glColor4f(red.r,red.g,red.b,red.a);
+				glVertex3f(0.f,0.f,0.f);
+			glEnd();
+		}
+		glRotatef(-ang,this->vertical[0],this->vertical[1],this->vertical[2]);
+		glRotatef(90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
+		glTranslatef(-this->orientn[0]/dist, -this->orientn[1]/dist, -this->orientn[2]/dist);		
 	}
 	if (mouthOpening){
 		mouth *= 2;
@@ -75,7 +103,6 @@ void Pac::draw(){
 	if (mouth<=8 || mouth>8*pow(2,10)){
 		mouthOpening = !mouthOpening;
 	}
-	
 	glTranslatef(-this->position[0], -this->position[1]-static_cast<float>(R), -this->position[2]);
 	glPopMatrix();
 }
