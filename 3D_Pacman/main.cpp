@@ -15,9 +15,11 @@
 
 // TIPS:
 	// Esc,q,Q to Quit
-	// F5 to restart the program
-	// Arrow Keys to control Camera
-	// Drag Mouse to change direction of camera
+	// F5 to restart the program // TODO:
+	// Arrow Keys to control Pacman
+	// WASD to control Camera
+	// Drag Mouse to change direction of camera // TODO:
+	// 1,2,3,4 to change camera View
 
 // RULES: 
 	// Code should be well documented and well formatted
@@ -26,7 +28,6 @@
 	// Any line of code should not exceed 80 characters, fold it if does
 	// No warnings during compilation
 	
-
 // TODO: Before Mid Evaluation
 	// Create Start Screen - simple in start i.e. press enter to start game
 	// Create Maze
@@ -49,11 +50,13 @@
 #include "Functions.h"
 #include "Pac.h"
 #include "Maze.h"
+#include "Ghost.h"
 
 // Global Variables
 Camera *cam;
 string cameratype = "follow";
 Pac *pacman;
+vector<Ghost*> ghost;
 Maze *maze;
 bool keyStates[256];// = new bool[256];
 bool keySpecialStates[256]; // = new bool[256]; // Create an array of boolean values of length 256 (0-255) 
@@ -323,8 +326,8 @@ void display (void) {
 	}
 	
 	// Solid Cylinder
-	glColor3f(1.0, 0.0, 0.0);
-	glutSolidCylinder(0.2, 1.0, 10, 10);
+	/*glColor3f(1.0, 0.0, 0.0);
+	glutSolidCylinder(0.2, 1.0, 10, 10);*/
 	
 	if (maze){
 		maze->draw();
@@ -333,16 +336,27 @@ void display (void) {
 		if (!pacman->moving) pacman->moveForward();
 		pacman->draw();
 	}
+	if (ghost.size()){
+		for (size_t i = 0; i < ghost.size(); i++)
+			ghost[i]->draw();
+	}
+
 	glPopMatrix();
 	
 	glutSwapBuffers();  
 }
 
 int main(int argc, char** argv){
+	srand(clock());
 	fInit();
 	cam = new Camera();
 	maze = new Maze();
 	pacman = new Pac(maze);
+	ghost.push_back(new Ghost(yellow, maze));
+	ghost.push_back(new Ghost(purple, maze));
+	ghost.push_back(new Ghost(pink, maze));
+	ghost.push_back(new Ghost(green, maze));
+
 	// Initialise Glut Variables
 	glutInit(&argc, argv);
 	glutInitDisplayMode (GLUT_DOUBLE| GLUT_RGBA | GLUT_DEPTH); 
@@ -364,9 +378,6 @@ int main(int argc, char** argv){
 	glutKeyboardUpFunc(keyUp); // Tell GLUT to use the method "keyUp" for key up events    
 	glutSpecialFunc(keySpecial); // Tell GLUT to use the method "keySpecial" for special key presses  
 	glutSpecialUpFunc(keySpecialUp); // Tell GLUT to use the method "keySpecialUp" for special up key events  
-
-	
-
 
 
 	// Start Main Loop

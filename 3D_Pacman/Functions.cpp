@@ -1,6 +1,7 @@
 #include "Functions.h"
 
 vf origin;
+color4 red, blue, green, yellow, purple, pink;
 
 color3::color3(){
 	this->init(0., 0., 0., 1.);
@@ -11,7 +12,7 @@ color3::color3(float r, float g, float b, float max){
 }
 
 void color3::init(float r, float g, float b, float max){
-	this->r = r, this->g = g, this->b = b, this->max = max;
+	this->r = r/max, this->g = g/max, this->b = b/max;
 }
 
 color3::~color3(){
@@ -30,12 +31,18 @@ color4::~color4(){
 }
 
 void color4::init(float r, float g, float b, float a, float max){
-	this->r = r, this->g = g, this->b = b, this->a = a, this->max = max;
+	this->r = r/max, this->g = g/max, this->b = b/max, this->a = a/max;
 }
 
 void fInit(){
 	for (int i = 0; i < 3; i++)
 		origin.push_back(0.f);
+	red		= color4(1.f,0.f,0.f);
+	green	= color4(0.f,1.f,0.f);
+	blue	= color4(0.f,0.f,1.f);
+	yellow	= color4(1.f,1.f,0.f);
+	purple	= color4(160.f,  32.f, 240.f,  255.f,  255.f);
+	pink	= color4(255.f, 105.f, 180.f,  255.f,  255.f); 
 }
 
 void newl(){

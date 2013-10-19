@@ -67,9 +67,13 @@ template <typename T> vector<T> rotateaboutaxisbyangle(vector<T> point, vector<T
 	return ret;
 }
 
+template <typename T> T randomm(T max, T min){
+	return (static_cast<T>(rand())/ (RAND_MAX)) * (max-min+1) + min;
+}
+
 class color3{
 public:
-	float r, g, b, max;
+	float r, g, b;
 	color3();
 	color3(float r, float g, float b, float max= 1.);
 	~color3();
@@ -80,7 +84,7 @@ private:
 
 class color4{
 public:
-	float r, g, b, a, max;
+	float r, g, b, a;
 	color4();
 	color4(float r, float g, float b, float a=1., float max= 1.);
 	~color4();
@@ -89,5 +93,12 @@ private:
 	void init(float r, float g, float b, float a, float max);
 
 };
+
+extern color4 red;
+extern color4 blue;
+extern color4 green;
+extern color4 yellow;
+extern color4 purple;
+extern color4 pink;
 
 #endif
