@@ -3,9 +3,18 @@
 /*
 Maze is defined in "TheGameMatrix.txt".
 First Line- Length Width
-w- wall:10, p- path with pellets:6, e- empty path:0
+   wall:a:11	h:15	b:12
+		v:16	m:10	v:16
+		c:13	h:15	d:14
+
+hwh      v        v        v        v
+ v      hxh      hy        zh      hlh
+		          v        v        v
+
+w:21, x:22, y:23, z:24, l:25 
+p- path with pellets:6, e- empty path:0
 g- ghosts place:7, warp gates- using nos:1, 2, 3, 4, 5.
-b- boost pellets:8
+s- boost pellets:8
 */
 
 Maze::Maze(){
@@ -24,6 +33,10 @@ void Maze::mazeReader(string filename){
 	int len; int wid;
 
 	mazeInf.open(filename);
+	
+	if(!mazeInf.good()){
+		cout << "File not found or corrupted. File: " << filename << endl;
+	}
 
 	getline(mazeInf, dimension);
 	stringstream lwSS(dimension);
@@ -46,8 +59,41 @@ void Maze::mazeReader(string filename){
 			featureSS >> feature;
 
 			switch(feature){
-			case 'w':
+			case 'm':
 				this->mazeMat[i][j] = 10;
+				break;
+			case 'a':
+				this->mazeMat[i][j] = 11;
+				break;
+			case 'b':
+				this->mazeMat[i][j] = 12;
+				break;
+			case 'c':
+				this->mazeMat[i][j] = 13;
+				break;
+			case 'd':
+				this->mazeMat[i][j] = 14;
+				break;
+			case 'h':
+				this->mazeMat[i][j] = 15;
+				break;
+			case 'v':
+				this->mazeMat[i][j] = 16;
+				break;
+			case 'w':
+				this->mazeMat[i][j] = 21;
+				break;
+			case 'x':
+				this->mazeMat[i][j] = 22;
+				break;
+			case 'y':
+				this->mazeMat[i][j] = 23;
+				break;
+			case 'z':
+				this->mazeMat[i][j] = 24;
+				break;
+			case 'l':
+				this->mazeMat[i][j] = 25;
 				break;
 			case 'p':
 				this->mazeMat[i][j] = 6;
@@ -58,7 +104,7 @@ void Maze::mazeReader(string filename){
 			case 'g':
 				this->mazeMat[i][j] = 7;
 				break;
-			case 'b':
+			case 's':
 				this->mazeMat[i][j] = 8;
 				break;
 			default:
@@ -106,48 +152,43 @@ void Maze::draw(){
 			int feature = mazeMat[i][j];
 			float x1 = (float)j-wd-0.5f; float x2 = (float)j-wd+0.5f;
 			float z1 = (float)i-ln-0.5f; float z2 = (float)i-ln+0.5f;
-
+			
+			glColor3f(0.0f, 0.0f, 1.0f);
 			switch(feature){
-			case 10:
-				glBegin(GL_QUADS);                
-				  glColor3f(0.0f, 0.0f, 1.0f);   
-				  //bottom face move clockwise for each face
-				  glVertex3f(x1, 0.0f, z1);
-				  glVertex3f(x2, 0.0f, z1);
-				  glVertex3f(x2, 0.0f, z2);
-				  glVertex3f(x1, 0.0f, z2);
- 
-				  //top face
-				  glVertex3f(x1, 0.5f, z1);
-				  glVertex3f(x2, 0.5f, z1);
-				  glVertex3f(x2, 0.5f, z2);
-				  glVertex3f(x1, 0.5f, z2);
- 
-				  //left face
-				  glVertex3f(x1, 0.0f, z1);
-				  glVertex3f(x1, 0.5f, z1);
-				  glVertex3f(x1, 0.5f, z2);
-				  glVertex3f(x1, 0.0f, z2);
- 
-				  //right face
-				  glVertex3f(x2, 0.0f, z2);
-				  glVertex3f(x2, 0.5f, z2);
-				  glVertex3f(x2, 0.5f, z1);
-				  glVertex3f(x2, 0.0f, z1);
- 
-				  //front face
-				  glVertex3f(x1, 0.0f, z2);
-				  glVertex3f(x1, 0.5f, z2);
-				  glVertex3f(x2, 0.5f, z2);
-				  glVertex3f(x2, 0.0f, z2);
- 
-				  //back face
-				  glVertex3f(x2, 0.0f, z1);
-				  glVertex3f(x2, 0.5f, z1);
-				  glVertex3f(x1, 0.5f, z1);
-				  glVertex3f(x1, 0.0f, z1);
-				glEnd();
+			case 11:
+				
+				break;
 
+			case 12:
+				
+				break;
+
+			case 13:
+				
+				break;
+
+			case 14:
+				
+				break;
+
+			case 15:
+				glPushMatrix();
+				glTranslatef((float)j-wd, 0.5f, (float)i-ln);
+				glRotatef(90, 0.0f, 1.0f, 0.0f);
+				glTranslatef(0.0f, 0.0f, -0.5f);
+				glutSolidCylinder(0.25f, 1.0f, 8, 8);
+				glTranslatef(0.0f, 0.0f, 0.5f);
+				glRotatef(-90, 0.0f, 1.0f, 0.0f);
+				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln));
+				glPopMatrix;
+				break;
+
+			case 16:
+				glPushMatrix();
+				glTranslatef((float)j-wd, 0.5f, (float)i-ln-0.5f);
+				glutSolidCylinder(0.25f, 1.0f, 8, 8);
+				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln-0.5f));
+				glPopMatrix;
 				break;
 
 			case 6:
@@ -155,7 +196,7 @@ void Maze::draw(){
 				glPushMatrix();
 				glTranslatef((float)j-wd, 0.25f, (float)i-ln);
 				glutSolidSphere(0.1f, 8, 8);
-				glTranslatef((float)j-wd, 0.25, (float)i-ln);
+				glTranslatef(-((float)j-wd), -0.25, -((float)i-ln));
 				glPopMatrix();
 				break;
 
