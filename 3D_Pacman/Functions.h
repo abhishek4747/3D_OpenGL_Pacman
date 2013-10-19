@@ -68,7 +68,7 @@ template <typename T> vector<T> rotateaboutaxisbyangle(vector<T> point, vector<T
 }
 
 template <typename T> T randomm(T max, T min){
-	return (static_cast<T>(rand())/ (RAND_MAX)) * (max-min+1) + min;
+	return (static_cast<double>(rand()) / (RAND_MAX)) * (max-min+1) + min;
 }
 
 class color3{

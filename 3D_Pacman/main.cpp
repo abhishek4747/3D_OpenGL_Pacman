@@ -57,11 +57,32 @@ Camera *cam;
 string cameratype = "follow";
 Pac *pacman;
 vector<Ghost*> ghost;
+bool ghostsMoving = false;
 Maze *maze;
+unsigned int iterations = 0;
 bool keyStates[256];// = new bool[256];
 bool keySpecialStates[256]; // = new bool[256]; // Create an array of boolean values of length 256 (0-255) 
 bool SHIFT = false, ALT = false, CTRL = false;
 
+void moveGhosts(){
+	ghostsMoving = true;
+	if (ghost.size()){
+		for (size_t i = 0; i < ghost.size(); i++){
+			int r = randomm(100,0);
+			cout<<r<<endl;
+			if (r<5){
+				ghost[i]->moveLeft();
+			}else if(r<10){
+				ghost[i]->moveLeft();
+			}else if (r<12){
+				ghost[i]->moveBack();
+			}else{
+				ghost[i]->moveForward();
+			}
+		}
+	}
+	ghostsMoving = false;
+}
 
 void keyOperations (void) {  
 	if (keyStates['q'] || keyStates['Q'] || keyStates[27]){
@@ -302,6 +323,7 @@ void reshape (int width, int height) {
 }
 
 void display (void) {
+	iterations++;
 	// KeyBoard Operations
 	keyOperations();
 	keySpecialOperations();
@@ -337,17 +359,19 @@ void display (void) {
 		pacman->draw();
 	}
 	if (ghost.size()){
-		for (size_t i = 0; i < ghost.size(); i++)
+		for (size_t i = 0; i < ghost.size(); i++){
 			ghost[i]->draw();
+		}
 	}
-
-	glPopMatrix();
-	
+	if (!ghostsMoving){
+		thread t1 (moveGhosts);
+		t1.detach();
+	}
+	glPopMatrix();	
 	glutSwapBuffers();  
 }
 
 int main(int argc, char** argv){
-	srand(clock());
 	fInit();
 	cam = new Camera();
 	maze = new Maze();
