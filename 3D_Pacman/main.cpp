@@ -59,29 +59,32 @@ Pac *pacman;
 vector<Ghost*> ghost;
 bool ghostsMoving = false;
 Maze *maze;
+bool gamePaused = false;
 unsigned int iterations = 0;
 bool keyStates[256];// = new bool[256];
 bool keySpecialStates[256]; // = new bool[256]; // Create an array of boolean values of length 256 (0-255) 
 bool SHIFT = false, ALT = false, CTRL = false;
 
 void moveGhosts(){
-	ghostsMoving = true;
-	if (ghost.size()){
-		for (size_t i = 0; i < ghost.size(); i++){
-			int r = randomm(100,0);
-			cout<<r<<endl;
-			if (r<5){
-				ghost[i]->moveLeft();
-			}else if(r<10){
-				ghost[i]->moveLeft();
-			}else if (r<12){
-				ghost[i]->moveBack();
-			}else{
-				ghost[i]->moveForward();
+	if (!gamePaused){
+		ghostsMoving = true;
+		if (ghost.size()){
+			for (size_t i = 0; i < ghost.size(); i++){
+				int r = randomm(100,0);
+				//cout<<r<<endl;
+				if (r<5){
+					ghost[i]->moveLeft();
+				}else if(r<10){
+					ghost[i]->moveLeft();
+				}else if (r<12){
+					ghost[i]->moveBack();
+				}else{
+					ghost[i]->moveForward();
+				}
 			}
 		}
+		ghostsMoving = false;
 	}
-	ghostsMoving = false;
 }
 
 void keyOperations (void) {  
@@ -135,6 +138,10 @@ void keyOperations (void) {
 		cameratype = "follow";
 	}else if (keyStates['4']) { 
 		cameratype = "else";
+	}
+	if (keyStates[13]){
+		keyStates[13] = false;
+		gamePaused = !gamePaused;
 	}
 
 	if(keyStates['o']){
@@ -200,8 +207,10 @@ void keySpecialOperations(void) {
 		if (keySpecialStates[GLUT_KEY_LEFT]) { // If the left arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_LEFT] = false;
 			if (!pacman->moving){
+				cout<<"move left"<<endl;
 				thread t1(&Pac::moveLeft,pacman);		
 				t1.detach();
+				cout<<"left moved"<<endl;
 			}
 		}
 		if (keySpecialStates[GLUT_KEY_RIGHT]) { // If the right arrow key has been pressed  
@@ -334,6 +343,7 @@ void display (void) {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity(); 
+	mtx.lock();
 	if (cameratype=="free"){
 		gluLookAt(cam->eyex, cam->eyey, cam->eyez, cam->centerx, cam->centery, cam->centerz, cam->upx, cam->upy, cam->upz);
 	}else if (cameratype=="top"){
@@ -346,24 +356,25 @@ void display (void) {
 	}else{
 		gluLookAt(0.,max(maze->size[0],maze->size[2]),0.,0.,0.,0.,0.,0.,-1.);
 	}
+	mtx.unlock();
 	
 	// Solid Cylinder
 	/*glColor3f(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.2, 1.0, 10, 10);*/
 	
-	if (maze){
+	if (maze ){
 		maze->draw();
 	}
-	if (pacman){
-		if (!pacman->moving) pacman->moveForward();
+	if (pacman ){
+		if (!pacman->moving && !gamePaused) pacman->moveForward();
 		pacman->draw();
 	}
-	if (ghost.size()){
+	if (ghost.size() ){
 		for (size_t i = 0; i < ghost.size(); i++){
 			ghost[i]->draw();
 		}
 	}
-	if (!ghostsMoving){
+	if (!ghostsMoving ){
 		thread t1 (moveGhosts);
 		t1.detach();
 	}
@@ -376,10 +387,10 @@ int main(int argc, char** argv){
 	cam = new Camera();
 	maze = new Maze();
 	pacman = new Pac(maze);
-	ghost.push_back(new Ghost(yellow, maze));
-	ghost.push_back(new Ghost(purple, maze));
-	ghost.push_back(new Ghost(pink, maze));
-	ghost.push_back(new Ghost(green, maze));
+	ghost.push_back(new Ghost(yellow, maze, pacman));
+	ghost.push_back(new Ghost(purple, maze, pacman));
+	ghost.push_back(new Ghost(pink, maze, pacman));
+	ghost.push_back(new Ghost(green, maze, pacman));
 
 	// Initialise Glut Variables
 	glutInit(&argc, argv);

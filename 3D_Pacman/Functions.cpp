@@ -1,5 +1,6 @@
 #include "Functions.h"
 
+mutex mtx;
 vf origin;
 color4 red, blue, green, yellow, purple, pink;
 

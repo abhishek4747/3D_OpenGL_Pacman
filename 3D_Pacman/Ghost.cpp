@@ -8,22 +8,21 @@ Ghost::Ghost(){
 	dim.push_back(.2f), dim.push_back(1.f);
 	string shape("cylinder");
 	color4 col(0.,1.,1.);
-	Maze *maze = new Maze();
-	this->init(pos, or, ver, shape, dim, .01f, col, maze);
+	this->init(pos, or, ver, shape, dim, .01f, col, new Maze(), new Pac());
 }
 
-Ghost::Ghost(color4 col, Maze *maze){
+Ghost::Ghost(color4 col, Maze *maze, Pac *pacman){
 	vf pos, or, ver, dim;
 	pos.push_back(randomm(-maze->size[0]/2, maze->size[0]/2)), pos.push_back(0.f), pos.push_back(randomm(-maze->size[2]/2, maze->size[2]/2));
 	or.push_back(0.f),  or.push_back(0.f),  or.push_back(-1.f);
 	ver.push_back(0.f), ver.push_back(1.f), ver.push_back(0.f);
 	dim.push_back(.2f), dim.push_back(1.f);
 	string shape("cylinder");
-	this->init(pos, or, ver, shape, dim, .1f, col, maze);
+	this->init(pos, or, ver, shape, dim, .1f, col, maze, pacman);
 }
 
-Ghost::Ghost(vf position, vf orientn, vf vertical, string shape, vf dimentions, float speed, color4 color, Maze *maze){
-	this->init(position, orientn, vertical, shape, dimentions, speed, color, maze);
+Ghost::Ghost(vf position, vf orientn, vf vertical, string shape, vf dimentions, float speed, color4 color, Maze *maze, Pac *pacman){
+	this->init(position, orientn, vertical, shape, dimentions, speed, color, maze, pacman);
 }
 
 void Ghost::draw(){
@@ -91,12 +90,13 @@ void Ghost::moveBack(){
 Ghost::~Ghost(){
 }
 
-void Ghost::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze){
+void Ghost::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze, Pac *pacman){
 	this->position = position, this->orientn = orientn, this->vertical = vertical;
 	this->shape = shape, this->dimentions = dimentions;
 	this->speed = speed;
 	this->color = color;
 	this->maze = maze;
+	this->pacman = pacman;
 	this->angle = 0.f;
 	this->moving = false;
 }

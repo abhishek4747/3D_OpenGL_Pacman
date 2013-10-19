@@ -2,6 +2,9 @@
 #include "Functions.h"
 #include "Maze.h"
 
+#ifndef _PAC_H
+#define _PAC_H
+
 class Pac{
 public:
 	vf position;			// Position
@@ -26,5 +29,8 @@ public:
 
 private:
 	void init(vf position, vf orientn, vf vertical, string shape, vf dimentions, float speed, color4 color, Maze *maze);
+	void moveSomewhere(float totaldegree, int fast, float direction= 1.f);
 
 };
+
+#endif // !_PAC_H
