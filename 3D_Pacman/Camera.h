@@ -5,6 +5,7 @@ public:
 	double eyex, eyey, eyez;
 	double centerx, centery, centerz;
 	double upx, upy, upz;
+
 	Camera();
 	Camera(double eyex, double eyey, double eyez, 
 		double centerx, double centery, double centerz, 

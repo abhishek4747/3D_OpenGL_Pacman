@@ -52,6 +52,7 @@
 
 // Global Variables
 Camera *cam;
+string cameratype = "follow";
 Pac *pacman;
 Maze *maze;
 bool keyStates[256];// = new bool[256];
@@ -103,9 +104,13 @@ void keyOperations (void) {
 
 
 	if (keyStates['1']) { 
-		
+		cameratype = "top";
 	}else if (keyStates['2']) { 
-		
+		cameratype = "free";
+	}else if (keyStates['3']) { 
+		cameratype = "follow";
+	}else if (keyStates['4']) { 
+		cameratype = "else";
 	}
 
 	if(keyStates['o']){
@@ -123,11 +128,6 @@ void keyOperations (void) {
 	}
 	if (keyStates['g']){
 		keyStates['g'] = false;
-		
-	}
-
-	if (keyStates['s']){
-		keyStates['s'] = false;
 		
 	}
 
@@ -172,22 +172,60 @@ void keyOperations (void) {
 } 
 
 void keySpecialOperations(void) {  
-	if (keySpecialStates[GLUT_KEY_LEFT]) { // If the left arrow key has been pressed  
-		keySpecialStates[GLUT_KEY_LEFT] = false;
-		pacman->moveLeft();
-
-	}
-	if (keySpecialStates[GLUT_KEY_RIGHT]) { // If the right arrow key has been pressed  
-		keySpecialStates[GLUT_KEY_RIGHT] = false;
-		pacman->moveRight();
-	}
-	if (keySpecialStates[GLUT_KEY_UP]) { // If the up arrow key has been pressed  
-		keySpecialStates[GLUT_KEY_UP] = false;
-		pacman->moveForward();
-	}
-	if (keySpecialStates[GLUT_KEY_DOWN]) { // If the down arrow key has been pressed  
-		keySpecialStates[GLUT_KEY_DOWN] = false;
-		pacman->moveBack();
+	if (cameratype=="follow"){
+		if (keySpecialStates[GLUT_KEY_LEFT]) { // If the left arrow key has been pressed  
+			keySpecialStates[GLUT_KEY_LEFT] = false;
+			if (!pacman->moving){
+				thread t1(&Pac::moveLeft,pacman);		
+				t1.detach();
+			}
+		}
+		if (keySpecialStates[GLUT_KEY_RIGHT]) { // If the right arrow key has been pressed  
+			keySpecialStates[GLUT_KEY_RIGHT] = false;
+			if (!pacman->moving){
+				thread t1(&Pac::moveRight,pacman);		
+				t1.detach();
+			}
+		}
+		if (keySpecialStates[GLUT_KEY_UP]) { // If the up arrow key has been pressed  
+			keySpecialStates[GLUT_KEY_UP] = false;
+			if (!pacman->moving){
+				thread t1(&Pac::moveForward,pacman);		
+				t1.detach();
+			}
+		}
+		if (keySpecialStates[GLUT_KEY_DOWN]) { // If the down arrow key has been pressed  
+			keySpecialStates[GLUT_KEY_DOWN] = false;
+			if (!pacman->moving){
+				thread t1(&Pac::moveBack,pacman);		
+				t1.detach();
+			}
+		}
+	}else{
+		if (keySpecialStates[GLUT_KEY_LEFT]) { // If the left arrow key has been pressed  
+			keySpecialStates[GLUT_KEY_LEFT] = false;
+			pacman->orientn[0] = -1;
+			pacman->orientn[1] = 0;
+			pacman->orientn[2] = 0;
+		}
+		if (keySpecialStates[GLUT_KEY_RIGHT]) { // If the right arrow key has been pressed  
+			keySpecialStates[GLUT_KEY_RIGHT] = false;
+			pacman->orientn[0] = 1;
+			pacman->orientn[1] = 0;
+			pacman->orientn[2] = 0;
+		}
+		if (keySpecialStates[GLUT_KEY_UP]) { // If the up arrow key has been pressed  
+			keySpecialStates[GLUT_KEY_UP] = false;
+			pacman->orientn[0] = 0;
+			pacman->orientn[1] = 0;
+			pacman->orientn[2] = -1;
+		}
+		if (keySpecialStates[GLUT_KEY_DOWN]) { // If the down arrow key has been pressed  
+			keySpecialStates[GLUT_KEY_DOWN] = false;
+			pacman->orientn[0] = 0;
+			pacman->orientn[1] = 0;
+			pacman->orientn[2] = 1;
+		}
 	}
 
 	if (keySpecialStates[GLUT_KEY_F5] || keySpecialStates[GLUT_KEY_F6]){
@@ -271,7 +309,19 @@ void display (void) {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity(); 
-	gluLookAt(cam->eyex, cam->eyey, cam->eyez, cam->centerx, cam->centery, cam->centerz, cam->upx, cam->upy, cam->upz);
+	if (cameratype=="free"){
+		gluLookAt(cam->eyex, cam->eyey, cam->eyez, cam->centerx, cam->centery, cam->centerz, cam->upx, cam->upy, cam->upz);
+	}else if (cameratype=="top"){
+		gluLookAt(0.,maze->size[0],maze->size[2],0.,0.,0.,0.,1.,0.);
+	}else if (cameratype=="follow"){
+		gluLookAt(pacman->position[0]-3*pacman->orientn[0],
+			pacman->position[1]-3*pacman->orientn[1]+max(maze->size[0],maze->size[2])/5.f,
+			pacman->position[2]-3*pacman->orientn[2],
+			pacman->position[0],pacman->position[1],pacman->position[2],0.,1.,0.);
+	}else{
+		gluLookAt(0.,max(maze->size[0],maze->size[2]),0.,0.,0.,0.,0.,0.,-1.);
+	}
+	
 	// Solid Cylinder
 	glColor3f(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.2, 1.0, 10, 10);
@@ -281,7 +331,7 @@ void display (void) {
 		maze->mazeReader("TheGameMatrix.txt");
 	}
 	if (pacman){
-		pacman->moveForward();
+		if (!pacman->moving) pacman->moveForward();
 		pacman->draw();
 	}
 	glPopMatrix();

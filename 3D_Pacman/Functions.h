@@ -60,15 +60,6 @@ template <typename T> vector<T> rotateaboutaxisbyangle(vector<T> point, vector<T
 		a = abc[0], b = abc[1], c = abc[2],
 		u = uvw[0], v = uvw[1], w = uvw[2];
 	T cosTheta = setPrecision(cos(degreeToRadian(angle)),3), sinTheta = setPrecision(sin(degreeToRadian(angle)),3) ;
-
-	cout<<"point :";printVar(x);printVar(y);printVar(z);printVector(point);
-	cout<<"abc :";printVar(a);printVar(b);printVar(c);printVector(abc);
-	cout<<"uvw :";printVar(u);printVar(v);printVar(w);printVector(uvw);
-	cout<<"angle :";printVar(angle);newl();
-	cout<<"cosT  :";printVar(cosTheta);newl();
-	cout<<"sinT  :";printVar(sinTheta);newl();
-
-
 	vector<T> ret;
 	ret.push_back((a*(v*v + w*w) - u*(b*v + c*w - u*x - v*y - w*z))*(1 - cosTheta) + x*cosTheta + (-c*v + b*w - w*y + v*z)*sinTheta);
 	ret.push_back((b*(u*u + w*w) - v*(a*u + c*w - u*x - v*y - w*z))*(1 - cosTheta) + y*cosTheta + ( c*u - a*w - w*x + u*z)*sinTheta);
