@@ -44,7 +44,6 @@ void Pac::draw(){
 		mtx.lock();
 		float ang = anglebw(orientn,initialv);
 		mtx.unlock();
-		cout<<ang<<endl;
 		mtx.lock();
 		glRotatef(-90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
 		mtx.unlock();
@@ -168,9 +167,10 @@ void Pac::moveSomewhere(float totaldegree, int fast, float direction){
 	}
 	mtx.lock();
 	orientn = fin;
-	mtx.unlock();
-
-	
+	mtx.unlock();	
+	for (int i = 0; i < 3; i++){
+		position[i] = static_cast<float>(static_cast<int>(position[i]+0.5f));
+	}
 }
 
 void Pac::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze){
