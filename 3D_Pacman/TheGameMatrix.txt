@@ -1,32 +1,24 @@
-31 28
-w w w w w w w w w w w w w w w w w w w w w w w w w w w w
-w p p p p p p p p p p p p p p p p p p p p p p p p p p w
-w p w w w w w w w w w w p w w p w w w w w w w w w w p w
-w p w w w w w w w w w w p w w p w w w w w w w w w w p w
-w p p p p p p w w p p p p w w p p p p w w p p p p p p w
-w w w p w w p w w p w w w w w w w w p w w p w w p w w w
-w w w p w w p w w p w w w w w w w w p w w p w w p w w w
-w p p p w w p p p p p p p e e p p p p p p p w w p p p w
-w p w w w w p w w w w w p w w p w w w w w w w w w w p w
-w p w w w w p w w w w w p w w p w w w w w w w w w w p w
-w p p p p p p p p p p p p w w p p p p p p p p p p p p w
-w w w w w w p w w e w w w w w w w w e w w p w w w w w w
-w w w w w w p w w e w w w w w w w w e w w p w w w w w w
-w w w w w w p w w e e e e e e e e e e w w p w w w w w w
-w w w w w w p w w e w w w w w w w w e w w p w w w w w w
-w w w w w w p w w e w g g g g g g w e w w p w w w w w w
-e e e e e e p e e e w g g g g g g w e e e p e e e e e e
-w w w w w w p w w e w g g g g g g w e w w p w w w w w w
-w w w w w w p w w e w w w g g w w w e w w p w w w w w w
-w w w w w w p w w e e e e e e e e e e w w p w w w w w w
-w w w w w w p w w w w w e w w e w w w w w p w w w w w w
-w w w w w w p w w w w w e w w e w w w w w p w w w w w w
-w p p p p p p w w p p p p w w p p p p w w p p p p p p w
-w p w w w w p w w p w w w w w w w w p w w p w w w w p w
-w p w w w w p w w p w w w w w w w w p w w p w w w w p w
-w p p p p p p p p p p p p p p p p p p p p p p p p p p w
-w p w w w w w w w w w w p w w p w w w w w w w w w w p w
-w p w w w w w w w w w w p w w p w w w w w w w w w w p w
-w p w w w w w w w w w w p w w p w w w w w w w w w w p w
-w p p p p p p p p p p p p w w p p p p p p p p p p p p w
-w w w w w w w w w w w w w w w w w w w w w w w w w w w w
+23 23
+a h h h h h h h h h h h h h h h h h h h h h b
+v p p p p p p p p p p p p p p p p p p p p p v
+v p h h h h w h h h p v p h h h w h h h h p v
+v p p p p p v p p p p v p p p p v p p p p p v
+z h h p v p v p h h h x h h h p v p v p h h y
+v p p p v p p p p p p e p p p p p p v p p p v
+v p h h d p h h h h p v p h h h h h x h h p v
+v p p p p p p p p p p v p p p p p p p p p p v
+z h h h b p v e h h h x h h h e v p a h h h y
+v m m m v p v e e e e e e e e e v p v m m m v
+v m m m v p v e a h h h h h b e v p v m m m v
+c h h h d p v e v g g g g g v e v p c h h h d
+e e e e e p e e v g g g g g v e e p e e e e e
+a h h h b p v e v g g g g g v e v p a h h h b
+v m m m v p v e z h h g h h d e v p v m m m v
+v m m m v p v e e e e e e e e e v p v m m m v
+z h h h d p z h h h e v e h h h y p c h h h y
+v p p p p p v p p p p v p p p p v p p p p p v
+v p h h h p v p h h h x h h h p v p h h h p v
+v p p p p p p p p p p p p p p p p p p p p p v
+v p h h h h h h h h p v p h h h h h h h h p v
+v p p p p p p p p p p v p p p p p p p p p p v
+c h h h h h h h h h h x h h h h h h h h h h d
