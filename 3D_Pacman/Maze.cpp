@@ -191,6 +191,26 @@ void Maze::draw(){
 				glPopMatrix;
 				break;
 
+			case 21:
+				
+				break;
+
+			case 22:
+				
+				break;
+
+			case 23:
+				
+				break;
+
+			case 24:
+				
+				break;
+
+			case 25:
+				
+				break;
+
 			case 6:
 				glColor3f(1.0f, 1.0f, 0.0f);
 				glPushMatrix();
