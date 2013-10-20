@@ -180,7 +180,7 @@ void Maze::draw(){
 				glTranslatef(0.0f, 0.0f, 0.5f);
 				glRotatef(-90, 0.0f, 1.0f, 0.0f);
 				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln));
-				glPopMatrix;
+				glPopMatrix();
 				break;
 
 			case 16:
@@ -188,7 +188,7 @@ void Maze::draw(){
 				glTranslatef((float)j-wd, 0.5f, (float)i-ln-0.5f);
 				glutSolidCylinder(0.25f, 1.0f, 8, 8);
 				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln-0.5f));
-				glPopMatrix;
+				glPopMatrix();
 				break;
 
 			case 21:

@@ -15,11 +15,12 @@
 
 // TIPS:
 	// Esc,q,Q to Quit
-	// F5 to restart the program // TODO:
+	// F5 to restart the program
 	// Arrow Keys to control Pacman
 	// WASD to control Camera
 	// Drag Mouse to change direction of camera // TODO:
 	// 1,2,3,4 to change camera View
+	// Enter or Space to Pause
 
 // RULES: 
 	// Code should be well documented and well formatted
@@ -64,6 +65,17 @@ unsigned int iterations = 0;
 bool keyStates[256];// = new bool[256];
 bool keySpecialStates[256]; // = new bool[256]; // Create an array of boolean values of length 256 (0-255) 
 bool SHIFT = false, ALT = false, CTRL = false;
+
+void mInit(){
+	cam = new Camera();
+	maze = new Maze("TheGameMatrix.txt");
+	pacman = new Pac(maze);
+	ghost.resize(0);
+	ghost.push_back(new Ghost(yellow, maze, pacman));
+	ghost.push_back(new Ghost(purple, maze, pacman));
+	ghost.push_back(new Ghost(pink, maze, pacman));
+	ghost.push_back(new Ghost(green, maze, pacman));
+}
 
 void moveGhosts(){
 	if (!gamePaused){
@@ -139,8 +151,9 @@ void keyOperations (void) {
 	}else if (keyStates['4']) { 
 		cameratype = "else";
 	}
-	if (keyStates[13]){
+	if (keyStates[13] || keyStates[32]){
 		keyStates[13] = false;
+		keyStates[32] = false;
 		gamePaused = !gamePaused;
 	}
 
@@ -267,7 +280,7 @@ void keySpecialOperations(void) {
 			keySpecialStates[GLUT_KEY_F6] = false;
 		}
 		keySpecialStates[GLUT_KEY_F5] = false;
-		
+		mInit();
 	}
 
 	if (keySpecialStates[GLUT_KEY_F7]){
@@ -383,16 +396,8 @@ void display (void) {
 }
 
 int main(int argc, char** argv){
-	fInit();
-	cam = new Camera();
-	maze = new Maze("TheGameMatrix.txt");
-	pacman = new Pac(maze);
-
-	ghost.push_back(new Ghost(yellow, maze, pacman));
-	ghost.push_back(new Ghost(purple, maze, pacman));
-	ghost.push_back(new Ghost(pink, maze, pacman));
-	ghost.push_back(new Ghost(green, maze, pacman));
-
+	fInit();	// functions.h init
+	mInit();	// main.cpp init
 
 	// Initialise Glut Variables
 	glutInit(&argc, argv);
@@ -404,6 +409,12 @@ int main(int argc, char** argv){
 	// Enable Glut Features
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
+	glEnable (GL_DEPTH_TEST);
+    /*glEnable (GL_LIGHTING);
+    glEnable (GL_LIGHT0);
+	glEnable (GL_LIGHT1);
+	glEnable (GL_LIGHT2);
+	glEnable(GL_COLOR_MATERIAL);*/
 
 	// Set Triggers
 	glutDisplayFunc(display);
@@ -415,7 +426,6 @@ int main(int argc, char** argv){
 	glutKeyboardUpFunc(keyUp); // Tell GLUT to use the method "keyUp" for key up events    
 	glutSpecialFunc(keySpecial); // Tell GLUT to use the method "keySpecial" for special key presses  
 	glutSpecialUpFunc(keySpecialUp); // Tell GLUT to use the method "keySpecialUp" for special up key events  
-
 
 	// Start Main Loop
 	glutMainLoop();   

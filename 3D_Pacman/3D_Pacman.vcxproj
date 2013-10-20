@@ -65,6 +65,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Agent.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Functions.cpp" />
     <ClCompile Include="Ghost.cpp" />
@@ -77,6 +78,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Functions.h" />
     <ClInclude Include="Ghost.h" />
+    <ClInclude Include="Agent.h" />
     <ClInclude Include="Headers.h" />
     <ClInclude Include="Maze.h" />
     <ClInclude Include="Pac.h" />

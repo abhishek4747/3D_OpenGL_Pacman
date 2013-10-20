@@ -21,13 +21,17 @@ template <typename T> T setPrecision(T number, int digits){
 	return static_cast<T>(static_cast<int>(number*p)/p);
 }
 
+template <typename T> void print(T v){
+	cout<<v<<" "; 
+}
+
 template <typename T> void printVar(T v){
-	cout<<v<<" ";
+	cout<<v<<" "; newl();
 }
 
 template <typename T> void printVector(vector<T> v){
 	for (size_t i = 0; i < v.size(); i++)
-		printVar(v[i]);
+		print(v[i]);
 	newl();
 }
 

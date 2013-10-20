@@ -1,14 +1,12 @@
 #include "Ghost.h"
 
 Ghost::Ghost(){
-	vf pos, or, ver, dim;
-	pos.push_back(0.f), pos.push_back(0.f), pos.push_back(0.f);
-	or.push_back(0.f),  or.push_back(0.f),  or.push_back(-1.f);
-	ver.push_back(0.f), ver.push_back(1.f), ver.push_back(0.f);
-	dim.push_back(.2f), dim.push_back(1.f);
-	string shape("cylinder");
-	color4 col(0.,1.,1.);
-	this->init(pos, or, ver, shape, dim, .01f, col, new Maze(), new Pac());
+	Agent::Agent();
+	this->color = color4(0.,1.,1.);
+	this->shape = "cylinder";
+	this->dimentions.resize(0);
+	this->dimentions.push_back(.2f), this->dimentions.push_back(1.f);
+	this->maze = new Maze(), this->pacman = new Pac();
 }
 
 Ghost::Ghost(color4 col, Maze *maze, Pac *pacman){
@@ -54,41 +52,6 @@ void Ghost::moveForward(){
 	}
 }
 
-void Ghost::moveLeft(){
-	moving = true;
-	vf fin = rotateaboutaxisbyangle(orientn,origin,vertical,90.f);
-	for (int i = 0; i < 90; i++){
-		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,1.f);
-		Sleep(1);
-	}
-	orientn = fin;
-	moving = false;
-}
-
-void Ghost::moveRight(){
-	moving = true;
-	vf fin = rotateaboutaxisbyangle(orientn,origin,vertical,-90.f);
-	for (int i = 0; i < 90; i++){
-		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,-1.f);
-		Sleep(1);
-	}
-	orientn = fin;
-	moving = false;
-}
-
-void Ghost::moveBack(){
-	moving = true;
-	vf fin = rotateaboutaxisbyangle(orientn,origin,vertical,180.f);
-	for (int i = 0; i < 180; i++){
-		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,1.f);
-		Sleep(1);
-	}
-	orientn = fin;
-	moving = false;
-}
-
-Ghost::~Ghost(){
-}
 
 void Ghost::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze, Pac *pacman){
 	this->position = position, this->orientn = orientn, this->vertical = vertical;
@@ -97,6 +60,5 @@ void Ghost::init(vf position, vf orientn, vf vertical, string shape,	vf dimentio
 	this->color = color;
 	this->maze = maze;
 	this->pacman = pacman;
-	this->angle = 0.f;
 	this->moving = false;
 }
