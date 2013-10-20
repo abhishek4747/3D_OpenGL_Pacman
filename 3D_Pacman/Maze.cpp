@@ -110,7 +110,7 @@ void Maze::draw(){
 			switch(feature){
 			case 10:
 				glBegin(GL_QUADS);                
-				  glColor3f(0.0f, 1.0f, 0.0f);   
+				  glColor3f(0.0f, 0.0f, 1.0f);   
 				  //bottom face move clockwise for each face
 				  glVertex3f(x1, 0.0f, z1);
 				  glVertex3f(x2, 0.0f, z1);
@@ -118,42 +118,47 @@ void Maze::draw(){
 				  glVertex3f(x1, 0.0f, z2);
  
 				  //top face
-				  glColor3f(1.0f, 0.5f, 0.0f);
-				  glVertex3f(x1, 1.0f, z1);
-				  glVertex3f(x2, 1.0f, z1);
-				  glVertex3f(x2, 1.0f, z2);
-				  glVertex3f(x1, 1.0f, z2);
+				  glVertex3f(x1, 0.5f, z1);
+				  glVertex3f(x2, 0.5f, z1);
+				  glVertex3f(x2, 0.5f, z2);
+				  glVertex3f(x1, 0.5f, z2);
  
 				  //left face
-				  glColor3f(1.0f, 0.0f, 0.0f);
 				  glVertex3f(x1, 0.0f, z1);
-				  glVertex3f(x1, 1.0f, z1);
-				  glVertex3f(x1, 1.0f, z2);
+				  glVertex3f(x1, 0.5f, z1);
+				  glVertex3f(x1, 0.5f, z2);
 				  glVertex3f(x1, 0.0f, z2);
  
 				  //right face
-				  glColor3f(1.0f, 1.0f, 0.0f);
 				  glVertex3f(x2, 0.0f, z2);
-				  glVertex3f(x2, 1.0f, z2);
-				  glVertex3f(x2, 1.0f, z1);
+				  glVertex3f(x2, 0.5f, z2);
+				  glVertex3f(x2, 0.5f, z1);
 				  glVertex3f(x2, 0.0f, z1);
  
 				  //front face
-				  glColor3f(0.0f, 0.0f, 1.0f);
 				  glVertex3f(x1, 0.0f, z2);
-				  glVertex3f(x1, 1.0f, z2);
-				  glVertex3f(x2, 1.0f, z2);
+				  glVertex3f(x1, 0.5f, z2);
+				  glVertex3f(x2, 0.5f, z2);
 				  glVertex3f(x2, 0.0f, z2);
  
 				  //back face
-				  glColor3f(1.0f, 0.0f, 1.0f);
 				  glVertex3f(x2, 0.0f, z1);
-				  glVertex3f(x2, 1.0f, z1);
-				  glVertex3f(x1, 1.0f, z1);
+				  glVertex3f(x2, 0.5f, z1);
+				  glVertex3f(x1, 0.5f, z1);
 				  glVertex3f(x1, 0.0f, z1);
 				glEnd();
 
 				break;
+
+			case 6:
+				glColor3f(1.0f, 1.0f, 0.0f);
+				glPushMatrix();
+				glTranslatef((float)j-wd, 0.25f, (float)i-ln);
+				glutSolidSphere(0.1f, 10, 10);
+				glTranslatef((float)j-wd, 0.25, (float)i-ln);
+				glPopMatrix();
+				break;
+
 			default:
 				break;
 			}
