@@ -12,9 +12,11 @@ public:
 	vf gravity;
 	string shape;
 	int level;
-	color4 color; 
+	color4 color;
+	vector<vector<int>> mazeMat;
 
 	Maze();
+	Maze(string filename);
 	void draw();
 	void mazeReader(string filename);
 	~Maze();

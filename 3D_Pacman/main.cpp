@@ -70,7 +70,7 @@ void keyOperations (void) {
 		cam->eyez -= 0.1f;
 	}
 	
-	double deg = 5.;
+	double deg = 1.;
 	if (keyStates['a'] || keyStates['A']) { // If the left arrow key has been pressed  
 		double x = cam->eyex;
 		double z = cam->eyez;
@@ -327,8 +327,7 @@ void display (void) {
 	glutSolidCylinder(0.2, 1.0, 10, 10);
 	
 	if (maze){
-		//maze->draw();
-		maze->mazeReader("TheGameMatrix.txt");
+		maze->draw();
 	}
 	if (pacman){
 		if (!pacman->moving) pacman->moveForward();
@@ -342,8 +341,9 @@ void display (void) {
 int main(int argc, char** argv){
 	fInit();
 	cam = new Camera();
-	maze = new Maze();
+	maze = new Maze("TheGameMatrix.txt");
 	pacman = new Pac(maze);
+
 	// Initialise Glut Variables
 	glutInit(&argc, argv);
 	glutInitDisplayMode (GLUT_DOUBLE| GLUT_RGBA | GLUT_DEPTH); 
