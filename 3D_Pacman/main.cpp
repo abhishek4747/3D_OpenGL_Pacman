@@ -15,9 +15,11 @@
 
 // TIPS:
 	// Esc,q,Q to Quit
-	// F5 to restart the program
-	// Arrow Keys to control Camera
-	// Drag Mouse to change direction of camera
+	// F5 to restart the program // TODO:
+	// Arrow Keys to control Pacman
+	// WASD to control Camera
+	// Drag Mouse to change direction of camera // TODO:
+	// 1,2,3,4 to change camera View
 
 // RULES: 
 	// Code should be well documented and well formatted
@@ -26,7 +28,6 @@
 	// Any line of code should not exceed 80 characters, fold it if does
 	// No warnings during compilation
 	
-
 // TODO: Before Mid Evaluation
 	// Create Start Screen - simple in start i.e. press enter to start game
 	// Create Maze
@@ -49,16 +50,42 @@
 #include "Functions.h"
 #include "Pac.h"
 #include "Maze.h"
+#include "Ghost.h"
 
 // Global Variables
 Camera *cam;
 string cameratype = "follow";
 Pac *pacman;
+vector<Ghost*> ghost;
+bool ghostsMoving = false;
 Maze *maze;
+bool gamePaused = false;
+unsigned int iterations = 0;
 bool keyStates[256];// = new bool[256];
 bool keySpecialStates[256]; // = new bool[256]; // Create an array of boolean values of length 256 (0-255) 
 bool SHIFT = false, ALT = false, CTRL = false;
 
+void moveGhosts(){
+	if (!gamePaused){
+		ghostsMoving = true;
+		if (ghost.size()){
+			for (size_t i = 0; i < ghost.size(); i++){
+				int r = randomm(100,0);
+				//cout<<r<<endl;
+				if (r<5){
+					ghost[i]->moveLeft();
+				}else if(r<10){
+					ghost[i]->moveLeft();
+				}else if (r<12){
+					ghost[i]->moveBack();
+				}else{
+					ghost[i]->moveForward();
+				}
+			}
+		}
+		ghostsMoving = false;
+	}
+}
 
 void keyOperations (void) {  
 	if (keyStates['q'] || keyStates['Q'] || keyStates[27]){
@@ -111,6 +138,10 @@ void keyOperations (void) {
 		cameratype = "follow";
 	}else if (keyStates['4']) { 
 		cameratype = "else";
+	}
+	if (keyStates[13]){
+		keyStates[13] = false;
+		gamePaused = !gamePaused;
 	}
 
 	if(keyStates['o']){
@@ -176,8 +207,10 @@ void keySpecialOperations(void) {
 		if (keySpecialStates[GLUT_KEY_LEFT]) { // If the left arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_LEFT] = false;
 			if (!pacman->moving){
+				cout<<"move left"<<endl;
 				thread t1(&Pac::moveLeft,pacman);		
 				t1.detach();
+				cout<<"left moved"<<endl;
 			}
 		}
 		if (keySpecialStates[GLUT_KEY_RIGHT]) { // If the right arrow key has been pressed  
@@ -299,6 +332,7 @@ void reshape (int width, int height) {
 }
 
 void display (void) {
+	iterations++;
 	// KeyBoard Operations
 	keyOperations();
 	keySpecialOperations();
@@ -309,6 +343,7 @@ void display (void) {
 	glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity(); 
+	mtx.lock();
 	if (cameratype=="free"){
 		gluLookAt(cam->eyex, cam->eyey, cam->eyez, cam->centerx, cam->centery, cam->centerz, cam->upx, cam->upy, cam->upz);
 	}else if (cameratype=="top"){
@@ -321,20 +356,29 @@ void display (void) {
 	}else{
 		gluLookAt(0.,max(maze->size[0],maze->size[2]),0.,0.,0.,0.,0.,0.,-1.);
 	}
+	mtx.unlock();
 	
 	// Solid Cylinder
-	glColor3f(1.0, 0.0, 0.0);
-	glutSolidCylinder(0.2, 1.0, 10, 10);
+	/*glColor3f(1.0, 0.0, 0.0);
+	glutSolidCylinder(0.2, 1.0, 10, 10);*/
 	
-	if (maze){
+	if (maze ){
 		maze->draw();
 	}
-	if (pacman){
-		if (!pacman->moving) pacman->moveForward();
+	if (pacman ){
+		if (!pacman->moving && !gamePaused) pacman->moveForward();
 		pacman->draw();
 	}
-	glPopMatrix();
-	
+	if (ghost.size() ){
+		for (size_t i = 0; i < ghost.size(); i++){
+			ghost[i]->draw();
+		}
+	}
+	if (!ghostsMoving ){
+		thread t1 (moveGhosts);
+		t1.detach();
+	}
+	glPopMatrix();	
 	glutSwapBuffers();  
 }
 
@@ -343,6 +387,12 @@ int main(int argc, char** argv){
 	cam = new Camera();
 	maze = new Maze("TheGameMatrix.txt");
 	pacman = new Pac(maze);
+
+	ghost.push_back(new Ghost(yellow, maze, pacman));
+	ghost.push_back(new Ghost(purple, maze, pacman));
+	ghost.push_back(new Ghost(pink, maze, pacman));
+	ghost.push_back(new Ghost(green, maze, pacman));
+
 
 	// Initialise Glut Variables
 	glutInit(&argc, argv);
@@ -365,9 +415,6 @@ int main(int argc, char** argv){
 	glutKeyboardUpFunc(keyUp); // Tell GLUT to use the method "keyUp" for key up events    
 	glutSpecialFunc(keySpecial); // Tell GLUT to use the method "keySpecial" for special key presses  
 	glutSpecialUpFunc(keySpecialUp); // Tell GLUT to use the method "keySpecialUp" for special up key events  
-
-	
-
 
 
 	// Start Main Loop

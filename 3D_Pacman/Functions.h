@@ -3,10 +3,14 @@
 #ifndef _FUNCTIONS_H
 #define _FUNCTIONS_H
 
+#define PI 3.14159265
+
 typedef vector<double> vd;
 typedef vector<float>  vf;
 
 extern vf origin;
+
+extern mutex mtx;
 
 void fInit();
 
@@ -34,11 +38,27 @@ template <typename T> T degreeToRadian(T degree){
 	return ((degree/c180)*(c22/c7));*/
 	double angleradians = degree * 22.0 / (180.0 * 7.);
 	return static_cast<T>(angleradians);
-	
 }
 
 template <typename T> T magnitue(vector<T> vec){
 	return sqrt(vec[0]*vec[0] + vec[1]*vec[1] + vec[2]*vec[2]);
+}
+
+template <typename T> T dotproduct(vector<T> u, vector<T> v){
+	return u[0]*v[0]+u[1]*v[1]+u[2]*v[2];
+}
+
+template <typename T> T crossproduct(T u, T v){
+	T ret;
+	ret.push_back(u[1]*v[2] - u[2]*v[1]);
+	ret.push_back(u[2]*v[0] - u[0]*v[2]);
+	ret.push_back(u[0]*v[1] - u[1]*v[0]);
+	return ret;
+}
+
+template <typename T> T anglebw(vector<T> u, vector<T> v){
+	vector<T> c = crossproduct(u,v);
+	return static_cast<T>((acos(dotproduct(u,v)/(magnitue(u)*magnitue(v))) * 180. * 7.)/22.)*(c[1]>0?-1:1);
 }
 
 template <typename T> vector<T> rotateaboutaxisbyangle(vector<T> point, vector<T> abc, vector<T> uvw, T angle){
@@ -67,27 +87,36 @@ template <typename T> vector<T> rotateaboutaxisbyangle(vector<T> point, vector<T
 	return ret;
 }
 
+template <typename T> T randomm(T max, T min){
+	return static_cast<T>((static_cast<double>(rand()) / (RAND_MAX)) * (max-min+1)) + min;
+}
+
 class color3{
 public:
-	float r, g, b, max;
+	float r, g, b;
 	color3();
 	color3(float r, float g, float b, float max= 1.);
 	~color3();
 private:
 	void init(float r, float g, float b, float max);
-
 };
 
 class color4{
 public:
-	float r, g, b, a, max;
+	float r, g, b, a;
 	color4();
 	color4(float r, float g, float b, float a=1., float max= 1.);
 	~color4();
 
 private:
 	void init(float r, float g, float b, float a, float max);
-
 };
+
+extern color4 red;
+extern color4 blue;
+extern color4 green;
+extern color4 yellow;
+extern color4 purple;
+extern color4 pink;
 
 #endif
