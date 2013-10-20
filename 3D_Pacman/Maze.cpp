@@ -154,7 +154,7 @@ void Maze::draw(){
 				glColor3f(1.0f, 1.0f, 0.0f);
 				glPushMatrix();
 				glTranslatef((float)j-wd, 0.25f, (float)i-ln);
-				glutSolidSphere(0.1f, 10, 10);
+				glutSolidSphere(0.1f, 8, 8);
 				glTranslatef((float)j-wd, 0.25, (float)i-ln);
 				glPopMatrix();
 				break;
