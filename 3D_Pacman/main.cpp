@@ -172,7 +172,6 @@ void keyOperations (void) {
 
 	if (keyStates['h']){
 		keyStates['h'] = false;
-		cout<<cam->eyex<<" "<<cam->eyey<<" "<<cam->eyez<<endl; 
 	}
 	if (keyStates['g']){
 		keyStates['g'] = false;
@@ -380,6 +379,24 @@ void reshape (int width, int height) {
 	glMatrixMode(GL_MODELVIEW);   
 }
 
+bool canMove(Pac *p, Maze *m){
+	vf pos = p->position;
+	vf next(3);
+	for (int i = 0; i < 3; i++){
+		next[i] = pos[i] + p->orientn[i]*p->dimentions[0]/4;
+	}
+
+	int x = static_cast<int>(next[0]+m->size[0]/2) ;
+	int z = static_cast<int>(next[2]+m->size[2]/2) ;
+	
+	if (x<0|| z<0 || x>m->size[0] || z>m->size[2] || m->mazeMat[z][x]>10){
+		return false;
+	}else if(m->mazeMat[z][x]==6){
+		m->mazeMat[z][x] = 0;
+	}
+	return true;
+}
+
 void display (void) {
 	iterations++;
 	// KeyBoard Operations
@@ -389,7 +406,7 @@ void display (void) {
 	// Background Color: Black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
-	glMatrixMode(GL_MODELVIEW);
+	//glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity(); 
 	mtx.lock();
@@ -398,14 +415,16 @@ void display (void) {
 	}else if (cameratype=="ariel"){
 		gluLookAt(0.,maze->size[0],maze->size[2],0.,0.,0.,0.,1.,0.);
 	}else if (cameratype=="follow"){
-		gluLookAt(pacman->position[0]-3*pacman->orientn[0],
-			pacman->position[1]-3*pacman->orientn[1]+max(maze->size[0],maze->size[2])/5.f,
-			pacman->position[2]-3*pacman->orientn[2],
+		int multiplier = 50*pacman->speed;
+		gluLookAt(pacman->position[0]-multiplier*pacman->orientn[0],
+			pacman->position[1]-multiplier*pacman->orientn[1]+max(maze->size[0],maze->size[2])/5.f,
+			pacman->position[2]-multiplier*pacman->orientn[2],
 			pacman->position[0],pacman->position[1],pacman->position[2],0.,1.,0.);
 	}else if (cameratype=="front"){
-		gluLookAt(pacman->position[0]+6*pacman->orientn[0],
-			pacman->position[1]+6*pacman->orientn[1]+max(maze->size[0],maze->size[2])/5.f,
-			pacman->position[2]+6*pacman->orientn[2],
+		int multiplier = 100*pacman->speed;
+		gluLookAt(pacman->position[0]+multiplier*pacman->orientn[0],
+			pacman->position[1]+multiplier*pacman->orientn[1]+max(maze->size[0],maze->size[2])/5.f,
+			pacman->position[2]+multiplier*pacman->orientn[2],
 			pacman->position[0],pacman->position[1],pacman->position[2],0.,1.,0.);
 	}else if (cameratype=="fixed"){
 		gluLookAt(pacman->position[0]+3.f,
@@ -426,7 +445,7 @@ void display (void) {
 		maze->draw();
 	}
 	if (pacman ){
-		if (!pacman->moving && !gamePaused) pacman->moveForward();
+		if (!pacman->moving && !gamePaused && canMove(pacman,maze)) pacman->moveForward();
 		pacman->draw();
 	}
 	if (ghost.size() ){
@@ -456,14 +475,18 @@ int main(int argc, char** argv){
 	// Enable Glut Features
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
-	glEnable (GL_DEPTH_TEST);
-    /*
-	glEnable (GL_LIGHTING);
-    glEnable (GL_LIGHT0);
-	glEnable (GL_LIGHT1);
-	glEnable (GL_LIGHT2);
-	glEnable(GL_COLOR_MATERIAL);
-	*/
+	//glShadeModel(GL_FLAT);
+    
+	//glEnable(GL_CULL_FACE);
+
+	//glEnable (GL_LIGHTING);
+    //glEnable (GL_LIGHT0);
+	//GLfloat lightpos[] = {0., 0., 0., 1.};
+	//glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+	//glEnable (GL_LIGHT1);
+	//glEnable (GL_LIGHT2);
+	// glEnable(GL_COLOR_MATERIAL);
+	
 
 	// Set Triggers
 	glutDisplayFunc(display);
@@ -476,10 +499,10 @@ int main(int argc, char** argv){
 	glutSpecialFunc(keySpecial); // Tell GLUT to use the method "keySpecial" for special key presses  
 	glutSpecialUpFunc(keySpecialUp); // Tell GLUT to use the method "keySpecialUp" for special up key events  
 
-	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// Start Main Loop
-	glutMainLoop();   
+	// glutMainLoop();   
 	
 	return 0;
 }

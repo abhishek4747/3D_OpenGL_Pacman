@@ -8,7 +8,7 @@ Agent::Agent(){
 	dim.push_back(.2f);
 	string shape("sphere");
 	color4 col(0.,1.,1.);
-	this->init(pos, or, ver, shape, dim, .01f, col);
+	this->init(pos, or, ver, shape, dim, .05f, col);
 }
 
 Agent::Agent(vf position, vf orientn, vf vertical, string shape, vf dimentions, float speed, color4 color){
@@ -24,19 +24,19 @@ void Agent::moveForward(){
 
 void Agent::moveLeft(){
 	moving = true;
-	moveSomewhere(90.f,3);
+	moveSomewhere(90.f,1);
 	moving = false;
 }
 
 void Agent::moveRight(){
 	moving = true;
-	moveSomewhere(-90.f,3);
+	moveSomewhere(-90.f,1);
 	moving = false;
 }
 
 void Agent::moveBack(){
 	moving = true;
-	moveSomewhere(180.f,3);
+	moveSomewhere(180.f,1);
 	moving = false;
 }
 
@@ -53,7 +53,7 @@ void Agent::integralPosition(){
 vf Agent::getIntegralPosition(){
 	vf ret;
 	for (int i = 0; i < 3; i++){
-		ret.push_back( static_cast<float>( static_cast<int>(position[i]+(position[i]+(position[i]<0?-0.5f:0.5f)<0?-0.5f:0.5f)) ) );
+		ret.push_back( static_cast<float>( static_cast<int>(position[i]+(position[i]+(position[i]<0?-0.5f:0.5f)<0?-0.5f:0.5f))) );
 	}
 	return ret;
 }

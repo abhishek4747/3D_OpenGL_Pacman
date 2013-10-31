@@ -10,10 +10,10 @@ Pac::Pac(Maze *maze){
 	pos.push_back(0.f), pos.push_back(0.f), pos.push_back(0.f);
 	or.push_back(0.f),  or.push_back(0.f),  or.push_back(-1.f);
 	ver.push_back(0.f), ver.push_back(1.f), ver.push_back(0.f);
-	dim.push_back(.1f);
+	dim.push_back(1.f);
 	string shape("sphere");
 	color4 col(0.,1.,1.);
-	this->init(pos, or, ver, shape, dim, .05f, col, maze);	
+	this->init(pos, or, ver, shape, dim, .1f, col, maze);	
 }
 
 Pac::Pac(vf position, vf orientn, vf vertical, string shape, vf dimentions, float speed, color4 color, Maze *maze){
@@ -22,13 +22,12 @@ Pac::Pac(vf position, vf orientn, vf vertical, string shape, vf dimentions, floa
 
 void Pac::draw(){
 	glPushMatrix();
-	double R = 4*this->dimentions[0];
+	double R = this->dimentions[0]/2;
 	int p = 16, q = 16;
 	static int mouth = 8;
 	static bool mouthOpening = true;
 	glTranslatef(this->position[0], this->position[1]+static_cast<float>(R), this->position[2]);
 	glColor4f(this->color.r, this->color.g, this->color.b, this->color.a);
-	
 	if (this->shape=="sphere"){
 		//glutSolidSphere(this->dimentions[0], 32, 32);
 		vf initialv;
@@ -40,6 +39,7 @@ void Pac::draw(){
 		glRotatef(-90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
 		mtx.unlock();
 		glRotatef(ang,this->vertical[0],this->vertical[1],this->vertical[2]);
+		
 		for(int j = -q; j < q; j++){
 			// One latitudinal triangle strip.
 			glBegin(GL_TRIANGLE_STRIP);
@@ -48,6 +48,12 @@ void Pac::draw(){
 				glVertex3f(0.f,0.f,0.f);
 				for(int i = p/mouth; i <= (mouth-1)*p/mouth; i++){
 					glColor4f(yellow.r,yellow.g,yellow.b,yellow.a);
+					/*GLfloat white[] = {0.8f, 0.8f, 0.8f, 1.0f};
+					GLfloat cyan[] = {0.f, .8f, .8f, 1.f};
+					glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);
+					glMaterialfv(GL_FRONT, GL_SPECULAR, white);
+					GLfloat shininess[] = {50};
+					glMaterialfv(GL_FRONT, GL_SHININESS, shininess);*/
 					glVertex3d( R * cos( (float)(j+1)/q * PI/2.0 ) * cos( 2.0 * (float)i/p * PI ),
 								R * sin( (float)(j+1)/q * PI/2.0 ),
 								R * cos( (float)(j+1)/q * PI/2.0 ) * sin( 2.0 * (float)i/p * PI ) );
