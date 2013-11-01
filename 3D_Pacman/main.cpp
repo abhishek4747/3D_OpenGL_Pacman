@@ -446,11 +446,39 @@ void display (void) {
 	/*glColor3f(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.2, 1.0, 10, 10);*/
 
-	glPushMatrix();
-    glScalef(1, -1, 1);  
-	
+/*************************************************************reflection*************************************************/
+	/* Don't update color or depth. */
+  glDisable(GL_DEPTH_TEST);
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-	if (maze ){
+  /* Draw 1 into the stencil buffer. */
+  glEnable(GL_STENCIL_TEST);
+  glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+  glStencilFunc(GL_ALWAYS, 1, 0xffffffff);
+
+  /* Now drawing the floor just tags the floor pixels
+     as stencil value 1. */
+  glColor4f(0.0f, 0.7f, 0.0f, 0.30);  
+    glBegin(GL_QUADS);
+        glVertex3f(-maze->size[0]/2, 0.0f, -maze->size[2]/2);
+        glVertex3f(-maze->size[0]/2, 0.0f, maze->size[2]/2);
+        glVertex3f(maze->size[0]/2, 0.0f, maze->size[2]/2);
+        glVertex3f(maze->size[0]/2, 0.0f, -maze->size[2]/2);
+    glEnd();
+
+  /* Re-enable update of color and depth. */ 
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  glEnable(GL_DEPTH_TEST);
+
+  /* Now, only render where stencil is set to 1. */
+  glStencilFunc(GL_EQUAL, 1, 0xffffffff);  /* draw if stencil ==1 */
+  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+  /* Draw reflected ninja, but only where floor is. */
+  glPushMatrix();
+  glScalef(1.0, -1.0, 1.0);
+    
+   if (maze ){
 		maze->draw();
 	}
 	if (pacman ){
@@ -466,9 +494,10 @@ void display (void) {
 		thread t1 (moveGhosts);
 		t1.detach();
 	}
+  glPopMatrix();
 
-	glPopMatrix();
-
+  glDisable(GL_STENCIL_TEST);  
+	
 	glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glColor4f(0.0f, 0.7f, 0.0f, 0.30);  
