@@ -129,6 +129,7 @@ extern color4 purple;
 extern color4 pink;
 extern color4 white,black;
 extern color4 grey;
+extern color4 navyblue;
 
 
 #endif

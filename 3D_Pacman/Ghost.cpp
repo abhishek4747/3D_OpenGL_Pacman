@@ -25,21 +25,26 @@ Ghost::Ghost(vf position, vf orientn, vf vertical, string shape, vf dimentions, 
 }
 
 void Ghost::draw(){
-	glPushMatrix();
-	posmtx.lock();
-	glTranslatef(this->position[0], this->position[1], this->position[2]);
-	posmtx.unlock();
-	glRotatef(90.f, -1.f, 0.f, 0.f);
-	glColor4f(this->color.r, this->color.g, this->color.b, this->color.a);
-	if (this->shape=="cylinder"){
-		glutSolidCylinder(this->dimentions[0], this->dimentions[1], 32, 32);
-	}
-	glTranslatef(0.f, 0.f, this->dimentions[1]);
-	glutSolidSphere(this->dimentions[0], 32, 32);
-	//glTranslatef(0.f, 0.f, -this->dimentions[1]);
-	//glRotatef(-90.f, -1.f, 0.f, 0.f);
-	//glTranslatef(-this->position[0], -this->position[1], -this->position[2]);
-	glPopMatrix();
+	if (!eaten){
+		glPushMatrix();
+		posmtx.lock();
+		glTranslatef(this->position[0], this->position[1], this->position[2]);
+		posmtx.unlock();
+		glRotatef(90.f, -1.f, 0.f, 0.f);
+		if (weak)
+			glColor4f(navyblue.r, navyblue.g, navyblue.b, navyblue.a);
+		else
+			glColor4f(this->color.r, this->color.g, this->color.b, this->color.a);
+		if (this->shape=="cylinder"){
+			glutSolidCylinder(this->dimentions[0], this->dimentions[1], 32, 32);
+		}
+		glTranslatef(0.f, 0.f, this->dimentions[1]);
+		glutSolidSphere(this->dimentions[0], 32, 32);
+		//glTranslatef(0.f, 0.f, -this->dimentions[1]);
+		//glRotatef(-90.f, -1.f, 0.f, 0.f);
+		//glTranslatef(-this->position[0], -this->position[1], -this->position[2]);
+		glPopMatrix();
+	}	
 }
 
 
@@ -51,4 +56,6 @@ void Ghost::init(vf position, vf orientn, vf vertical, string shape,	vf dimentio
 	this->maze = maze;
 	this->pacman = pacman;
 	this->moving = false;
+	this->weak = false;
+	this->eaten = false;
 }

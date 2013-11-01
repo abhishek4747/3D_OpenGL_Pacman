@@ -158,4 +158,5 @@ void Pac::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions
 	this->color = color;
 	this->maze = maze;
 	this->moving = false;
+	this->strong = false;
 }
