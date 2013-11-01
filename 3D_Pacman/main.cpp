@@ -31,22 +31,34 @@
 	
 // TODO: Before Mid Evaluation
 	// [Done] Create Maze	
-	// Create Ghost .obj
-	// Create Pac	.obj
+	// [Done] Create Ghost   -> .obj
+	// [Done] Create Pac	 ->.obj
 	// [Done] Movement
 	// [Done] Animation	
-	
-	// Create Start Screen - simple in start i.e. press enter to start game
+	// [Done] Reflection
+	// [Done] Lighting
+	// [Done] Collision with walls and eating pallets
+
+// CANDO: 
 	// Camera Movement Controls with Mouse
-	// Levels
+	// Ghosts Movement
+	// Mutex Bug
+	// Draw Power up pallets
+	// Maze Complete
+	// Collision with Ghosts
+	// Performance Improvement
+	// Set start position of Pacs and Ghosts
 	// 
 
 // TODO: After Mid Evalutaion
+	// Levels
+	// Shaders
+	// Create Start Screen - simple in start i.e. press enter to start game
 	// Multplayer
-	// Network
 	// Height Map
 	// Sound Effects
-	// Shaders
+	
+	// 
 
 // includes all common headers
 #include "Headers.h" 
@@ -447,12 +459,41 @@ void display (void) {
 	// Solid Cylinder
 	/*glColor3f(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.2, 1.0, 10, 10);*/
-	
-	glPushMatrix();
-    glScalef(1, -1, 1);  
-	
 
-	if (maze ){
+/*************************************************************reflection*************************************************/
+	/* Don't update color or depth. */
+  glDisable(GL_DEPTH_TEST);
+  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+
+  /* Draw 1 into the stencil buffer. */
+  glEnable(GL_STENCIL_TEST);
+  glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+  glStencilFunc(GL_ALWAYS, 1, 0xffffffff);
+
+  /* Now drawing the floor just tags the floor pixels
+     as stencil value 1. */
+  glColor4f(0.0f, 0.7f, 0.0f, 0.30);  
+    glBegin(GL_QUADS);
+	glNormal3f(0.f,1.f,0.f);
+        glVertex3f(-maze->size[0]/2, 0.0f, -maze->size[2]/2);
+        glVertex3f(-maze->size[0]/2, 0.0f, maze->size[2]/2);
+        glVertex3f(maze->size[0]/2, 0.0f, maze->size[2]/2);
+        glVertex3f(maze->size[0]/2, 0.0f, -maze->size[2]/2);
+    glEnd();
+
+  /* Re-enable update of color and depth. */ 
+  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+  glEnable(GL_DEPTH_TEST);
+
+  /* Now, only render where stencil is set to 1. */
+  glStencilFunc(GL_EQUAL, 1, 0xffffffff);  /* draw if stencil ==1 */
+  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+
+  /* Draw reflected ninja, but only where floor is. */
+  glPushMatrix();
+  glScalef(1.0, -1.0, 1.0);
+    
+   if (maze ){
 		maze->draw();
 	}
 	if (pacman ){
@@ -468,9 +509,10 @@ void display (void) {
 		thread t1 (moveGhosts);
 		t1.detach();
 	}
+  glPopMatrix();
 
-	glPopMatrix();
-
+  glDisable(GL_STENCIL_TEST);  
+	
 	glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glColor4f(0.0f, 0.7f, 0.7f, 0.10f);  
@@ -523,8 +565,8 @@ int main(int argc, char** argv){
 	glEnable(GL_NORMALIZE);
 	glEnable (GL_LIGHTING);
     
-	GLfloat ambient2[] = {.2f, .2f, .2f, 1};
-	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient2) ;
+	/*GLfloat ambient2[] = {.2f, .2f, .2f, 1};
+	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient2) ;*/
 
 
 	GLfloat diffuse[] = {0,1,0,1};
@@ -537,7 +579,7 @@ int main(int argc, char** argv){
 	//glLightfv (GL_LIGHT0, GL_SPECULAR, specular) ;
 
 	glEnable (GL_LIGHT0);
-	GLfloat lightpos1[] = {0., 0., 100., 1.};
+	GLfloat lightpos1[] = {0., 10., 100., 1.};
 	glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
 
 	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, ambient) ;
