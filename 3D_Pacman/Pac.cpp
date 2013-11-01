@@ -103,6 +103,29 @@ void Pac::draw(){
 	if (mouth<=8 || mouth>8*pow(2,10)){
 		mouthOpening = !mouthOpening;
 	}
+	//eyes
+	float dbweye = R/5; 
+	float sqrt3 = sqrt(3);
+	glPushMatrix();
+	glTranslatef(R*this->orientn[0]/sqrt3 + (this->orientn[0]==0.f?dbweye:0.f),R*this->orientn[1]+R/sqrt(2),R*this->orientn[2]/sqrt3 +(this->orientn[2]==0.f?dbweye:0.f));
+	glColor3f(green.r,green.g,green.b);
+	float rEyebrow = R/10;
+	glutSolidSphere(R/4, 32, 32);
+	glTranslatef(0.f,dbweye,0.f);
+	glColor3f(black.r,black.g,black.b);
+	
+	glRotatef(90.f, this->orientn[0], this->orientn[1], this->orientn[2]);
+	DrawEllipsoid(rEyebrow,rEyebrow,2*rEyebrow);
+	glTranslatef(0.f,-dbweye,0.f);
+	glRotatef(90.f, -this->orientn[0], -this->orientn[1], -this->orientn[2]);
+
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(R*this->orientn[0]/sqrt3 - (this->orientn[0]==0.f?dbweye:0.f),R*this->orientn[1]+R/sqrt(2),R*this->orientn[2]/sqrt3-(this->orientn[2]==0.f?dbweye:0.f));
+	glColor3f(green.r,green.g,green.b);
+	glutSolidSphere(R/4, 32, 32);
+	glPopMatrix();
+
 	glTranslatef(-this->position[0], -this->position[1]-static_cast<float>(R), -this->position[2]);
 	glPopMatrix();
 }

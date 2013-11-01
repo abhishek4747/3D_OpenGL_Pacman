@@ -457,11 +457,13 @@ int main(int argc, char** argv){
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
 	glEnable (GL_DEPTH_TEST);
-    /*glEnable (GL_LIGHTING);
+    /*
+	glEnable (GL_LIGHTING);
     glEnable (GL_LIGHT0);
 	glEnable (GL_LIGHT1);
 	glEnable (GL_LIGHT2);
-	glEnable(GL_COLOR_MATERIAL);*/
+	glEnable(GL_COLOR_MATERIAL);
+	*/
 
 	// Set Triggers
 	glutDisplayFunc(display);
@@ -473,6 +475,8 @@ int main(int argc, char** argv){
 	glutKeyboardUpFunc(keyUp); // Tell GLUT to use the method "keyUp" for key up events    
 	glutSpecialFunc(keySpecial); // Tell GLUT to use the method "keySpecial" for special key presses  
 	glutSpecialUpFunc(keySpecialUp); // Tell GLUT to use the method "keySpecialUp" for special up key events  
+
+	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// Start Main Loop
 	glutMainLoop();   

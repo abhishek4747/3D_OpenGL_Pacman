@@ -53,7 +53,7 @@ void Agent::integralPosition(){
 vf Agent::getIntegralPosition(){
 	vf ret;
 	for (int i = 0; i < 3; i++){
-		ret.push_back( static_cast<float>( static_cast<int>(position[i]+(position[i]<0?-0.5f:0.5f)) ) );
+		ret.push_back( static_cast<float>( static_cast<int>(position[i]+(position[i]+(position[i]<0?-0.5f:0.5f)<0?-0.5f:0.5f)) ) );
 	}
 	return ret;
 }
@@ -74,7 +74,7 @@ void Agent::moveSomewhere(float totaldegree, int fast){
 	mtx.unlock();
 	
 	//integralPosition();
-	thread t1(&Agent::translate,this,getIntegralPosition(),100);
+	thread t1(&Agent::translate,this,getIntegralPosition(),200);
 	t1.detach();
 }
 
