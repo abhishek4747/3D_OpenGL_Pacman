@@ -154,21 +154,10 @@ void Pac::draw(){
 }
 
 void Pac::moveForward(){
-	mtx.lock();
-	float mag = magnitue(this->orientn);
-	mtx.unlock();
-	float newPos[3];
-	bool canMove = true;
 	for (size_t i = 0; i < 3; i++){
 		mtx.lock();
-		newPos[i] = this->position[i]+this->orientn[i]*this->speed/mag;
+		this->position[i] = this->position[i]+this->orientn[i]*this->speed;
 		mtx.unlock();
-		canMove &= (newPos[i]>= -this->maze->size[i]/2 && newPos[i]<= this->maze->size[i]/2);
-	}
-	if (canMove){
-		for (size_t i = 0; i < 3; i++){
-			this->position[i] = newPos[i];
-		}
 	}
 }
 

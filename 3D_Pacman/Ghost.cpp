@@ -11,7 +11,8 @@ Ghost::Ghost(){
 
 Ghost::Ghost(color4 col, Maze *maze, Pac *pacman){
 	vf pos, or, ver, dim;
-	pos.push_back(randomm(-maze->size[0]/2, maze->size[0]/2)), pos.push_back(0.f), pos.push_back(randomm(-maze->size[2]/2, maze->size[2]/2));
+	// pos.push_back(randomm(-maze->size[0]/2, maze->size[0]/2)), pos.push_back(0.f), pos.push_back(randomm(-maze->size[2]/2, maze->size[2]/2));
+	pos.push_back(0.f), pos.push_back(0.f),pos.push_back(0.f);
 	or.push_back(0.f),  or.push_back(0.f),  or.push_back(-1.f);
 	ver.push_back(0.f), ver.push_back(1.f), ver.push_back(0.f);
 	dim.push_back(.4f), dim.push_back(1.f);
@@ -40,18 +41,8 @@ void Ghost::draw(){
 }
 
 void Ghost::moveForward(){
-	float mag = magnitue(this->orientn);
-	float newPos[3];
-	bool canMove = true;
 	for (size_t i = 0; i < 3; i++){
-		newPos[i] = this->position[i]+this->orientn[i]*this->speed/mag;
-		canMove &= (newPos[i]>= -this->maze->size[i]/2 && newPos[i]<= this->maze->size[i]/2);
-	}
-	
-	if (canMove){
-		for (size_t i = 0; i < 3; i++){
-			this->position[i] = newPos[i];
-		}
+		this->position[i] = this->position[i]+this->orientn[i]*this->speed;
 	}
 }
 

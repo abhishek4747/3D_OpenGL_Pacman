@@ -95,6 +95,12 @@ template <typename T> T randomm(T max, T min){
 	return static_cast<T>((static_cast<double>(rand()) / (RAND_MAX)) * (max-min+1)) + min;
 }
 
+template <typename T> T random (T low, T high) {
+	srand(time(0)*rand());
+    if (low > high) return high;
+    return low + (std::rand() % (high - low + 1));
+}
+
 class color3{
 public:
 	float r, g, b;

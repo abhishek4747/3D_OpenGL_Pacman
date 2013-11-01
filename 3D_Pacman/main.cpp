@@ -48,6 +48,7 @@
 	// Collision with Ghosts
 	// Performance Improvement
 	// Set start position of Pacs and Ghosts
+	// Create Sun
 	// 
 
 // TODO: After Mid Evalutaion
@@ -92,25 +93,34 @@ void mInit(){
 	ghost.push_back(new Ghost(green, maze, pacman));
 }
 
-void moveGhosts(){
-	if (!gamePaused){
-		ghostsMoving = true;
-		if (ghost.size()){
-			for (size_t i = 0; i < ghost.size(); i++){
-				int r = randomm(100,0);
-				//cout<<r<<endl;
-				if (r<5){
-					ghost[i]->moveLeft();
-				}else if(r<10){
-					ghost[i]->moveLeft();
-				}else if (r<12){
-					ghost[i]->moveBack();
-				}else{
-					ghost[i]->moveForward();
-				}
-			}
-		}
-		ghostsMoving = false;
+bool canMove(Agent *p, Maze *m){
+	vf pos = p->position;
+	vf next(3);
+	for (int i = 0; i < 3; i++){
+		next[i] = pos[i] + p->orientn[i]*p->dimentions[0]/2;
+	}
+
+	int x = static_cast<int>(next[0]+m->size[0]/2) ;
+	int z = static_cast<int>(next[2]+m->size[2]/2) ;
+	
+	if (x<0|| z<0 || x>m->size[0] || z>m->size[2] || m->mazeMat[z][x]>10){
+		return false;
+	}else if(m->mazeMat[z][x]==6){
+		m->mazeMat[z][x] = 0;
+	}
+	return true;
+}
+
+void randomMoveGhost(int i,int turn = 1){
+	int m = 30;
+	int r = random(0,m);
+	cout<<r<<endl;
+	if (r==0){
+		ghost[i]->moveLeft();
+	}else if (r==1){
+		ghost[i]->moveRight();
+	}else if (r==2){
+		ghost[i]->moveBack();
 	}
 }
 
@@ -396,22 +406,33 @@ void reshape (int width, int height) {
 	glMatrixMode(GL_MODELVIEW);   
 }
 
-bool canMove(Pac *p, Maze *m){
-	vf pos = p->position;
-	vf next(3);
-	for (int i = 0; i < 3; i++){
-		next[i] = pos[i] + p->orientn[i]*p->dimentions[0]/2;
+void drawEverything(){
+	if (maze ){
+		maze->draw();
 	}
-
-	int x = static_cast<int>(next[0]+m->size[0]/2) ;
-	int z = static_cast<int>(next[2]+m->size[2]/2) ;
-	
-	if (x<0|| z<0 || x>m->size[0] || z>m->size[2] || m->mazeMat[z][x]>10){
-		return false;
-	}else if(m->mazeMat[z][x]==6){
-		m->mazeMat[z][x] = 0;
+	if (pacman ){
+		if (!pacman->moving && !gamePaused && canMove(pacman,maze)) {
+			/*thread t1(&Pac::moveForward,pacman);
+			t1.detach();*/
+			pacman->moveForward();
+		}
+		pacman->draw();
 	}
-	return true;
+	if (ghost.size() ){
+		for (size_t i = 0; i < ghost.size(); i++){
+			if (!gamePaused && canMove(ghost[i],maze)) {
+				thread t1(&Ghost::moveForward,ghost[i]);
+				t1.detach();
+				//ghost[i]->moveForward();
+			}
+			ghost[i]->draw();
+			if (!ghostsMoving & !gamePaused){
+				randomMoveGhost(i,0);
+				/*thread t1 (randomMoveGhost,i,0);
+				t1.detach();*/
+			}
+		}
+	}
 }
 
 void display (void) {
@@ -462,56 +483,41 @@ void display (void) {
 
 /*************************************************************reflection*************************************************/
 	/* Don't update color or depth. */
-  glDisable(GL_DEPTH_TEST);
-  glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
+	glDisable(GL_DEPTH_TEST);
+	glColorMask(GL_FALSE, GL_FALSE, GL_FALSE, GL_FALSE);
 
-  /* Draw 1 into the stencil buffer. */
-  glEnable(GL_STENCIL_TEST);
-  glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
-  glStencilFunc(GL_ALWAYS, 1, 0xffffffff);
+	/* Draw 1 into the stencil buffer. */
+	glEnable(GL_STENCIL_TEST);
+	glStencilOp(GL_REPLACE, GL_REPLACE, GL_REPLACE);
+	glStencilFunc(GL_ALWAYS, 1, 0xffffffff);
 
-  /* Now drawing the floor just tags the floor pixels
-     as stencil value 1. */
-  glColor4f(0.0f, 0.7f, 0.0f, 0.30);  
-    glBegin(GL_QUADS);
+	/* Now drawing the floor just tags the floor pixels
+		as stencil value 1. */
+	glColor4f(0.0f, 0.7f, 0.0f, 0.30);  
+	glBegin(GL_QUADS);
 	glNormal3f(0.f,1.f,0.f);
-        glVertex3f(-maze->size[0]/2, 0.0f, -maze->size[2]/2);
-        glVertex3f(-maze->size[0]/2, 0.0f, maze->size[2]/2);
-        glVertex3f(maze->size[0]/2, 0.0f, maze->size[2]/2);
-        glVertex3f(maze->size[0]/2, 0.0f, -maze->size[2]/2);
-    glEnd();
+		glVertex3f(-maze->size[0]/2, 0.0f, -maze->size[2]/2);
+		glVertex3f(-maze->size[0]/2, 0.0f, maze->size[2]/2);
+		glVertex3f(maze->size[0]/2, 0.0f, maze->size[2]/2);
+		glVertex3f(maze->size[0]/2, 0.0f, -maze->size[2]/2);
+	glEnd();
 
-  /* Re-enable update of color and depth. */ 
-  glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
-  glEnable(GL_DEPTH_TEST);
+	/* Re-enable update of color and depth. */ 
+	glColorMask(GL_TRUE, GL_TRUE, GL_TRUE, GL_TRUE);
+	glEnable(GL_DEPTH_TEST);
 
-  /* Now, only render where stencil is set to 1. */
-  glStencilFunc(GL_EQUAL, 1, 0xffffffff);  /* draw if stencil ==1 */
-  glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
+	/* Now, only render where stencil is set to 1. */
+	glStencilFunc(GL_EQUAL, 1, 0xffffffff);  /* draw if stencil ==1 */
+	glStencilOp(GL_KEEP, GL_KEEP, GL_KEEP);
 
-  /* Draw reflected ninja, but only where floor is. */
-  glPushMatrix();
-  glScalef(1.0, -1.0, 1.0);
+	/* Draw reflected ninja, but only where floor is. */
+	glPushMatrix();
+	glScalef(1.0, -1.0, 1.0);
     
-   if (maze ){
-		maze->draw();
-	}
-	if (pacman ){
-		if (!pacman->moving && !gamePaused && canMove(pacman,maze)) pacman->moveForward();
-		pacman->draw();
-	}
-	if (ghost.size() ){
-		for (size_t i = 0; i < ghost.size(); i++){
-			ghost[i]->draw();
-		}
-	}
-	if (!ghostsMoving ){
-		thread t1 (moveGhosts);
-		t1.detach();
-	}
-  glPopMatrix();
+	drawEverything();
+	glPopMatrix();
 
-  glDisable(GL_STENCIL_TEST);  
+	glDisable(GL_STENCIL_TEST);  
 	
 	glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -525,28 +531,13 @@ void display (void) {
     glEnd();
 	glDisable(GL_BLEND);
 
-	if (maze ){
-		maze->draw();
-	}
-	if (pacman ){
-		if (!pacman->moving && !gamePaused && canMove(pacman,maze)) pacman->moveForward();
-		pacman->draw();
-	}
-	if (ghost.size() ){
-		for (size_t i = 0; i < ghost.size(); i++){
-			ghost[i]->draw();
-		}
-	}
-	if (!ghostsMoving ){
-		thread t1 (moveGhosts);
-		t1.detach();
-	}
-
+	drawEverything();
 	glPopMatrix();
 	glutSwapBuffers();  
 }
 
 int main(int argc, char** argv){
+	srand(time(NULL));
 	fInit();	// functions.h init
 	mInit();	// main.cpp init
 
