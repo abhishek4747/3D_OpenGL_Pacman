@@ -2,7 +2,7 @@
 
 mutex mtx;
 vf origin;
-color4 red, blue, green, yellow, purple, pink;
+color4 red, blue, green, yellow, purple, pink, white, black;
 
 color3::color3(){
 	this->init(0., 0., 0., 1.);
@@ -46,8 +46,24 @@ void fInit(){
 	yellow	= color4(1.f,1.f,0.f);
 	purple	= color4(160.f,  32.f, 240.f,  255.f,  255.f);
 	pink	= color4(255.f, 105.f, 180.f,  255.f,  255.f); 
+	white	= color4(1.f,1.f,1.f);
+	black   = color4(0.f,0.f,0.f);
 }
 
 void newl(){
 	cout<<endl;
 }
+
+void DrawEllipsoid(float fA, float fB, float fC, unsigned int uiStacks, unsigned int uiSlices){
+	float tStep = (PI) / (float)uiSlices;
+	float sStep = (PI) / (float)uiStacks;
+	for(float t = -PI/2; t <= (PI/2)+.0001; t += tStep){
+		glBegin(GL_TRIANGLE_STRIP);
+		for(float s = -PI; s <= PI+.0001; s += sStep){
+			glVertex3f(fA * cos(t) * cos(s), fB * cos(t) * sin(s), fC * sin(t));
+			glVertex3f(fA * cos(t+tStep) * cos(s), fB * cos(t+tStep) * sin(s), fC * sin(t+tStep));
+		}
+		glEnd();
+	}
+}
+  

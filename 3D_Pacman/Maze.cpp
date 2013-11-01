@@ -143,7 +143,7 @@ void Maze::draw(){
 	//This is a Mesh
 	glPushMatrix();
 	
-	// A white colored mesh
+	// A yellow colored mesh
 	glColor3f(1.0, 1.0, 1.0);
 	glTranslatef(this->position[0], this->position[1], this->position[2]);
 	glBegin(GL_LINES);
@@ -176,6 +176,7 @@ void Maze::draw(){
 			float x1 = (float)j-wd-0.5f; float x2 = (float)j-wd+0.5f;
 			float z1 = (float)i-ln-0.5f; float z2 = (float)i-ln+0.5f;
 			
+			GLfloat cyan[] = {0.f, .0f, .1f, 1.f};
 			glColor3f(0.0f, 0.0f, 1.0f);
 
 			switch(feature){
@@ -196,6 +197,8 @@ void Maze::draw(){
 				break;
 
 			case 15:
+				glColor3f(0.0f, 0.0f, 1.0f);
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);
 				glPushMatrix();
 				glTranslatef((float)j-wd, 0.5f, (float)i-ln);
 				glRotatef(90, 0.0f, 1.0f, 0.0f);
@@ -208,6 +211,8 @@ void Maze::draw(){
 				break;
 
 			case 16:
+				glColor3f(0.0f, 0.0f, 1.0f);
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);
 				glPushMatrix();
 				glTranslatef((float)j-wd, 0.5f, (float)i-ln-0.5f);
 				glutSolidCylinder(0.25f, 1.0f, 8, 8);
@@ -260,10 +265,10 @@ void Maze::draw(){
 				break;
 
 			case 6:
-				glColor3f(1.0f, 1.0f, 0.0f);
-				glPushMatrix();
+				glColor3f(yellow.r, yellow.g, yellow.b);
+				glPushMatrix();	
 				glTranslatef((float)j-wd, 0.25f, (float)i-ln);
-				glutSolidSphere(0.1f, 8, 8);
+				glutSolidSphere(0.2f, 24, 24);
 				glTranslatef(-((float)j-wd), -0.25, -((float)i-ln));
 				glPopMatrix();
 				break;

@@ -10,6 +10,7 @@
 #include <gl\glut.h>
 #include <gl\GLU.h>
 #include <gl\freeglut.h>
+#include <gl\wglew.h>
 #include <mutex>
 
 using namespace std;

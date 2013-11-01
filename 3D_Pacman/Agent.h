@@ -26,6 +26,9 @@ public:
 	void moveLeft();
 	void moveRight();
 	void moveBack();
+	void integralPosition();
+	vf getIntegralPosition();
+	void translate(vf destination, int millisecs=1000);
 	~Agent();
 
 private:

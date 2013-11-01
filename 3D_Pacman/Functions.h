@@ -122,5 +122,7 @@ extern color4 green;
 extern color4 yellow;
 extern color4 purple;
 extern color4 pink;
+extern color4 white,black;
+void DrawEllipsoid(float fA, float fB, float fC, unsigned int uiStacks = 32, unsigned int uiSlices = 32);
 
 #endif

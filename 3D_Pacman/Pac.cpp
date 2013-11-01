@@ -10,10 +10,10 @@ Pac::Pac(Maze *maze){
 	pos.push_back(0.f), pos.push_back(0.f), pos.push_back(0.f);
 	or.push_back(0.f),  or.push_back(0.f),  or.push_back(-1.f);
 	ver.push_back(0.f), ver.push_back(1.f), ver.push_back(0.f);
-	dim.push_back(.1f);
+	dim.push_back(1.f);
 	string shape("sphere");
 	color4 col(0.,1.,1.);
-	this->init(pos, or, ver, shape, dim, .05f, col, maze);	
+	this->init(pos, or, ver, shape, dim, .1f, col, maze);	
 }
 
 Pac::Pac(vf position, vf orientn, vf vertical, string shape, vf dimentions, float speed, color4 color, Maze *maze){
@@ -22,13 +22,12 @@ Pac::Pac(vf position, vf orientn, vf vertical, string shape, vf dimentions, floa
 
 void Pac::draw(){
 	glPushMatrix();
-	double R = 4*this->dimentions[0];
+	double R = this->dimentions[0]/2;
 	int p = 16, q = 16;
 	static int mouth = 8;
 	static bool mouthOpening = true;
 	glTranslatef(this->position[0], this->position[1]+static_cast<float>(R), this->position[2]);
 	glColor4f(this->color.r, this->color.g, this->color.b, this->color.a);
-	
 	if (this->shape=="sphere"){
 		//glutSolidSphere(this->dimentions[0], 32, 32);
 		vf initialv;
@@ -40,6 +39,7 @@ void Pac::draw(){
 		glRotatef(-90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
 		mtx.unlock();
 		glRotatef(ang,this->vertical[0],this->vertical[1],this->vertical[2]);
+		
 		for(int j = -q; j < q; j++){
 			// One latitudinal triangle strip.
 			glBegin(GL_TRIANGLE_STRIP);
@@ -48,9 +48,21 @@ void Pac::draw(){
 				glVertex3f(0.f,0.f,0.f);
 				for(int i = p/mouth; i <= (mouth-1)*p/mouth; i++){
 					glColor4f(yellow.r,yellow.g,yellow.b,yellow.a);
+					GLfloat white[] = {0.8f, 0.8f, 0.8f, 1.0f};
+					GLfloat yellow[] = {1.f, 1.f, 0.f, 1.f};
+					glMaterialfv(GL_FRONT, GL_DIFFUSE, yellow);
+					glMaterialfv(GL_FRONT, GL_SPECULAR, white);
+					GLfloat shininess[] = {128};
+					glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+					glNormal3d( R * cos( (float)(j+1)/q * PI/2.0 ) * cos( 2.0 * (float)i/p * PI ),
+								R * sin( (float)(j+1)/q * PI/2.0 ),
+								R * cos( (float)(j+1)/q * PI/2.0 ) * sin( 2.0 * (float)i/p * PI ) );
 					glVertex3d( R * cos( (float)(j+1)/q * PI/2.0 ) * cos( 2.0 * (float)i/p * PI ),
 								R * sin( (float)(j+1)/q * PI/2.0 ),
 								R * cos( (float)(j+1)/q * PI/2.0 ) * sin( 2.0 * (float)i/p * PI ) );
+					glNormal3d( R * cos( (float)j/q * PI/2.0 ) * cos( 2.0 * (float)i/p * PI ),
+								R * sin( (float)j/q * PI/2.0 ),
+								R * cos( (float)j/q * PI/2.0 ) * sin( 2.0 * (float)i/p * PI ) );    
 					glVertex3d( R * cos( (float)j/q * PI/2.0 ) * cos( 2.0 * (float)i/p * PI ),
 								R * sin( (float)j/q * PI/2.0 ),
 								R * cos( (float)j/q * PI/2.0 ) * sin( 2.0 * (float)i/p * PI ) );         
@@ -64,6 +76,7 @@ void Pac::draw(){
 		mtx.lock();
 		glRotatef(90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
 		mtx.unlock();
+
 		float R2 = 7*R/8;
 		float dist = 100.f;
 		mtx.lock();
@@ -103,6 +116,29 @@ void Pac::draw(){
 	if (mouth<=8 || mouth>8*pow(2,10)){
 		mouthOpening = !mouthOpening;
 	}
+	//eyes
+	float dbweye = R/5; 
+	float sqrt3 = sqrt(3);
+	glPushMatrix();
+	glTranslatef(R*this->orientn[0]/sqrt3 + (this->orientn[0]==0.f?dbweye:0.f),R*this->orientn[1]+R/sqrt(2),R*this->orientn[2]/sqrt3 +(this->orientn[2]==0.f?dbweye:0.f));
+	glColor3f(green.r,green.g,green.b);
+	float rEyebrow = R/10;
+	glutSolidSphere(R/4, 32, 32);
+	glTranslatef(0.f,dbweye,0.f);
+	glColor3f(black.r,black.g,black.b);
+	
+	glRotatef(90.f, this->orientn[0], this->orientn[1], this->orientn[2]);
+	DrawEllipsoid(rEyebrow,rEyebrow,2*rEyebrow);
+	glTranslatef(0.f,-dbweye,0.f);
+	glRotatef(90.f, -this->orientn[0], -this->orientn[1], -this->orientn[2]);
+
+	glPopMatrix();
+	glPushMatrix();
+	glTranslatef(R*this->orientn[0]/sqrt3 - (this->orientn[0]==0.f?dbweye:0.f),R*this->orientn[1]+R/sqrt(2),R*this->orientn[2]/sqrt3-(this->orientn[2]==0.f?dbweye:0.f));
+	glColor3f(green.r,green.g,green.b);
+	glutSolidSphere(R/4, 32, 32);
+	glPopMatrix();
+
 	glTranslatef(-this->position[0], -this->position[1]-static_cast<float>(R), -this->position[2]);
 	glPopMatrix();
 }
