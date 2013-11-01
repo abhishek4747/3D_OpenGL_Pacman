@@ -125,13 +125,25 @@ void Pac::draw(){
 		mouthOpening = !mouthOpening;
 	}
 	//eyes
-	float dbweye = R/5; 
-	float sqrt3 = sqrt(3);
+	vf y_direction(3);
+	y_direction[0] = 0.0f; y_direction[1] = 1.0f; y_direction[2] = 0.0f;
+	vf orientn_unit = orientn;
+	float orientn_value = magnitue(orientn);
+
+	orientn_unit[0] = orientn[0]/orientn_value; orientn_unit[1] = orientn[1]/orientn_value; orientn_unit[2] = orientn[2]/orientn_value;
+
+	vf orient_Normal = crossproduct(y_direction, orientn);
+
+	float dbweye = R/2;
+
+	float dist_orn = sqrt((R*R)/(2.f*2.f*3.f));
+	float dist_orn_norm = sqrt(((dbweye*dbweye)/3.f));
+
 	glPushMatrix();
-	glTranslatef(R*this->orientn[0]/sqrt3 + (this->orientn[0]==0.f?dbweye:0.f),R*this->orientn[1]+R/sqrt(2),R*this->orientn[2]/sqrt3 +(this->orientn[2]==0.f?dbweye:0.f));
-	glColor3f(green.r,green.g,green.b);
+	glTranslatef(dist_orn*orientn_unit[0] + dist_orn_norm*orient_Normal[0], 4*R/5, dist_orn*orientn_unit[2] + dist_orn_norm*orient_Normal[2]);
+	glColor3f(white.r,white.g,white.b);
 	float rEyebrow = R/10;
-	glutSolidSphere(R/4, 32, 32);
+	glutSolidSphere(R/4, 16, 16);
 	glTranslatef(0.f,dbweye,0.f);
 	glColor3f(black.r,black.g,black.b);
 	
@@ -142,8 +154,8 @@ void Pac::draw(){
 
 	glPopMatrix();
 	glPushMatrix();
-	glTranslatef(R*this->orientn[0]/sqrt3 - (this->orientn[0]==0.f?dbweye:0.f),R*this->orientn[1]+R/sqrt(2),R*this->orientn[2]/sqrt3-(this->orientn[2]==0.f?dbweye:0.f));
-	glColor3f(green.r,green.g,green.b);
+	glTranslatef(dist_orn*orientn_unit[0] - dist_orn_norm*orient_Normal[0], 4*R/5, dist_orn*orientn_unit[2] - dist_orn_norm*orient_Normal[2]);
+	glColor3f(white.r,white.g,white.b);
 	glutSolidSphere(R/4, 32, 32);
 	glPopMatrix();
 
