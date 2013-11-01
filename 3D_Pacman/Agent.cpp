@@ -19,6 +19,7 @@ void Agent::draw(){
 }
 
 void Agent::moveForward(){
+
 }
 
 void Agent::moveLeft(){
@@ -42,6 +43,21 @@ void Agent::moveBack(){
 Agent::~Agent(){
 }
 
+void Agent::integralPosition(){
+	for (int i = 0; i < 3; i++){
+		if (i!=1)
+			position[i] = static_cast<float>(static_cast<int>(position[i]+(position[i]<0?-0.5f:0.5f)));
+	}
+}
+
+vf Agent::getIntegralPosition(){
+	vf ret;
+	for (int i = 0; i < 3; i++){
+		ret.push_back( static_cast<float>( static_cast<int>(position[i]+(position[i]<0?-0.5f:0.5f)) ) );
+	}
+	return ret;
+}
+
 void Agent::moveSomewhere(float totaldegree, int fast){
 	mtx.lock();
 	float direction = totaldegree>0? 1.f: -1.f;
@@ -56,11 +72,22 @@ void Agent::moveSomewhere(float totaldegree, int fast){
 	mtx.lock();
 	orientn = fin;
 	mtx.unlock();
+	
+	//integralPosition();
+	thread t1(&Agent::translate,this,getIntegralPosition(),100);
+	t1.detach();
+}
 
-	// Integral positions only 
+void Agent::translate(vf destination, int millisecs){
+	vf delta;
 	for (int i = 0; i < 3; i++){
-		if (i!=1)
-			position[i] = static_cast<float>(static_cast<int>(position[i]+0.5f));
+		delta.push_back((destination[i]-position[i])/100.f);
+	}
+	for (int i = 0; i < 100; i++){
+		for (int i = 0; i < 3; i++){
+			position[i] += delta[i];
+		}
+		Sleep(millisecs/100);
 	}
 }
 
