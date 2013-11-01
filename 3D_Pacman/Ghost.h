@@ -10,6 +10,7 @@ class Ghost: public Agent{
 public:
 	Maze *maze;
 	Pac *pacman;
+	bool weak, eaten;
 	
 	Ghost();
 	Ghost(color4 col, Maze *maze, Pac *pacman);

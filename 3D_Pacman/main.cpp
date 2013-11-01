@@ -5,7 +5,7 @@
 * Instructor:	Subodh Kumar
 * T.A.		:	Nisha Jain	
 * Started on:	15-Oct-2013
-* Ended on	:	-Oct-2013
+* Ended on	:	-Nov-2013
 * Motivation:	http://freepacmanforacause.webs.com/pacman_1.gif
 
 ******************************************************************************/
@@ -38,11 +38,8 @@
 
 // CANDO: 
 	// Camera Movement Controls with Mouse
-	// Ghosts Movement
-	// Mutex Bug
 	// Draw Power up pallets
-	// Maze Complete
-	// Collision with Ghosts
+	// Maze Complete	
 	// Performance Improvement
 	// Set start position of Pacs and Ghosts
 	// Create Sun
@@ -55,8 +52,6 @@
 	// Multplayer
 	// Height Map
 	// Sound Effects
-	
-	// 
 
 // includes all common headers
 #include "Headers.h" 
@@ -74,7 +69,7 @@ vector<Ghost*> ghost;
 bool ghostsMoving = false;
 Maze *maze;
 bool gamePaused = false;
-unsigned int iterations = 0;
+unsigned int iterations = 0, frames = 0;
 bool keyStates[256];// = new bool[256];
 bool keySpecialStates[256]; // = new bool[256]; // Create an array of boolean values of length 256 (0-255) 
 bool SHIFT = false, ALT = false, CTRL = false;
@@ -131,6 +126,12 @@ void randomMoveGhost(int i,int turn = 1){
 			// ghost[i]->moveBack();
 		}
 	}
+}
+
+void frameCalculatorLoop(void){
+	Sleep(1000);
+	frames = iterations;
+	iterations = 0;
 }
 
 void keyOperations (void) {  
@@ -421,14 +422,20 @@ void reshape (int width, int height) {
 }
 
 void drawEverything(){
+	if (iterations==0){
+		cout<<"FPS: "<<frames<<endl;
+		thread fps(frameCalculatorLoop);
+		fps.detach();
+	}
+	iterations++;
 	if (maze ){
 		maze->draw();
 	}
 	if (pacman ){
 		if (!pacman->moving && !gamePaused && canMove(pacman,maze)) {
-			/*thread t1(&Pac::moveForward,pacman);
-			t1.detach();*/
-			pacman->moveForward();
+			thread t1(&Pac::moveForward,pacman);
+			t1.detach();
+			//pacman->moveForward();
 		}
 		pacman->draw();
 	}
@@ -449,8 +456,7 @@ void drawEverything(){
 	}
 }
 
-void display (void) {
-	iterations++;
+void display (void) {		
 	// KeyBoard Operations
 	keyOperations();
 	keySpecialOperations();
@@ -620,9 +626,8 @@ int main(int argc, char** argv){
 	glutSpecialUpFunc(keySpecialUp); // Tell GLUT to use the method "keySpecialUp" for special up key events  
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-
 	// Start Main Loop
-	glutMainLoop();   
+	glutMainLoop();
 	
 	return 0;
 }

@@ -9,6 +9,7 @@
 class Pac : public Agent{
 public:
 	Maze *maze;
+	bool strong;
 
 	Pac();
 	Pac(Maze *maze);
