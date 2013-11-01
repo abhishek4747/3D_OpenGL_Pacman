@@ -7,9 +7,9 @@ First Line- Length Width
 		v:16	m:10	v:16
 		c:13	h:15	d:14
 
-hwh      v        v        v        v
- v      hxh      hy        zh      hlh
-		          v        v        v
+hhh      x        v        v     
+ w      hhh      yv        vz     
+		          v        v       
 
 w:21, x:22, y:23, z:24, l:25 
 p- path with pellets:6, e- empty path:0
@@ -114,7 +114,30 @@ void Maze::mazeReader(string filename){
 		}
 	}	
 }
+/*
+static void torus(int numc, int numt)
+{
+   int i, j, k;
+   double s, t, x, y, z, twopi;
 
+   twopi = 2 * 3.14;
+   for (i = 0; i < numc; i++) {
+      glBegin(GL_QUAD_STRIP);
+      for (j = 0; j <= numt/4; j++) {
+         for (k = 1; k >= 0; k--) {
+            s = (i + k) % numc + 0.5;
+            t = j % numt;
+
+            x = (1+.1*cos(s*twopi/numc))*cos(t*twopi/numt);
+            y = (1+.1*cos(s*twopi/numc))*sin(t*twopi/numt);
+            z = .1 * sin(s * twopi / numc);
+            glVertex3f(x, y, z);
+         }
+      }
+      glEnd();
+   }
+}
+*/
 void Maze::draw(){
 	/*
 	//This is a Mesh
@@ -154,6 +177,7 @@ void Maze::draw(){
 			float z1 = (float)i-ln-0.5f; float z2 = (float)i-ln+0.5f;
 			
 			glColor3f(0.0f, 0.0f, 1.0f);
+
 			switch(feature){
 			case 11:
 				
@@ -192,19 +216,43 @@ void Maze::draw(){
 				break;
 
 			case 21:
-				
+				glPushMatrix();
+				glTranslatef((float)j-wd, 0.5f, (float)i-ln-1.0f);
+				glutSolidCylinder(0.25f, 1.5f, 8, 8);
+				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln-1.0f));
+				glPopMatrix();
 				break;
 
 			case 22:
-				
+				glPushMatrix();
+				glTranslatef((float)j-wd, 0.5f, (float)i-ln-0.5f);
+				glutSolidCylinder(0.25f, 1.5f, 8, 8);
+				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln-0.5f));
+				glPopMatrix();
 				break;
 
 			case 23:
-				
+				glPushMatrix();
+				glTranslatef((float)j-wd, 0.5f, (float)i-ln);
+				glRotatef(90, 0.0f, 1.0f, 0.0f);
+				glTranslatef(0.0f, 0.0f, -0.5f);
+				glutSolidCylinder(0.25f, 1.5f, 8, 8);
+				glTranslatef(0.0f, 0.0f, 0.5f);
+				glRotatef(-90, 0.0f, 1.0f, 0.0f);
+				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln));
+				glPopMatrix();
 				break;
 
 			case 24:
-				
+				glPushMatrix();
+				glTranslatef((float)j-wd, 0.5f, (float)i-ln);
+				glRotatef(90, 0.0f, 1.0f, 0.0f);
+				glTranslatef(0.0f, 0.0f, -1.0f);
+				glutSolidCylinder(0.25f, 1.5f, 8, 8);
+				glTranslatef(0.0f, 0.0f, 1.0f);
+				glRotatef(-90, 0.0f, 1.0f, 0.0f);
+				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln));
+				glPopMatrix();
 				break;
 
 			case 25:
