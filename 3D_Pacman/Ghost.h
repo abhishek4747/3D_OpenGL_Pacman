@@ -15,7 +15,6 @@ public:
 	Ghost(color4 col, Maze *maze, Pac *pacman);
 	Ghost(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze, Pac *pacman);
 	void draw();
-	void moveForward();
 
 private:
 	void init(vf position, vf orientn, vf vertical, string shape, vf dimentions, float speed, color4 color, Maze *maze, Pac *pacman);

@@ -14,7 +14,6 @@ public:
 	Pac(Maze *maze);
 	Pac(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze);
 	void draw();
-	void moveForward();
 
 private:
 	void init(vf position, vf orientn, vf vertical, string shape, vf dimentions, float speed, color4 color, Maze *maze);

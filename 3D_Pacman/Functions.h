@@ -10,8 +10,6 @@ typedef vector<float>  vf;
 
 extern vf origin;
 
-extern mutex mtx;
-
 void fInit();
 
 void newl();
@@ -95,11 +93,7 @@ template <typename T> T randomm(T max, T min){
 	return static_cast<T>((static_cast<double>(rand()) / (RAND_MAX)) * (max-min+1)) + min;
 }
 
-template <typename T> T random (T low, T high) {
-	srand(time(0)*rand());
-    if (low > high) return high;
-    return low + (std::rand() % (high - low + 1));
-}
+int random (int low, int high);
 
 class color3{
 public:
@@ -122,6 +116,11 @@ private:
 	void init(float r, float g, float b, float a, float max);
 };
 
+void DrawEllipsoid(float fA, float fB, float fC, unsigned int uiStacks = 32, unsigned int uiSlices = 32);
+
+/*******************************COLOR TABLE************************************
+			http://gucky.uni-muenster.de/cgi-bin/rgbtab-en					  
+******************************************************************************/
 extern color4 red;
 extern color4 blue;
 extern color4 green;
@@ -130,6 +129,7 @@ extern color4 purple;
 extern color4 pink;
 extern color4 white,black;
 extern color4 grey;
-void DrawEllipsoid(float fA, float fB, float fC, unsigned int uiStacks = 32, unsigned int uiSlices = 32);
+
 
 #endif
+

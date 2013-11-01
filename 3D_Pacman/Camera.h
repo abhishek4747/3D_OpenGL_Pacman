@@ -16,6 +16,4 @@ private:
 	void init(double eyex, double eyey, double eyez, 
 		double centerx, double centery, double centerz, 
 		double upx, double upy, double upz);
-
-
 };

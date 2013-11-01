@@ -1,6 +1,5 @@
 #include "Functions.h"
 
-mutex mtx;
 vf origin;
 color4 red, blue, green, yellow, purple, pink, white, black, grey;
 
@@ -35,7 +34,11 @@ void color4::init(float r, float g, float b, float a, float max){
 	this->r = r/max, this->g = g/max, this->b = b/max, this->a = a/max;
 }
 
-
+int random (int low, int high) {
+	srand(time(0)*rand());
+    if (low > high) return high;
+    return low + (std::rand() % (high - low + 1));
+}
 
 void fInit(){
 	for (int i = 0; i < 3; i++)
@@ -49,6 +52,7 @@ void fInit(){
 	grey	= color4(105.f, 105.f, 105.f,  222.f,  222.f);
 	white	= color4(1.f,1.f,1.f);
 	black   = color4(0.f,0.f,0.f);
+
 }
 
 void newl(){

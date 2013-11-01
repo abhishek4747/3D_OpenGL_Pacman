@@ -8,9 +8,6 @@
 * Ended on	:	-Oct-2013
 * Motivation:	http://freepacmanforacause.webs.com/pacman_1.gif
 
-* Features:
-	* 
-	*
 ******************************************************************************/
 
 // TIPS:
@@ -94,10 +91,13 @@ void mInit(){
 }
 
 bool canMove(Agent *p, Maze *m){
-	vf pos = p->position;
 	vf next(3);
 	for (int i = 0; i < 3; i++){
-		next[i] = pos[i] + p->orientn[i]*p->dimentions[0]/2;
+		p->posmtx.lock();
+		p->ormtx.lock();
+		next[i] = p->position[i] + p->orientn[i]*p->dimentions[0]/2;
+		p->ormtx.unlock();
+		p->posmtx.unlock();
 	}
 
 	int x = static_cast<int>(next[0]+m->size[0]/2) ;
@@ -112,15 +112,22 @@ bool canMove(Agent *p, Maze *m){
 }
 
 void randomMoveGhost(int i,int turn = 1){
-	int m = 30;
-	int r = random(0,m);
-	cout<<r<<endl;
-	if (r==0){
-		ghost[i]->moveLeft();
-	}else if (r==1){
-		ghost[i]->moveRight();
-	}else if (r==2){
-		ghost[i]->moveBack();
+	if (!ghost[i]->moving){
+		int m = 30;
+		int r = random(0,m);
+		if (r==0){
+			thread t1(&Ghost::moveLeft,ghost[i]);
+			t1.detach();
+			// ghost[i]->moveLeft();
+		}else if (r==1){
+			thread t1(&Ghost::moveRight,ghost[i]);
+			t1.detach();
+			// ghost[i]->moveRight();
+		}else if (r==2){
+			thread t1(&Ghost::moveBack,ghost[i]);
+			t1.detach();
+			// ghost[i]->moveBack();
+		}
 	}
 }
 
@@ -447,7 +454,8 @@ void display (void) {
 	//glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity(); 
-	mtx.lock();
+	pacman->posmtx.lock();
+	pacman->ormtx.lock();
 	if (cameratype=="free"){
 		gluLookAt(cam->eyex, cam->eyey, cam->eyez, cam->centerx, cam->centery, cam->centerz, cam->upx, cam->upy, cam->upz);
 	}else if (cameratype=="ariel"){
@@ -475,8 +483,8 @@ void display (void) {
 	else{
 		gluLookAt(0.,max(maze->size[0],maze->size[2]),0.,0.,0.,0.,0.,0.,-1.);
 	}
-	mtx.unlock();
-	
+	pacman->posmtx.unlock();
+	pacman->ormtx.unlock();
 	// Solid Cylinder
 	/*glColor3f(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.2, 1.0, 10, 10);*/
@@ -537,7 +545,6 @@ void display (void) {
 }
 
 int main(int argc, char** argv){
-	srand(time(NULL));
 	fInit();	// functions.h init
 	mInit();	// main.cpp init
 
@@ -589,14 +596,10 @@ int main(int argc, char** argv){
 	GLfloat lightpos4[] = {5., 5., -5., 1.};
 	glLightfv(GL_LIGHT3, GL_POSITION, lightpos4);*/
 
-
-	
-	//glEnable (GL_LIGHT1);
-	//glEnable (GL_LIGHT2);
 	glEnable(GL_COLOR_MATERIAL);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
-	// Set Triggers
+	// Set display and reshape Triggers
 	glutDisplayFunc(display);
 	glutIdleFunc(display);
 	glutReshapeFunc(reshape);
@@ -614,16 +617,3 @@ int main(int argc, char** argv){
 	
 	return 0;
 }
-
-/*******************************COLOR TABLE************************************
-http://gucky.uni-muenster.de/cgi-bin/rgbtab-en
-
-Black:	0.f, 0.f, 0.f
-White:	1.f, 1.f, 1.f
-Red:	1.f, 0.f, 0.f
-Green:	0.f, 1.f, 0.f
-Blue:	0.f, 0.f, 1.f
-Write More Colors Here If needed For Example
-MazeColor: x,y,z etc
-
-******************************************************************************/

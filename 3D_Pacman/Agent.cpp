@@ -18,10 +18,6 @@ Agent::Agent(vf position, vf orientn, vf vertical, string shape, vf dimentions, 
 void Agent::draw(){
 }
 
-void Agent::moveForward(){
-
-}
-
 void Agent::moveLeft(){
 	moving = true;
 	moveSomewhere(90.f,1);
@@ -40,38 +36,54 @@ void Agent::moveBack(){
 	moving = false;
 }
 
+void Agent::moveForward(){
+	for (size_t i = 0; i < 3; i++){
+		posmtx.lock();
+		ormtx.lock();
+		this->position[i] = this->position[i]+this->orientn[i]*this->speed;
+		ormtx.unlock();
+		posmtx.unlock();
+	}
+}
+
+
 Agent::~Agent(){
 }
 
 void Agent::integralPosition(){
 	for (int i = 0; i < 3; i++){
-		if (i!=1)
+		if (i!=1){
+			posmtx.lock();
 			position[i] = static_cast<float>(static_cast<int>(position[i]+(position[i]<0?-0.5f:0.5f)));
+			posmtx.unlock();
+		}
 	}
 }
 
 vf Agent::getIntegralPosition(){
 	vf ret;
 	for (int i = 0; i < 3; i++){
+		posmtx.lock();
 		ret.push_back( static_cast<float>( static_cast<int>(position[i]+(position[i]+(position[i]<0?-0.5f:0.5f)<0?-0.5f:0.5f))) );
+		posmtx.unlock();
 	}
 	return ret;
 }
 
 void Agent::moveSomewhere(float totaldegree, int fast){
-	mtx.lock();
 	float direction = totaldegree>0? 1.f: -1.f;
+	ormtx.lock();
 	vf fin = rotateaboutaxisbyangle(orientn,origin,vertical,totaldegree);
-	mtx.unlock();
+	ormtx.unlock();
 	for (int i = 0; i < abs(totaldegree)/fast; i++){
-		mtx.lock();
+		ormtx.lock();
 		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,fast*direction);
-		mtx.unlock();
+		ormtx.unlock();
 		Sleep(1*fast);
 	}
-	mtx.lock();
+	ormtx.lock();
 	orientn = fin;
-	mtx.unlock();
+	ormtx.unlock();
 	
 	//integralPosition();
 	thread t1(&Agent::translate,this,getIntegralPosition(),200);
@@ -81,11 +93,15 @@ void Agent::moveSomewhere(float totaldegree, int fast){
 void Agent::translate(vf destination, int millisecs){
 	vf delta;
 	for (int i = 0; i < 3; i++){
+		posmtx.lock();
 		delta.push_back((destination[i]-position[i])/100.f);
+		posmtx.unlock();
 	}
 	for (int i = 0; i < 100; i++){
 		for (int i = 0; i < 3; i++){
+			posmtx.lock();
 			position[i] += delta[i];
+			posmtx.unlock();
 		}
 		Sleep(millisecs/100);
 	}

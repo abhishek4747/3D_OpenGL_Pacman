@@ -32,12 +32,10 @@ void Pac::draw(){
 		//glutSolidSphere(this->dimentions[0], 32, 32);
 		vf initialv;
 		initialv.push_back(1.f);initialv.push_back(0.f);initialv.push_back(0.f);
-		mtx.lock();
+		ormtx.lock();
 		float ang = anglebw(orientn,initialv);
-		mtx.unlock();
-		mtx.lock();
 		glRotatef(-90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
-		mtx.unlock();
+		ormtx.unlock();
 		glRotatef(ang,this->vertical[0],this->vertical[1],this->vertical[2]);
 		
 		for(int j = -q; j < q; j++){
@@ -83,16 +81,16 @@ void Pac::draw(){
 			glEnd();
 		}
 		glRotatef(-ang,this->vertical[0],this->vertical[1],this->vertical[2]);
-		mtx.lock();
+		ormtx.lock();
 		glRotatef(90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
-		mtx.unlock();
+		ormtx.unlock();
 
 		float R2 = 7*R/8;
 		float dist = 100.f;
-		mtx.lock();
+		ormtx.lock();
 		glTranslatef(this->orientn[0]/dist, this->orientn[1]/dist,this->orientn[2]/dist);
 		glRotatef(-90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
-		mtx.unlock();
+		ormtx.unlock();
 		glRotatef(ang,this->vertical[0],this->vertical[1],this->vertical[2]);
 		for(int j = -q; j < q; j++){
 			// One latitudinal triangle strip.
@@ -113,10 +111,10 @@ void Pac::draw(){
 			glEnd();
 		}
 		glRotatef(-ang,this->vertical[0],this->vertical[1],this->vertical[2]);
-		mtx.lock();
+		ormtx.lock();
 		glRotatef(90.f,this->orientn[0],this->orientn[1],this->orientn[2]);
 		glTranslatef(-this->orientn[0]/dist, -this->orientn[1]/dist, -this->orientn[2]/dist);		
-		mtx.unlock();
+		ormtx.unlock();
 	}
 	if (mouthOpening){
 		mouth *= 2;
@@ -151,14 +149,6 @@ void Pac::draw(){
 
 	glTranslatef(-this->position[0], -this->position[1]-static_cast<float>(R), -this->position[2]);
 	glPopMatrix();
-}
-
-void Pac::moveForward(){
-	for (size_t i = 0; i < 3; i++){
-		mtx.lock();
-		this->position[i] = this->position[i]+this->orientn[i]*this->speed;
-		mtx.unlock();
-	}
 }
 
 void Pac::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze){

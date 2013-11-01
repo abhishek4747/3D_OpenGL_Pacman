@@ -18,6 +18,8 @@ public:
 	color4 color; 
 	
 	bool moving;
+	mutex ormtx;
+	mutex posmtx;
 
 	Agent();
 	Agent(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color);
