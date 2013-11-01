@@ -47,19 +47,29 @@ void Pac::draw(){
 				glColor4f(yellow.r,yellow.g,yellow.b,yellow.a);
 				glVertex3f(0.f,0.f,0.f);
 				for(int i = p/mouth; i <= (mouth-1)*p/mouth; i++){
+					
 					glColor4f(yellow.r,yellow.g,yellow.b,yellow.a);
+					/*
+					glColorMaterial(GL_FRONT_AND_BACK, GL_DIFFUSE);
+					glEnableClientState(GL_COLOR_ARRAY);
 					GLfloat white[] = {0.8f, 0.8f, 0.8f, 1.0f};
 					GLfloat yellow[] = {1.f, 1.f, 0.f, 1.f};
 					glMaterialfv(GL_FRONT, GL_DIFFUSE, yellow);
 					glMaterialfv(GL_FRONT, GL_SPECULAR, white);
-					GLfloat shininess[] = {128};
-					glMaterialfv(GL_FRONT, GL_SHININESS, shininess);
+					GLfloat shine[]= {120};
+					glMaterialfv(GL_FRONT, GL_SHININESS, shine);
+					glMateriali(GL_FRONT, GL_SHININESS, 120);*/
 					glNormal3d( R * cos( (float)(j+1)/q * PI/2.0 ) * cos( 2.0 * (float)i/p * PI ),
-								R * sin( (float)(j+1)/q * PI/2.0 ),
+								
+						R * sin( (float)(j+1)/q * PI/2.0 ),
 								R * cos( (float)(j+1)/q * PI/2.0 ) * sin( 2.0 * (float)i/p * PI ) );
 					glVertex3d( R * cos( (float)(j+1)/q * PI/2.0 ) * cos( 2.0 * (float)i/p * PI ),
 								R * sin( (float)(j+1)/q * PI/2.0 ),
 								R * cos( (float)(j+1)/q * PI/2.0 ) * sin( 2.0 * (float)i/p * PI ) );
+					/*glMaterialfv(GL_FRONT, GL_SPECULAR, yellow);
+					glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, white);
+					glMaterialfv(GL_FRONT, GL_SHININESS, shine);
+					glMateriali(GL_FRONT, GL_SHININESS, 120);*/
 					glNormal3d( R * cos( (float)j/q * PI/2.0 ) * cos( 2.0 * (float)i/p * PI ),
 								R * sin( (float)j/q * PI/2.0 ),
 								R * cos( (float)j/q * PI/2.0 ) * sin( 2.0 * (float)i/p * PI ) );    
