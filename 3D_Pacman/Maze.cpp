@@ -114,9 +114,9 @@ void Maze::mazeReader(string filename){
 		}
 	}	
 }
+
 /*
-static void torus(int numc, int numt)
-{
+static void torus(int numc, int numt){
    int i, j, k;
    double s, t, x, y, z, twopi;
 
@@ -138,6 +138,7 @@ static void torus(int numc, int numt)
    }
 }
 */
+
 void Maze::draw(){
 	/*
 	//This is a Mesh

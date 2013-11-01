@@ -1,4 +1,3 @@
-
 /******************************************************************************
 * Project	:	3D_Pacman 
 * Authors	:	Abhishek Kumar & Nikhil Verma
@@ -20,7 +19,7 @@
 	// Arrow Keys to control Pacman
 	// WASD to control Camera
 	// Drag Mouse to change direction of camera // TODO:
-	// 1,2,3,4 to change camera View
+	// 1,2,3,4,5,6,7 to change camera View
 	// Enter or Space to Pause
 
 // RULES: 
@@ -32,19 +31,21 @@
 	
 // TODO: Before Mid Evaluation
 	// Create Start Screen - simple in start i.e. press enter to start game
-	// Create Maze
+	// [Done] Create Maze
 	// Camera Movement Controls with Mouse
 	// Create Ghost .obj
 	// Create Pac	.obj
-	// Movement
-	// Animation
+	// [Done] Movement
+	// [Done] Animation
 	// Levels
 	// 
 
 // TODO: After Mid Evalutaion
 	// Multplayer
+	// Network
 	// Height Map
 	// Sound Effects
+	// Shaders
 
 // includes all common headers
 #include "Headers.h" 
