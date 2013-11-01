@@ -5,7 +5,7 @@ Ghost::Ghost(){
 	this->color = color4(0.,1.,1.);
 	this->shape = "cylinder";
 	this->dimentions.resize(0);
-	this->dimentions.push_back(.2f), this->dimentions.push_back(1.f);
+	this->dimentions.push_back(.4f), this->dimentions.push_back(1.f);
 	this->maze = new Maze(), this->pacman = new Pac();
 }
 
@@ -14,7 +14,7 @@ Ghost::Ghost(color4 col, Maze *maze, Pac *pacman){
 	pos.push_back(randomm(-maze->size[0]/2, maze->size[0]/2)), pos.push_back(0.f), pos.push_back(randomm(-maze->size[2]/2, maze->size[2]/2));
 	or.push_back(0.f),  or.push_back(0.f),  or.push_back(-1.f);
 	ver.push_back(0.f), ver.push_back(1.f), ver.push_back(0.f);
-	dim.push_back(.2f), dim.push_back(1.f);
+	dim.push_back(.4f), dim.push_back(1.f);
 	string shape("cylinder");
 	this->init(pos, or, ver, shape, dim, .1f, col, maze, pacman);
 }
@@ -31,6 +31,9 @@ void Ghost::draw(){
 	if (this->shape=="cylinder"){
 		glutSolidCylinder(this->dimentions[0], this->dimentions[1], 32, 32);
 	}
+	glTranslatef(0.f, 0.f, this->dimentions[1]);
+	glutSolidSphere(this->dimentions[0], 32, 32);
+	glTranslatef(0.f, 0.f, -this->dimentions[1]);
 	glRotatef(-90.f, -1.f, 0.f, 0.f);
 	glTranslatef(-this->position[0], -this->position[1], -this->position[2]);
 	glPopMatrix();

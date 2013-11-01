@@ -35,6 +35,8 @@ void color4::init(float r, float g, float b, float a, float max){
 	this->r = r/max, this->g = g/max, this->b = b/max, this->a = a/max;
 }
 
+
+
 void fInit(){
 	for (int i = 0; i < 3; i++)
 		origin.push_back(0.f);
