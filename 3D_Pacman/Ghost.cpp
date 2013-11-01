@@ -51,7 +51,6 @@ void Ghost::moveForward(){
 	if (canMove){
 		for (size_t i = 0; i < 3; i++){
 			this->position[i] = newPos[i];
-			cout << " " << randomm(4, 2) << " ";
 		}
 	}
 }
