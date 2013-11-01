@@ -154,6 +154,8 @@ void keyOperations (void) {
 		cameratype = "front";
 	}else if (keyStates['6']) { 
 		cameratype = "fixed";
+	}else if (keyStates['7']){
+		cameratype = "notfixed";
 	}
 	if (keyStates[13] || keyStates[32]){
 		keyStates[13] = false;
@@ -405,7 +407,7 @@ void display (void) {
 
 	// Background Color: Black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
 	//glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity(); 
@@ -431,6 +433,8 @@ void display (void) {
 			pacman->position[1]+0.f+max(maze->size[0],maze->size[2])/5.f,
 			pacman->position[2]+3.f,
 			pacman->position[0],pacman->position[1],pacman->position[2],0.,1.,0.);
+	}else if (cameratype=="notfixed"){
+		gluLookAt(cam->eyex, cam->eyey, cam->eyez,pacman->position[0],pacman->position[1],pacman->position[2], cam->upx, cam->upy, cam->upz);
 	}
 	else{
 		gluLookAt(0.,max(maze->size[0],maze->size[2]),0.,0.,0.,0.,0.,0.,-1.);
@@ -467,7 +471,7 @@ int main(int argc, char** argv){
 
 	// Initialise Glut Variables
 	glutInit(&argc, argv);
-	glutInitDisplayMode (GLUT_DOUBLE| GLUT_RGBA | GLUT_DEPTH); 
+	glutInitDisplayMode (GLUT_DOUBLE| GLUT_RGBA | GLUT_DEPTH ); // | GLUT_STENCIL 
 	glutInitWindowSize (1350, 690);
 	glutInitWindowPosition (0, 0); 
 	glutCreateWindow ("3D Pacman");
@@ -476,16 +480,33 @@ int main(int argc, char** argv){
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);
 	//glShadeModel(GL_FLAT);
-    
-	//glEnable(GL_CULL_FACE);
 
-	//glEnable (GL_LIGHTING);
-    //glEnable (GL_LIGHT0);
-	//GLfloat lightpos[] = {0., 0., 0., 1.};
-	//glLightfv(GL_LIGHT0, GL_POSITION, lightpos);
+		/*glColorMask(GL_FALSE,GL_FALSE,GL_FALSE,GL_FALSE);
+		glDepthMask(GL_FALSE);
+		glEnable(GL_STENCIL_TEST);*/
+
+	glEnable(GL_CULL_FACE);
+
+	glEnable (GL_LIGHTING);
+    glEnable (GL_LIGHT0);
+	GLfloat lightpos1[] = {5., 5., 5., 1.};
+	glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
+
+	glEnable (GL_LIGHT1);
+	GLfloat lightpos2[] = {-5., 5., 5., 1.};
+	glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
+
+	glEnable (GL_LIGHT2);
+	GLfloat lightpos3[] = {-5., 5.,-5., 1.};
+	glLightfv(GL_LIGHT2, GL_POSITION, lightpos3);
+
+	glEnable (GL_LIGHT3);
+	GLfloat lightpos4[] = {5., 5., -5., 1.};
+	glLightfv(GL_LIGHT3, GL_POSITION, lightpos4);
+
 	//glEnable (GL_LIGHT1);
 	//glEnable (GL_LIGHT2);
-	// glEnable(GL_COLOR_MATERIAL);
+	glEnable(GL_COLOR_MATERIAL);
 	
 
 	// Set Triggers
@@ -499,10 +520,10 @@ int main(int argc, char** argv){
 	glutSpecialFunc(keySpecial); // Tell GLUT to use the method "keySpecial" for special key presses  
 	glutSpecialUpFunc(keySpecialUp); // Tell GLUT to use the method "keySpecialUp" for special up key events  
 
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 	// Start Main Loop
-	// glutMainLoop();   
+	glutMainLoop();   
 	
 	return 0;
 }

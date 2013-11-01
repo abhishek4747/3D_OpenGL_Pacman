@@ -153,6 +153,7 @@ void Maze::draw(){
 			float x1 = (float)j-wd-0.5f; float x2 = (float)j-wd+0.5f;
 			float z1 = (float)i-ln-0.5f; float z2 = (float)i-ln+0.5f;
 			
+			GLfloat cyan[] = {0.f, .0f, .1f, 1.f};
 			switch(feature){
 			case 11:
 				
@@ -172,8 +173,7 @@ void Maze::draw(){
 
 			case 15:
 				glColor3f(0.0f, 0.0f, 1.0f);
-				/*GLfloat cyan[] = {0.f, .0f, .1f, 1.f};
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);*/
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);
 				glPushMatrix();
 				glTranslatef((float)j-wd, 0.5f, (float)i-ln);
 				glRotatef(90, 0.0f, 1.0f, 0.0f);
@@ -187,8 +187,7 @@ void Maze::draw(){
 
 			case 16:
 				glColor3f(0.0f, 0.0f, 1.0f);
-				/*GLfloat cyan[] = {0.f, .0f, .1f, 1.f};
-				glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);*/
+				glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);
 				glPushMatrix();
 				glTranslatef((float)j-wd, 0.5f, (float)i-ln-0.5f);
 				glutSolidCylinder(0.25f, 1.0f, 8, 8);
