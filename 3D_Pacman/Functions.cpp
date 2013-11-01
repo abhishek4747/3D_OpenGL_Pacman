@@ -2,7 +2,7 @@
 
 mutex mtx;
 vf origin;
-color4 red, blue, green, yellow, purple, pink, white, black;
+color4 red, blue, green, yellow, purple, pink, white, black, grey;
 
 color3::color3(){
 	this->init(0., 0., 0., 1.);
@@ -46,6 +46,7 @@ void fInit(){
 	yellow	= color4(1.f,1.f,0.f);
 	purple	= color4(160.f,  32.f, 240.f,  255.f,  255.f);
 	pink	= color4(255.f, 105.f, 180.f,  255.f,  255.f); 
+	grey	= color4(105.f, 105.f, 105.f,  222.f,  222.f);
 	white	= color4(1.f,1.f,1.f);
 	black   = color4(0.f,0.f,0.f);
 }

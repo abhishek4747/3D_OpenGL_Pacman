@@ -47,7 +47,6 @@ void Maze::mazeReader(string filename){
 	s[0] = wid; s[1] = static_cast<float> (INT_MAX); s[2] = len;
 	this->init(s);
 
-	
 	char feature;
 	this->mazeMat.resize(len);
 	for(int i = 0; i < len; i++){
@@ -176,7 +175,7 @@ void Maze::draw(){
 			int feature = mazeMat[i][j];
 			float x1 = (float)j-wd-0.5f; float x2 = (float)j-wd+0.5f;
 			float z1 = (float)i-ln-0.5f; float z2 = (float)i-ln+0.5f;
-			
+
 			GLfloat cyan[] = {0.f, .0f, .1f, 1.f};
 			glColor3f(0.0f, 0.0f, 1.0f);
 
@@ -266,7 +265,7 @@ void Maze::draw(){
 				break;
 
 			case 6:
-				glColor3f(yellow.r, yellow.g, yellow.b);
+				glColor3f(white.r, white.g, white.b);
 				glPushMatrix();	
 				glTranslatef((float)j-wd, 0.25f, (float)i-ln);
 				glutSolidSphere(0.2f, 24, 24);

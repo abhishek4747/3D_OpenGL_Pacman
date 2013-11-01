@@ -30,13 +30,14 @@
 	// No warnings during compilation
 	
 // TODO: Before Mid Evaluation
-	// Create Start Screen - simple in start i.e. press enter to start game
-	// [Done] Create Maze
-	// Camera Movement Controls with Mouse
+	// [Done] Create Maze	
 	// Create Ghost .obj
 	// Create Pac	.obj
 	// [Done] Movement
-	// [Done] Animation
+	// [Done] Animation	
+	
+	// Create Start Screen - simple in start i.e. press enter to start game
+	// Camera Movement Controls with Mouse
 	// Levels
 	// 
 
@@ -447,6 +448,10 @@ void display (void) {
 	/*glColor3f(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.2, 1.0, 10, 10);*/
 	
+	glPushMatrix();
+    glScalef(1, -1, 1);  
+	
+
 	if (maze ){
 		maze->draw();
 	}
@@ -463,7 +468,39 @@ void display (void) {
 		thread t1 (moveGhosts);
 		t1.detach();
 	}
-	glPopMatrix();	
+
+	glPopMatrix();
+
+	glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glColor4f(0.0f, 0.7f, 0.7f, 0.10f);  
+    glBegin(GL_QUADS);
+		glNormal3f(0.f,1.f,0.f);
+        glVertex3f(-maze->size[0]/2, 0.0f, -maze->size[2]/2);
+        glVertex3f(-maze->size[0]/2, 0.0f, maze->size[2]/2);
+        glVertex3f(maze->size[0]/2, 0.0f, maze->size[2]/2);
+        glVertex3f(maze->size[0]/2, 0.0f, -maze->size[2]/2);
+    glEnd();
+	glDisable(GL_BLEND);
+
+	if (maze ){
+		maze->draw();
+	}
+	if (pacman ){
+		if (!pacman->moving && !gamePaused && canMove(pacman,maze)) pacman->moveForward();
+		pacman->draw();
+	}
+	if (ghost.size() ){
+		for (size_t i = 0; i < ghost.size(); i++){
+			ghost[i]->draw();
+		}
+	}
+	if (!ghostsMoving ){
+		thread t1 (moveGhosts);
+		t1.detach();
+	}
+
+	glPopMatrix();
 	glutSwapBuffers();  
 }
 
@@ -492,8 +529,8 @@ int main(int argc, char** argv){
 
 	GLfloat diffuse[] = {0,1,0,1};
 	GLfloat ambient[] = {.5,.5,0,1};
-	GLfloat specular[] = {.4,.4,.4,1};
-	GLfloat shine[]= {50};
+	GLfloat specular[] = {.3,.3,.3,1};
+	GLfloat shine[]= {100};
 
 	//glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuse) ;
 	//glLightfv (GL_LIGHT0, GL_AMBIENT, ambient) ;
