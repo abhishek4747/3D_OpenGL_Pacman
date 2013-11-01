@@ -13,7 +13,7 @@ hhh      x        v        v
 
 w:21, x:22, y:23, z:24, l:25 
 p- path with pellets:6, e- empty path:0
-g- ghosts place:7, warp gates- using nos:1, 2, 3, 4, 5.
+g- ghosts place:7, warp gates- using nos: 1, 2, 3, 4, 5.
 s- boost pellets:8
 */
 
@@ -272,7 +272,16 @@ void Maze::draw(){
 				glTranslatef(-((float)j-wd), -0.25, -((float)i-ln));
 				glPopMatrix();
 				break;
-
+			
+			case 8:
+				glColor3f(yellow.r, yellow.g, yellow.b);
+				glPushMatrix();	
+				glTranslatef((float)j-wd, 0.25f, (float)i-ln);
+				glutSolidSphere(0.3f, 24, 24);
+				glTranslatef(-((float)j-wd), -0.25, -((float)i-ln));
+				glPopMatrix();
+				break;
+	
 			default:
 				break;
 			}
