@@ -1,0 +1,7 @@
+Copy dll files (32 bit) to sysWOW64
+
+In visual studio select empty project and then in the properties, configuration properties -> vc++ directories, select include and lib directories of freeglut and glew.
+
+In linker -> input -> additional dependencies write OpenGL32.lib; glew32.lib; freeglut.lib
+
+Then from solutions explorer sources select vc++ 

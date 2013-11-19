@@ -1,3 +1,5 @@
+#ifndef _HEADERS
+
 #include <iostream>
 #include <string>
 #include <vector>
@@ -14,4 +16,7 @@
 #include <mutex>
 
 using namespace std;
+
+#define _HEADERS
+#endif
 

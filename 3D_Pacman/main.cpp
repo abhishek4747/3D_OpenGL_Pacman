@@ -5,19 +5,20 @@
 * Instructor:	Subodh Kumar
 * T.A.		:	Nisha Jain	
 * Started on:	15-Oct-2013
-* Ended on	:	-Nov-2013
+* Ended on	:	19-Nov-2013
 * Motivation:	http://freepacmanforacause.webs.com/pacman_1.gif
 
 ******************************************************************************/
 
 // TIPS:
-	// Esc,q,Q to Quit
-	// F5 to restart the program
-	// Arrow Keys to control Pacman
-	// WASD to control Camera
-	// Drag Mouse to change direction of camera // TODO:
-	// 1,2,3,4,5,6,7 to change camera View
-	// Enter or Space to Pause
+	// [Esc] [q] [Q]				--> Quit
+	// [F5]							--> Restart
+	// [Arrow Keys]					--> Controls Pacman
+	// [W] [A] [S] [D]				--> Controls Camera
+	// [1] [2] [3] [4] [5] [6] [7]	--> Camera Modes
+	// [Enter] [Space]				--> Pause
+	
+	// Drag Mouse to change direction of camera // TODO: NOT SURE IF SHOULD BE DONE
 
 // RULES: 
 	// Code should be well documented and well formatted
