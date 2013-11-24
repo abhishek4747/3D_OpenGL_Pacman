@@ -3,9 +3,8 @@
 * Authors	:	Abhishek Kumar & Nikhil Verma
 * Course	:	CSL781 Computer Graphics (Fall, 2013)
 * Instructor:	Subodh Kumar
-* T.A.		:	Nisha Jain	
 * Started on:	15-Oct-2013
-* Ended on	:	19-Nov-2013
+* Ended on	:	28-Nov-2013
 * Motivation:	http://freepacmanforacause.webs.com/pacman_1.gif
 
 ******************************************************************************/
@@ -46,13 +45,33 @@
 	// Create Sun
 	// 
 
-// TODO: After Mid Evalutaion
-	// Levels
-	// Shaders
-	// Create Start Screen - simple in start i.e. press enter to start game
-	// Multplayer
+// DO:
+	// Color3 class is of no use
+	// Start Screen
+	// Console Controls - Debug Statements
+	// Initial Camera Rotation
+	// Minimap
+	// Skybox
+	// Performance Optimizations
+	// Sun
+	// Water
+	// Shadows
+	// Environment mapping
+	// Documentation
+	// Presentations
+	// Class game - Object oriented 
+	// Level 2
+	// Power Up pallets
+	// Ghosts movement Algorithms
+	// Sun
+	// Texture mapping on walls
+	// Object loading for ghosts
+	// Points on screen
+
+// Not Do
+	// Multiplayer
 	// Height Map
-	// Sound Effects
+	// Sounds
 
 // includes all common headers
 #include "Headers.h" 
