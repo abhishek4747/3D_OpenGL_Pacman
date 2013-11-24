@@ -36,14 +36,7 @@
 	// [Done] Lighting
 	// [Done] Collision with walls and eating pallets
 
-// CANDO: 
-	// Camera Movement Controls with Mouse
-	// Draw Power up pallets
-	// Maze Complete	
-	// Performance Improvement
-	// Set start position of Pacs and Ghosts
-	// Create Sun
-	// 
+// 1. Optimizations
 
 // DO:
 	// Color3 class is of no use
@@ -75,84 +68,36 @@
 
 // includes all common headers
 #include "Headers.h" 
-#include "Camera.h"
 #include "Functions.h"
-#include "Pac.h"
-#include "Maze.h"
-#include "Ghost.h"
+#include "Camera.h"
+#include "Game.h"
 
 // Global Variables
-Camera *cam;
-string cameratype = "follow";
-Pac *pacman;
-vector<Ghost*> ghost;
-bool ghostsMoving = false;
-Maze *maze;
-bool gamePaused = false;
-unsigned int iterations = 0, frames = 0;
+Camera *cam = new Camera();;
+Game *game = new Game();
+
+// Keys Capture
 bool keyStates[256];// = new bool[256];
 bool keySpecialStates[256]; // = new bool[256]; // Create an array of boolean values of length 256 (0-255) 
 bool SHIFT = false, ALT = false, CTRL = false;
+
+// If reflection is on
 bool IS_REFLECT = false;
 
-
-void mInit(){
-	cam = new Camera();
-	maze = new Maze("TheGameMatrix.txt");
-	pacman = new Pac(maze);
-	ghost.resize(0);
-	ghost.push_back(new Ghost(yellow, maze, pacman));
-	ghost.push_back(new Ghost(purple, maze, pacman));
-	ghost.push_back(new Ghost(pink, maze, pacman));
-	ghost.push_back(new Ghost(green, maze, pacman));
-}
-
-bool canMove(Agent *p, Maze *m){
-	vf next(3);
-	for (int i = 0; i < 3; i++){
-		p->posmtx.lock();
-		p->ormtx.lock();
-		next[i] = p->position[i] + p->orientn[i]*p->dimentions[0]/2;
-		p->ormtx.unlock();
-		p->posmtx.unlock();
-	}
-
-	int x = static_cast<int>(next[0]+m->size[0]/2) ;
-	int z = static_cast<int>(next[2]+m->size[2]/2) ;
-	
-	if (x<0|| z<0 || x>m->size[0] || z>m->size[2] || m->mazeMat[z][x]>10){
-		return false;
-	}else if(m->mazeMat[z][x]==6){
-		m->mazeMat[z][x] = 0;
-	}
-	return true;
-}
-
-void randomMoveGhost(int i,int turn = 1){
-	if (!ghost[i]->moving){
-		int m = 30;
-		int r = random(0,m);
-		if (r==0){
-			thread t1(&Ghost::moveLeft,ghost[i]);
-			t1.detach();
-			// ghost[i]->moveLeft();
-		}else if (r==1){
-			thread t1(&Ghost::moveRight,ghost[i]);
-			t1.detach();
-			// ghost[i]->moveRight();
-		}else if (r==2){
-			thread t1(&Ghost::moveBack,ghost[i]);
-			t1.detach();
-			// ghost[i]->moveBack();
-		}
-	}
-}
+// Fram Calulation
+unsigned int iterations = 0, frames = 0;
 
 void frameCalculatorLoop(void){
 	Sleep(1000);
 	frames = iterations;
 	iterations = 0;
 }
+
+void mInit(){
+	cam = new Camera();
+	game = new Game();
+}
+
 
 void keyOperations (void) {  
 	if (keyStates['q'] || keyStates['Q'] || keyStates[27]){
@@ -198,24 +143,24 @@ void keyOperations (void) {
 
 
 	if (keyStates['1']) { 
-		cameratype = "ariel";
+		cam->cameratype = ARIEL;
 	}else if (keyStates['2']) { 
-		cameratype = "free";
+		cam->cameratype = FREE;
 	}else if (keyStates['3']) { 
-		cameratype = "follow";
+		cam->cameratype = FOLLOW;
 	}else if (keyStates['4']) { 
-		cameratype = "top";
+		cam->cameratype = TOP;
 	}else if (keyStates['5']) { 
-		cameratype = "front";
+		cam->cameratype = FRONT;
 	}else if (keyStates['6']) { 
-		cameratype = "fixed";
+		cam->cameratype = C_FIXED;
 	}else if (keyStates['7']){
-		cameratype = "notfixed";
+		cam->cameratype = NOTFIXED;
 	}
 	if (keyStates[13] || keyStates[32]){
 		keyStates[13] = false;
 		keyStates[32] = false;
-		gamePaused = !gamePaused;
+		game->togglePause();
 	}
 
 	if(keyStates['o']){
@@ -281,93 +226,93 @@ void keyOperations (void) {
 } 
 
 void keySpecialOperations(void) {  
-	if (cameratype=="follow"){
+	if (cam->cameratype==FOLLOW){
 		if (keySpecialStates[GLUT_KEY_LEFT]) { // If the left arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_LEFT] = false;
-			if (!pacman->moving){
-				thread t1(&Pac::moveLeft,pacman);		
+			if (!game->pacman->moving){
+				thread t1(&Pac::moveLeft,game->pacman);		
 				t1.detach();
 			}
 		}
 		if (keySpecialStates[GLUT_KEY_RIGHT]) { // If the right arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_RIGHT] = false;
-			if (!pacman->moving){
-				thread t1(&Pac::moveRight,pacman);		
+			if (!game->pacman->moving){
+				thread t1(&Pac::moveRight,game->pacman);		
 				t1.detach();
 			}
 		}
 		if (keySpecialStates[GLUT_KEY_UP]) { // If the up arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_UP] = false;
-			if (!pacman->moving){
-				thread t1(&Pac::moveForward,pacman);		
+			if (!game->pacman->moving){
+				thread t1(&Pac::moveForward,game->pacman);		
 				t1.detach();
 			}
 		}
 		if (keySpecialStates[GLUT_KEY_DOWN]) { // If the down arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_DOWN] = false;
-			if (!pacman->moving){
-				thread t1(&Pac::moveBack,pacman);		
+			if (!game->pacman->moving){
+				thread t1(&Pac::moveBack,game->pacman);		
 				t1.detach();
 			}
 		}
-	}else if (cameratype=="front"){
+	}else if (cam->cameratype==FRONT){
 		if (keySpecialStates[GLUT_KEY_LEFT]) { // If the left arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_LEFT] = false;
-			if (!pacman->moving){
-				thread t1(&Pac::moveRight,pacman);		
+			if (!game->pacman->moving){
+				thread t1(&Pac::moveRight,game->pacman);		
 				t1.detach();
 			}
 		}
 		if (keySpecialStates[GLUT_KEY_RIGHT]) { // If the right arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_RIGHT] = false;
-			if (!pacman->moving){
-				thread t1(&Pac::moveLeft,pacman);		
+			if (!game->pacman->moving){
+				thread t1(&Pac::moveLeft,game->pacman);		
 				t1.detach();
 			}
 		}
 		if (keySpecialStates[GLUT_KEY_UP]) { // If the up arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_UP] = false;
-			if (!pacman->moving){
-				thread t1(&Pac::moveBack,pacman);		
+			if (!game->pacman->moving){
+				thread t1(&Pac::moveBack,game->pacman);		
 				t1.detach();
 			}
 		}
 		if (keySpecialStates[GLUT_KEY_DOWN]) { // If the down arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_DOWN] = false;
-			if (!pacman->moving){
-				thread t1(&Pac::moveForward,pacman);		
+			if (!game->pacman->moving){
+				thread t1(&Pac::moveForward,game->pacman);		
 				t1.detach();
 			}
 		}
 	}
 	else{
-		if (keySpecialStates[GLUT_KEY_LEFT] && !( pacman->orientn[0] == -1 && pacman->orientn[1] == 0 && pacman->orientn[2] == 0)) { // If the left arrow key has been pressed  
+		if (keySpecialStates[GLUT_KEY_LEFT] && !( game->pacman->orientn[0] == -1 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == 0)) { // If the left arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_LEFT] = false;
-			pacman->orientn[0] = -1;
-			pacman->orientn[1] = 0;
-			pacman->orientn[2] = 0;
-			pacman->integralPosition();
+			game->pacman->orientn[0] = -1;
+			game->pacman->orientn[1] = 0;
+			game->pacman->orientn[2] = 0;
+			game->pacman->integralPosition();
 		}
-		if (keySpecialStates[GLUT_KEY_RIGHT] && !( pacman->orientn[0] == 1 && pacman->orientn[1] == 0 && pacman->orientn[2] == 0)) { // If the right arrow key has been pressed  
+		if (keySpecialStates[GLUT_KEY_RIGHT] && !( game->pacman->orientn[0] == 1 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == 0)) { // If the right arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_RIGHT] = false;
-			pacman->orientn[0] = 1;
-			pacman->orientn[1] = 0;
-			pacman->orientn[2] = 0;
-			pacman->integralPosition();
+			game->pacman->orientn[0] = 1;
+			game->pacman->orientn[1] = 0;
+			game->pacman->orientn[2] = 0;
+			game->pacman->integralPosition();
 		}
-		if (keySpecialStates[GLUT_KEY_UP] && !( pacman->orientn[0] == 0 && pacman->orientn[1] == 0 && pacman->orientn[2] == -1)) { // If the up arrow key has been pressed  
+		if (keySpecialStates[GLUT_KEY_UP] && !( game->pacman->orientn[0] == 0 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == -1)) { // If the up arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_UP] = false;
-			pacman->orientn[0] = 0;
-			pacman->orientn[1] = 0;
-			pacman->orientn[2] = -1;
-			pacman->integralPosition();
+			game->pacman->orientn[0] = 0;
+			game->pacman->orientn[1] = 0;
+			game->pacman->orientn[2] = -1;
+			game->pacman->integralPosition();
 		}
-		if (keySpecialStates[GLUT_KEY_DOWN] && !( pacman->orientn[0] == 0 && pacman->orientn[1] == 0 && pacman->orientn[2] == 1)) { // If the down arrow key has been pressed  
+		if (keySpecialStates[GLUT_KEY_DOWN] && !( game->pacman->orientn[0] == 0 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == 1)) { // If the down arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_DOWN] = false;
-			pacman->orientn[0] = 0;
-			pacman->orientn[1] = 0;
-			pacman->orientn[2] = 1;
-			pacman->integralPosition();
+			game->pacman->orientn[0] = 0;
+			game->pacman->orientn[1] = 0;
+			game->pacman->orientn[2] = 1;
+			game->pacman->integralPosition();
 		}
 	}
 
@@ -448,27 +393,27 @@ void drawEverything(){
 		fps.detach();
 	}
 	iterations++;
-	if (maze ){
-		maze->draw();
+	if (game->maze ){
+		game->maze->draw();
 	}
-	if (pacman ){
-		if (!pacman->moving && !gamePaused && canMove(pacman,maze)) {
-			thread t1(&Pac::moveForward,pacman);
+	if (game->pacman ){
+		if (!game->pacman->moving && !game->isPaused() && game->canAgentMove(game->pacman,game->maze)) {
+			thread t1(&Pac::moveForward,game->pacman);
 			t1.detach();
-			//pacman->moveForward();
+			//game->pacman->moveForward();
 		}
-		pacman->draw();
+		game->pacman->draw();
 	}
-	if (ghost.size() ){
-		for (size_t i = 0; i < ghost.size(); i++){
-			if (!gamePaused && canMove(ghost[i],maze)) {
-				thread t1(&Ghost::moveForward,ghost[i]);
+	if (game->ghost.size() ){
+		for (size_t i = 0; i < game->ghost.size(); i++){
+			if (!game->isPaused() && game->canAgentMove(game->ghost[i],game->maze)) {
+				thread t1(&Ghost::moveForward,game->ghost[i]);
 				t1.detach();
 				//ghost[i]->moveForward();
 			}
-			ghost[i]->draw();
-			if (!ghostsMoving & !gamePaused){
-				randomMoveGhost(i,0);
+			game->ghost[i]->draw();
+			if (!game->ghostsMoving & !game->isPaused()){
+				game->randomMoveGhost(i,0);
 				/*thread t1 (randomMoveGhost,i,0);
 				t1.detach();*/
 			}
@@ -487,37 +432,37 @@ void display (void) {
 	//glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity(); 
-	pacman->posmtx.lock();
-	pacman->ormtx.lock();
-	if (cameratype=="free"){
+	game->pacman->posmtx.lock();
+	game->pacman->ormtx.lock();
+	if (cam->cameratype==FREE){
 		gluLookAt(cam->eyex, cam->eyey, cam->eyez, cam->centerx, cam->centery, cam->centerz, cam->upx, cam->upy, cam->upz);
-	}else if (cameratype=="ariel"){
-		gluLookAt(0.,maze->size[0],maze->size[2],0.,0.,0.,0.,1.,0.);
-	}else if (cameratype=="follow"){
-		int multiplier = 50*pacman->speed;
-		gluLookAt(pacman->position[0]-multiplier*pacman->orientn[0],
-			pacman->position[1]-multiplier*pacman->orientn[1]+max(maze->size[0],maze->size[2])/5.f,
-			pacman->position[2]-multiplier*pacman->orientn[2],
-			pacman->position[0],pacman->position[1],pacman->position[2],0.,1.,0.);
-	}else if (cameratype=="front"){
-		int multiplier = 100*pacman->speed;
-		gluLookAt(pacman->position[0]+multiplier*pacman->orientn[0],
-			pacman->position[1]+multiplier*pacman->orientn[1]+max(maze->size[0],maze->size[2])/5.f,
-			pacman->position[2]+multiplier*pacman->orientn[2],
-			pacman->position[0],pacman->position[1],pacman->position[2],0.,1.,0.);
-	}else if (cameratype=="fixed"){
-		gluLookAt(pacman->position[0]+3.f,
-			pacman->position[1]+0.f+max(maze->size[0],maze->size[2])/5.f,
-			pacman->position[2]+3.f,
-			pacman->position[0],pacman->position[1],pacman->position[2],0.,1.,0.);
-	}else if (cameratype=="notfixed"){
-		gluLookAt(cam->eyex, cam->eyey, cam->eyez,pacman->position[0],pacman->position[1],pacman->position[2], cam->upx, cam->upy, cam->upz);
+	}else if (cam->cameratype==ARIEL){
+		gluLookAt(0.,game->maze->size[0],game->maze->size[2],0.,0.,0.,0.,1.,0.);
+	}else if (cam->cameratype==FOLLOW){
+		int multiplier = 50*game->pacman->speed;
+		gluLookAt(game->pacman->position[0]-multiplier*game->pacman->orientn[0],
+			game->pacman->position[1]-multiplier*game->pacman->orientn[1]+max(game->maze->size[0],game->maze->size[2])/5.f,
+			game->pacman->position[2]-multiplier*game->pacman->orientn[2],
+			game->pacman->position[0],game->pacman->position[1],game->pacman->position[2],0.,1.,0.);
+	}else if (cam->cameratype==FRONT){
+		int multiplier = 100*game->pacman->speed;
+		gluLookAt(game->pacman->position[0]+multiplier*game->pacman->orientn[0],
+			game->pacman->position[1]+multiplier*game->pacman->orientn[1]+max(game->maze->size[0],game->maze->size[2])/5.f,
+			game->pacman->position[2]+multiplier*game->pacman->orientn[2],
+			game->pacman->position[0],game->pacman->position[1],game->pacman->position[2],0.,1.,0.);
+	}else if (cam->cameratype==C_FIXED){
+		gluLookAt(game->pacman->position[0]+3.f,
+			game->pacman->position[1]+0.f+max(game->maze->size[0],game->maze->size[2])/5.f,
+			game->pacman->position[2]+3.f,
+			game->pacman->position[0],game->pacman->position[1],game->pacman->position[2],0.,1.,0.);
+	}else if (cam->cameratype==NOTFIXED){
+		gluLookAt(cam->eyex, cam->eyey, cam->eyez,game->pacman->position[0],game->pacman->position[1],game->pacman->position[2], cam->upx, cam->upy, cam->upz);
 	}
 	else{
-		gluLookAt(0.,max(maze->size[0],maze->size[2]),0.,0.,0.,0.,0.,0.,-1.);
+		gluLookAt(0.,max(game->maze->size[0],game->maze->size[2]),0.,0.,0.,0.,0.,0.,-1.);
 	}
-	pacman->posmtx.unlock();
-	pacman->ormtx.unlock();
+	game->pacman->posmtx.unlock();
+	game->pacman->ormtx.unlock();
 	// Solid Cylinder
 	/*glColor3f(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.2, 1.0, 10, 10);*/
@@ -539,10 +484,10 @@ void display (void) {
 		glColor4f(0.0f, 0.7f, 0.0f, 0.30);  
 		glBegin(GL_QUADS);
 		glNormal3f(0.f,1.f,0.f);
-			glVertex3f(-maze->size[0]/2, 0.0f, -maze->size[2]/2);
-			glVertex3f(-maze->size[0]/2, 0.0f, maze->size[2]/2);
-			glVertex3f(maze->size[0]/2, 0.0f, maze->size[2]/2);
-			glVertex3f(maze->size[0]/2, 0.0f, -maze->size[2]/2);
+			glVertex3f(-game->maze->size[0]/2, 0.0f, -game->maze->size[2]/2);
+			glVertex3f(-game->maze->size[0]/2, 0.0f, game->maze->size[2]/2);
+			glVertex3f(game->maze->size[0]/2, 0.0f, game->maze->size[2]/2);
+			glVertex3f(game->maze->size[0]/2, 0.0f, -game->maze->size[2]/2);
 		glEnd();
 
 		/* Re-enable update of color and depth. */ 
@@ -567,10 +512,10 @@ void display (void) {
 		glColor4f(0.0f, 0.7f, 0.7f, 0.10f);  
 		glBegin(GL_QUADS);
 			glNormal3f(0.f,1.f,0.f);
-			glVertex3f(-maze->size[0]/2, 0.0f, -maze->size[2]/2);
-			glVertex3f(-maze->size[0]/2, 0.0f, maze->size[2]/2);
-			glVertex3f(maze->size[0]/2, 0.0f, maze->size[2]/2);
-			glVertex3f(maze->size[0]/2, 0.0f, -maze->size[2]/2);
+			glVertex3f(-game->maze->size[0]/2, 0.0f, -game->maze->size[2]/2);
+			glVertex3f(-game->maze->size[0]/2, 0.0f, game->maze->size[2]/2);
+			glVertex3f(game->maze->size[0]/2, 0.0f, game->maze->size[2]/2);
+			glVertex3f(game->maze->size[0]/2, 0.0f, -game->maze->size[2]/2);
 		glEnd();
 		glDisable(GL_BLEND);
 	}

@@ -16,6 +16,7 @@ void Camera::init(double eyex, double eyey, double eyez,
 	this->eyex = eyex, this->eyey = eyey, this->eyez = eyez;
 	this->centerx = centerx, this->centery = centery, this->centerz = centerz;
 	this->upx = upx, this->upy = upy, this->upz = upz;
+	this->cameratype = FOLLOW;
 }
 
 Camera::~Camera(){

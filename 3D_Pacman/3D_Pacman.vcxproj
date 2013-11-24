@@ -73,10 +73,12 @@
     <ClCompile Include="Maze.cpp" />
     <ClCompile Include="Pac.cpp" />
     <ClCompile Include="Screen.cpp" />
+    <ClCompile Include="Game.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Functions.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="Ghost.h" />
     <ClInclude Include="Agent.h" />
     <ClInclude Include="Headers.h" />
