@@ -3,22 +3,6 @@
 vf origin;
 color4 red, blue, green, yellow, purple, pink, white, black, grey, navyblue;
 
-color3::color3(){
-	this->init(0., 0., 0., 1.);
-}
-
-color3::color3(float r, float g, float b, float max){
-	this->init(r, g, b, max);
-}
-
-void color3::init(float r, float g, float b, float max){
-	this->r = r/max, this->g = g/max, this->b = b/max;
-}
-
-color3::~color3(){
-}
-
-
 color4::color4(){
 	this->init(0.,0.,0.,1.,1.);
 }

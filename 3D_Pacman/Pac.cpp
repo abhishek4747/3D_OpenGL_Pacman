@@ -13,7 +13,7 @@ Pac::Pac(Maze *maze){
 	dim.push_back(1.f);
 	string shape("sphere");
 	color4 col(0.,1.,1.);
-	this->init(pos, or, ver, shape, dim, .1f, col, maze);	
+	this->init(pos, or, ver, shape, dim, 0.1f, col, maze);	
 }
 
 Pac::Pac(vf position, vf orientn, vf vertical, string shape, vf dimentions, float speed, color4 color, Maze *maze){
@@ -26,7 +26,12 @@ void Pac::draw(){
 	int p = 16, q = 16;
 	static int mouth = 8;
 	static bool mouthOpening = true;
-	glTranslatef(this->position[0], this->position[1]+static_cast<float>(R), this->position[2]);
+	
+	this->posmtx.lock();
+	vf pacPos = this->position;
+	this->posmtx.unlock();
+
+	glTranslatef(pacPos[0], pacPos[1]+static_cast<float>(R), pacPos[2]);
 	glColor4f(this->color.r, this->color.g, this->color.b, this->color.a);
 	if (this->shape=="sphere"){
 		//glutSolidSphere(this->dimentions[0], 32, 32);
@@ -129,8 +134,9 @@ void Pac::draw(){
 	y_direction[0] = 0.0f; y_direction[1] = 1.0f; y_direction[2] = 0.0f;
 	vf orientn_unit = orientn;
 	float orientn_value = magnitue(orientn);
-
+	this->ormtx.lock();
 	orientn_unit[0] = orientn[0]/orientn_value; orientn_unit[1] = orientn[1]/orientn_value; orientn_unit[2] = orientn[2]/orientn_value;
+	this->ormtx.unlock();
 
 	vf orient_Normal = crossproduct(y_direction, orientn);
 
@@ -159,7 +165,7 @@ void Pac::draw(){
 	glutSolidSphere(R/4, 32, 32);
 	glPopMatrix();
 
-	glTranslatef(-this->position[0], -this->position[1]-static_cast<float>(R), -this->position[2]);
+	glTranslatef(-pacPos[0], -pacPos[1]-static_cast<float>(R), -pacPos[2]);
 	glPopMatrix();
 }
 

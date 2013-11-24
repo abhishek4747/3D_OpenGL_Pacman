@@ -48,6 +48,14 @@ void Agent::moveForward(){
 	moving = false;
 }
 
+void Agent::moveForwardTo(float x, float y, float z){
+	this->posmtx.lock();
+	this->position[0] = x;
+	this->position[1] = y;
+	this->position[2] = z;
+	this->posmtx.unlock();
+}
+
 
 Agent::~Agent(){
 }
@@ -81,7 +89,7 @@ void Agent::moveSomewhere(float totaldegree, int fast){
 		ormtx.lock();
 		orientn = rotateaboutaxisbyangle(orientn,origin,vertical,fast*direction);
 		ormtx.unlock();
-		Sleep(1*fast);
+		Sleep(1*fast/(speed*5));
 	}
 	ormtx.lock();
 	orientn = fin;

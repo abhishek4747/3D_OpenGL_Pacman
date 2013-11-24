@@ -19,7 +19,6 @@ public:
 	Maze(string filename);
 	void draw();
 	void mazeReader(string filename);
-	~Maze();
 
 private:
 	void init(vf size);

@@ -25,6 +25,7 @@ public:
 	Agent(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color);
 	void draw();
 	void moveForward();
+	void moveForwardTo(float x, float y, float z);
 	void moveLeft();
 	void moveRight();
 	void moveBack();

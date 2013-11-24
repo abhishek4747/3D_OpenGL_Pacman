@@ -95,16 +95,6 @@ template <typename T> T randomm(T max, T min){
 
 int random (int low, int high);
 
-class color3{
-public:
-	float r, g, b;
-	color3();
-	color3(float r, float g, float b, float max= 1.);
-	~color3();
-private:
-	void init(float r, float g, float b, float max);
-};
-
 class color4{
 public:
 	float r, g, b, a;

@@ -20,9 +20,11 @@ public:
 	bool isPaused();
 	void togglePause();
 
-	bool canAgentMove(Agent *p, Maze *m);
+	vf canAgentMove(Agent *p, Maze *m);
 	void randomMoveGhost(int i,int turn = 1);
 	
+	void draw();
+	void moveObjects();
 private:
 	bool gamePaused;
 	void initGame();

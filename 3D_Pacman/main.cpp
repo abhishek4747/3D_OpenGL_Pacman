@@ -36,7 +36,8 @@
 	// [Done] Lighting
 	// [Done] Collision with walls and eating pallets
 
-// 1. Optimizations
+// 1. Game.cpp
+// 2. Optimizations
 
 // DO:
 	// Color3 class is of no use
@@ -81,8 +82,20 @@ bool keyStates[256];// = new bool[256];
 bool keySpecialStates[256]; // = new bool[256]; // Create an array of boolean values of length 256 (0-255) 
 bool SHIFT = false, ALT = false, CTRL = false;
 
+// Optimization Variables
+vf pacPosition;
+
+
 // If reflection is on
 bool IS_REFLECT = false;
+
+// Main Init Function
+void mInit(){
+	cam = new Camera();
+	game = new Game();
+	pacPosition.resize(3);
+	pacPosition = game->pacman->position;
+}
 
 // Fram Calulation
 unsigned int iterations = 0, frames = 0;
@@ -93,22 +106,20 @@ void frameCalculatorLoop(void){
 	iterations = 0;
 }
 
-void mInit(){
-	cam = new Camera();
-	game = new Game();
-}
-
-
 void keyOperations (void) {  
+	// Press Q to Quit
 	if (keyStates['q'] || keyStates['Q'] || keyStates[27]){
 		exit(0);
 	}
+
+	// Press 0 or . move in z-axis
 	if(keyStates['0']){
 		cam->eyez += 0.1f;
 	}else if(keyStates['.']){
 		cam->eyez -= 0.1f;
 	}
 	
+	// Press WASD to move camera
 	double deg = 1.;
 	if (keyStates['a'] || keyStates['A']) { // If the left arrow key has been pressed  
 		double x = cam->eyex;
@@ -134,14 +145,14 @@ void keyOperations (void) {
 		cam->eyez *= 1.01f;
 	}
 
-
+	// Press + or - to move camera in y-axis
 	if(keyStates['-']){
 		cam->eyey += exp(cam->eyey/100.f)/100.f;
 	}else if(keyStates['+']){
 		cam->eyey -= exp(cam->eyey/100.f)/100.f;
 	}
 
-
+	// Camera Modes
 	if (keyStates['1']) { 
 		cam->cameratype = ARIEL;
 	}else if (keyStates['2']) { 
@@ -157,71 +168,18 @@ void keyOperations (void) {
 	}else if (keyStates['7']){
 		cam->cameratype = NOTFIXED;
 	}
+	
+	// Press Space or Enter to Pause
 	if (keyStates[13] || keyStates[32]){
 		keyStates[13] = false;
 		keyStates[32] = false;
 		game->togglePause();
 	}
 
-	if(keyStates['o']){
-		size_t h = 0;
-		
-	} 
-	if(keyStates['i']){
-		size_t h = 1;
-		
-	}
-
-	if (keyStates['h']){
-		keyStates['h'] = false;
-	}
-	if (keyStates['g']){
-		keyStates['g'] = false;
-		
-	}
-
-	if (keyStates['p']){
-		keyStates['p'] = false;
-		
-	}else if (keyStates['l']){
-		keyStates['l'] = false;
-		
-	}
-	if (keyStates['u']){
-		keyStates['u'] = false;
-		
-	}else if (keyStates['k']){
-		keyStates['k'] = false;
-		
-	}
-
-	if (keyStates['j']){
-		keyStates['j']=false;
-		size_t u = 1;
-		
-	}
-
-	if (keyStates[';']){
-		keyStates[';']=false;
-		size_t u = 0;
-		
-	}
-
-	if (keyStates['m']){
-		keyStates['m']=false;
-		size_t u = 1;
-		
-	}
-
-	if (keyStates['/']){
-		keyStates['/']=false;
-		size_t u = 0;
-		
-	}
+	// Reflection
 	if (keyStates['r']){
 		keyStates['r']=false;
 		IS_REFLECT = !IS_REFLECT;
-		
 	}
 } 
 
@@ -286,28 +244,32 @@ void keySpecialOperations(void) {
 		}
 	}
 	else{
-		if (keySpecialStates[GLUT_KEY_LEFT] && !( game->pacman->orientn[0] == -1 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == 0)) { // If the left arrow key has been pressed  
+		if (keySpecialStates[GLUT_KEY_LEFT] && !( game->pacman->orientn[0] == -1 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == 0)) { 
+			// If the left arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_LEFT] = false;
 			game->pacman->orientn[0] = -1;
 			game->pacman->orientn[1] = 0;
 			game->pacman->orientn[2] = 0;
 			game->pacman->integralPosition();
 		}
-		if (keySpecialStates[GLUT_KEY_RIGHT] && !( game->pacman->orientn[0] == 1 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == 0)) { // If the right arrow key has been pressed  
+		if (keySpecialStates[GLUT_KEY_RIGHT] && !( game->pacman->orientn[0] == 1 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == 0)) { 
+			// If the right arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_RIGHT] = false;
 			game->pacman->orientn[0] = 1;
 			game->pacman->orientn[1] = 0;
 			game->pacman->orientn[2] = 0;
 			game->pacman->integralPosition();
 		}
-		if (keySpecialStates[GLUT_KEY_UP] && !( game->pacman->orientn[0] == 0 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == -1)) { // If the up arrow key has been pressed  
+		if (keySpecialStates[GLUT_KEY_UP] && !( game->pacman->orientn[0] == 0 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == -1)) { 
+			// If the up arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_UP] = false;
 			game->pacman->orientn[0] = 0;
 			game->pacman->orientn[1] = 0;
 			game->pacman->orientn[2] = -1;
 			game->pacman->integralPosition();
 		}
-		if (keySpecialStates[GLUT_KEY_DOWN] && !( game->pacman->orientn[0] == 0 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == 1)) { // If the down arrow key has been pressed  
+		if (keySpecialStates[GLUT_KEY_DOWN] && !( game->pacman->orientn[0] == 0 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == 1)) { 
+			// If the down arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_DOWN] = false;
 			game->pacman->orientn[0] = 0;
 			game->pacman->orientn[1] = 0;
@@ -323,14 +285,6 @@ void keySpecialOperations(void) {
 		}
 		keySpecialStates[GLUT_KEY_F5] = false;
 		mInit();
-	}
-
-	if (keySpecialStates[GLUT_KEY_F7]){
-		keySpecialStates[GLUT_KEY_F7] = false;
-		
-	}else if (keySpecialStates[GLUT_KEY_F8]){
-		keySpecialStates[GLUT_KEY_F8] = false;
-		
 	}
 }
 
@@ -386,88 +340,82 @@ void reshape (int width, int height) {
 	glMatrixMode(GL_MODELVIEW);   
 }
 
-void drawEverything(){
+void display (void) {		
+	// KeyBoard Operations
+	keyOperations();
+	keySpecialOperations();
+
+	// Write FPS
 	if (iterations==0){
 		cout<<"FPS: "<<frames<<endl;
 		thread fps(frameCalculatorLoop);
 		fps.detach();
 	}
 	iterations++;
-	if (game->maze ){
-		game->maze->draw();
-	}
-	if (game->pacman ){
-		if (!game->pacman->moving && !game->isPaused() && game->canAgentMove(game->pacman,game->maze)) {
-			thread t1(&Pac::moveForward,game->pacman);
-			t1.detach();
-			//game->pacman->moveForward();
-		}
-		game->pacman->draw();
-	}
-	if (game->ghost.size() ){
-		for (size_t i = 0; i < game->ghost.size(); i++){
-			if (!game->isPaused() && game->canAgentMove(game->ghost[i],game->maze)) {
-				thread t1(&Ghost::moveForward,game->ghost[i]);
-				t1.detach();
-				//ghost[i]->moveForward();
-			}
-			game->ghost[i]->draw();
-			if (!game->ghostsMoving & !game->isPaused()){
-				game->randomMoveGhost(i,0);
-				/*thread t1 (randomMoveGhost,i,0);
-				t1.detach();*/
-			}
-		}
-	}
-}
-
-void display (void) {		
-	// KeyBoard Operations
-	keyOperations();
-	keySpecialOperations();
 
 	// Background Color: Black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
+
 	//glMatrixMode(GL_MODELVIEW);
 	glPushMatrix();
 	glLoadIdentity(); 
+
+	// Cache pacman position
 	game->pacman->posmtx.lock();
+	pacPosition = game->pacman->position;
+	game->pacman->posmtx.unlock();
+	
+
 	game->pacman->ormtx.lock();
-	if (cam->cameratype==FREE){
-		gluLookAt(cam->eyex, cam->eyey, cam->eyez, cam->centerx, cam->centery, cam->centerz, cam->upx, cam->upy, cam->upz);
-	}else if (cam->cameratype==ARIEL){
+	game->pacman->ormtx.unlock();
+	// SetCamera Postion	
+	// Camera is Ariel: Full view of board from top at an angle
+	if (cam->cameratype==ARIEL){
 		gluLookAt(0.,game->maze->size[0],game->maze->size[2],0.,0.,0.,0.,1.,0.);
-	}else if (cam->cameratype==FOLLOW){
-		int multiplier = 50*game->pacman->speed;
-		gluLookAt(game->pacman->position[0]-multiplier*game->pacman->orientn[0],
-			game->pacman->position[1]-multiplier*game->pacman->orientn[1]+max(game->maze->size[0],game->maze->size[2])/5.f,
-			game->pacman->position[2]-multiplier*game->pacman->orientn[2],
-			game->pacman->position[0],game->pacman->position[1],game->pacman->position[2],0.,1.,0.);
-	}else if (cam->cameratype==FRONT){
-		int multiplier = 100*game->pacman->speed;
-		gluLookAt(game->pacman->position[0]+multiplier*game->pacman->orientn[0],
-			game->pacman->position[1]+multiplier*game->pacman->orientn[1]+max(game->maze->size[0],game->maze->size[2])/5.f,
-			game->pacman->position[2]+multiplier*game->pacman->orientn[2],
-			game->pacman->position[0],game->pacman->position[1],game->pacman->position[2],0.,1.,0.);
-	}else if (cam->cameratype==C_FIXED){
-		gluLookAt(game->pacman->position[0]+3.f,
-			game->pacman->position[1]+0.f+max(game->maze->size[0],game->maze->size[2])/5.f,
-			game->pacman->position[2]+3.f,
-			game->pacman->position[0],game->pacman->position[1],game->pacman->position[2],0.,1.,0.);
-	}else if (cam->cameratype==NOTFIXED){
-		gluLookAt(cam->eyex, cam->eyey, cam->eyez,game->pacman->position[0],game->pacman->position[1],game->pacman->position[2], cam->upx, cam->upy, cam->upz);
 	}
-	else{
+	// Camera is Free: Camera is free to move with looking at (0,0,0)
+	else if (cam->cameratype==FREE){
+		gluLookAt(cam->eyex, cam->eyey, cam->eyez, cam->centerx, cam->centery, cam->centerz, cam->upx, cam->upy, cam->upz);
+	}
+	// Camre is Follow: Camera is following pacman like in temple run
+	else if (cam->cameratype==FOLLOW){
+		int multiplier = 50*game->pacman->speed;
+		gluLookAt(
+			pacPosition[0]-multiplier*game->pacman->orientn[0],
+			pacPosition[1]+min(10.f,multiplier*game->pacman->orientn[1]+max(game->maze->size[0],game->maze->size[2])/5.f),
+			pacPosition[2]-multiplier*game->pacman->orientn[2],
+			pacPosition[0],pacPosition[1],pacPosition[2],0.,1.,0.);
+	}
+	// Camera is Top: Top view of the maze
+	else if (cam->cameratype==TOP){
 		gluLookAt(0.,max(game->maze->size[0],game->maze->size[2]),0.,0.,0.,0.,0.,0.,-1.);
 	}
-	game->pacman->posmtx.unlock();
-	game->pacman->ormtx.unlock();
+	// Camera is Front: front view of pacman following
+	else if (cam->cameratype==FRONT){
+		int multiplier = 100*game->pacman->speed;
+		gluLookAt(pacPosition[0]+multiplier*game->pacman->orientn[0],
+			pacPosition[1]+multiplier*game->pacman->orientn[1]+max(game->maze->size[0],game->maze->size[2])/5.f,
+			pacPosition[2]+multiplier*game->pacman->orientn[2],
+			pacPosition[0],pacPosition[1],pacPosition[2],0.,1.,0.);
+	}
+	// Camera is C_Fixed: Ariel view of pacman following him
+	else if (cam->cameratype==C_FIXED){
+		gluLookAt(pacPosition[0]+3.f,
+			pacPosition[1]+0.f+max(game->maze->size[0],game->maze->size[2])/5.f,
+			pacPosition[2]+3.f,
+			pacPosition[0],pacPosition[1],pacPosition[2],0.,1.,0.);
+	}
+	// Camera is NOTFIXED: Camera can move always looking at pacman (like in cricket match following ball)
+	else if (cam->cameratype==NOTFIXED){
+		gluLookAt(cam->eyex, cam->eyey, cam->eyez,pacPosition[0],pacPosition[1],pacPosition[2], cam->upx, cam->upy, cam->upz);
+	}
+
 	// Solid Cylinder
 	/*glColor3f(1.0, 0.0, 0.0);
 	glutSolidCylinder(0.2, 1.0, 10, 10);*/
 
-/*************************************************************reflection*************************************************/
+	/*************************************************************reflection*************************************************/
 	if (IS_REFLECT){
 
 		/* Don't update color or depth. */
@@ -502,7 +450,7 @@ void display (void) {
 		glPushMatrix();
 		glScalef(1.0, -1.0, 1.0);
     
-		drawEverything();
+		game->draw();
 		glPopMatrix();
 
 		glDisable(GL_STENCIL_TEST);  
@@ -519,7 +467,9 @@ void display (void) {
 		glEnd();
 		glDisable(GL_BLEND);
 	}
-	drawEverything();
+	/*********************************************************reflection end*************************************************/
+
+	game->draw();
 	glPopMatrix();
 	glutSwapBuffers();  
 }

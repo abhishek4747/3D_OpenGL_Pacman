@@ -203,19 +203,19 @@ void Maze::draw(){
 				glTranslatef((float)j-wd, 0.5f, (float)i-ln);
 				glRotatef(90, 0.0f, 1.0f, 0.0f);
 				glTranslatef(0.0f, 0.0f, -0.5f);
-				glutSolidCylinder(0.25f, 1.0f, 8, 8);
+				glutSolidCylinder(0.25f, 1.0f, 8, 1 );
 				glTranslatef(0.0f, 0.0f, 0.5f);
 				glRotatef(-90, 0.0f, 1.0f, 0.0f);
 				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln));
 				glPopMatrix();
 				break;
-
+				
 			case 16:
 				glColor3f(0.0f, 0.0f, 1.0f);
 				glMaterialfv(GL_FRONT, GL_DIFFUSE, cyan);
 				glPushMatrix();
 				glTranslatef((float)j-wd, 0.5f, (float)i-ln-0.5f);
-				glutSolidCylinder(0.25f, 1.0f, 8, 8);
+				glutSolidCylinder(0.25f, 1.0f, 8, 1 );
 				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln-0.5f));
 				glPopMatrix();
 				break;
@@ -223,7 +223,7 @@ void Maze::draw(){
 			case 21:
 				glPushMatrix();
 				glTranslatef((float)j-wd, 0.5f, (float)i-ln-1.0f);
-				glutSolidCylinder(0.25f, 1.5f, 8, 8);
+				glutSolidCylinder(0.25f, 1.5f, 8, 1 );
 				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln-1.0f));
 				glPopMatrix();
 				break;
@@ -231,7 +231,7 @@ void Maze::draw(){
 			case 22:
 				glPushMatrix();
 				glTranslatef((float)j-wd, 0.5f, (float)i-ln-0.5f);
-				glutSolidCylinder(0.25f, 1.5f, 8, 8);
+				glutSolidCylinder(0.25f, 1.5f, 8, 1 );
 				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln-0.5f));
 				glPopMatrix();
 				break;
@@ -241,7 +241,7 @@ void Maze::draw(){
 				glTranslatef((float)j-wd, 0.5f, (float)i-ln);
 				glRotatef(90, 0.0f, 1.0f, 0.0f);
 				glTranslatef(0.0f, 0.0f, -0.5f);
-				glutSolidCylinder(0.25f, 1.5f, 8, 8);
+				glutSolidCylinder(0.25f, 1.5f, 8, 1 );
 				glTranslatef(0.0f, 0.0f, 0.5f);
 				glRotatef(-90, 0.0f, 1.0f, 0.0f);
 				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln));
@@ -253,7 +253,7 @@ void Maze::draw(){
 				glTranslatef((float)j-wd, 0.5f, (float)i-ln);
 				glRotatef(90, 0.0f, 1.0f, 0.0f);
 				glTranslatef(0.0f, 0.0f, -1.0f);
-				glutSolidCylinder(0.25f, 1.5f, 8, 8);
+				glutSolidCylinder(0.25f, 1.5f, 8, 1 );
 				glTranslatef(0.0f, 0.0f, 1.0f);
 				glRotatef(-90, 0.0f, 1.0f, 0.0f);
 				glTranslatef(-((float)j-wd), -0.5f, -((float)i-ln));
@@ -268,7 +268,7 @@ void Maze::draw(){
 				glColor3f(white.r, white.g, white.b);
 				glPushMatrix();	
 				glTranslatef((float)j-wd, 0.25f, (float)i-ln);
-				glutSolidSphere(0.2f, 24, 24);
+				glutSolidSphere(0.2f, 8, 8);
 				glTranslatef(-((float)j-wd), -0.25, -((float)i-ln));
 				glPopMatrix();
 				break;
@@ -277,7 +277,7 @@ void Maze::draw(){
 				glColor3f(yellow.r, yellow.g, yellow.b);
 				glPushMatrix();	
 				glTranslatef((float)j-wd, 0.25f, (float)i-ln);
-				glutSolidSphere(0.3f, 24, 24);
+				glutSolidSphere(0.3f, 8, 8);
 				glTranslatef(-((float)j-wd), -0.25, -((float)i-ln));
 				glPopMatrix();
 				break;
@@ -287,11 +287,6 @@ void Maze::draw(){
 			}
 		}
 	}
-
-}
-
-Maze::~Maze(){
-
 }
 
 void Maze::init(vf size){
