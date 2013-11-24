@@ -106,6 +106,9 @@ void Maze::mazeReader(string filename){
 			case 's':
 				this->mazeMat[i][j] = 8;
 				break;
+			case '1':
+				this->mazeMat[i][j] = 1;
+				break;
 			default:
 				this->mazeMat[i][j] = static_cast<int> (feature);
 				break;
@@ -281,7 +284,14 @@ void Maze::draw(){
 				glTranslatef(-((float)j-wd), -0.25, -((float)i-ln));
 				glPopMatrix();
 				break;
-	
+			case 1:
+				glColor3f(red.r, red.g, red.b);
+				glPushMatrix();	
+				glTranslatef((float)j-wd, 0.25f, (float)i-ln);
+				glutSolidSphere(0.3f, 8, 8);
+				glTranslatef(-((float)j-wd), -0.25, -((float)i-ln));
+				glPopMatrix();
+				break;
 			default:
 				break;
 			}

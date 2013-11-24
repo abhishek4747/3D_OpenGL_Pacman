@@ -38,12 +38,13 @@
 
 // 1. Game.cpp
 // 2. Optimizations
+// 3. Minimap
+
 
 // DO:
 	// Start Screen
 	// Console Controls - Debug Statements
 	// Initial Camera Rotation
-	// Minimap
 	// Skybox
 	// Performance Optimizations
 	// Sun
@@ -88,6 +89,7 @@ vf pacPosition;
 // Extras
 bool first = true;
 bool IS_REFLECT = false; // If reflection is on
+bool miniMapOn = false;
 
 // Main Init Function
 void mInit(){
@@ -180,6 +182,12 @@ void keyOperations (void) {
 	if (keyStates['r']){
 		keyStates['r']=false;
 		IS_REFLECT = !IS_REFLECT;
+	}
+
+	// Minimap
+	if (keyStates['v']){
+		keyStates['v']=false;
+		miniMapOn = !miniMapOn;
 	}
 } 
 
@@ -483,10 +491,13 @@ void display (void) {
 	//glScissor(m_viewport[0],(m_viewport[1]*4)/5,m_viewport[2],m_viewport[3]);
     primaryView();
 
-	glLoadIdentity();
-	glClear(GL_DEPTH_BUFFER_BIT);
-    scissor_viewport(m_viewport[0],(m_viewport[1]*4)/5,m_viewport[2]/5,m_viewport[3]/5);
-    secondaryView();
+	if (miniMapOn){
+		glLoadIdentity();
+		glClear(GL_DEPTH_BUFFER_BIT);
+		scissor_viewport(m_viewport[0],(m_viewport[1]*4)/5,m_viewport[2]/5,m_viewport[3]/5);
+		secondaryView();
+	}
+	
 
 	scissor_viewport(m_viewport[0],m_viewport[1],m_viewport[2],m_viewport[3]);
 	glutSwapBuffers();  
@@ -561,8 +572,7 @@ int main(int argc, char** argv){
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	// Start Main Loop
-	thread t1(&Game::MainLoop,game);
-	t1.detach();
+	game->startGame();
 	glutMainLoop();
 	// Move them
 	

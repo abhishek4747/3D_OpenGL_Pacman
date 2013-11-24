@@ -26,6 +26,11 @@ void Game::initGame(){
 
 }
 
+void Game::startGame(){
+	thread t1(&Game::MainLoop,this);
+	t1.detach();
+}
+
 
 vf Game::canAgentMove(Agent *p, Maze *m){
 	// Get Next position of the agent
@@ -43,18 +48,37 @@ vf Game::canAgentMove(Agent *p, Maze *m){
 
 	
 	// Check if next is valid postion
-	if (x<0|| z<0 || x>m->size[0] || z>m->size[2] || m->mazeMat[z][x]>10){
+	if (x<0|| z<0 || x>=m->mazeMat[0].size() || z>=m->mazeMat.size() || m->mazeMat[z][x]>10){
 		// Going out of Maze or Hitting a wall
 		nextP.resize(0);
 		return nextP;
 	}
-	
 	x = static_cast<int>(nextP[0]+m->size[0]/2) ;
 	z = static_cast<int>(nextP[2]+m->size[2]/2) ;
 
 	if(m->mazeMat[z][x]==6){
 		m->mazeMat[z][x] = 0;
-	}
+	}else if(m->mazeMat[z][x] > 0 && m->mazeMat[z][x]<6){
+		cout<<"yo: "<<m->mazeMat[z][x]<<" -- "<<z<<" "<<x<<endl;
+		for (size_t i = 0; i < m->mazeMat.size(); i++){
+			for (size_t j = 0; j < m->mazeMat[0].size(); j++){
+				if (!(i==z && j==x) && m->mazeMat[i][j]==m->mazeMat[z][x]){
+					cout<<i<<" "<<j<<endl;
+					p->ormtx.lock();
+					p->posmtx.lock();
+					p->position[0] = j - m->size[0]/2 + 2*p->orientn[0];
+					p->position[2] = i - m->size[2]/2 + 2*p->orientn[2];
+					p->posmtx.unlock();
+					/*p->orientn[0] = -p->orientn[0];
+					p->orientn[2] = -p->orientn[2];*/
+					p->ormtx.unlock();
+					p->integralPosition();
+					
+					return canAgentMove(p,m);
+				}
+			}
+		}
+	} 
 	return nextP;
 }
 
