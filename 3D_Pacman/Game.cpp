@@ -93,22 +93,21 @@ void Game::draw(){
 	for (size_t i = 0; i < this->ghost.size(); i++){
 		this->ghost[i]->draw();
 	}
-
-	// Move them
-	thread t1(&Game::moveObjects,this);
-	t1.detach();
 }
 
 void Game::moveObjects(){
 	if (!this->isPaused()){
 		// Pacman
 		if (this->pacman && !this->pacman->moving) {
+			
 			vf next = this->canAgentMove(this->pacman,this->maze);
 			if (next.size()==3){
 				//thread t1(&Pac::moveForwardTo,this->pacman,next[0],next[1],next[2]);
 				//t1.detach();
 				this->pacman->moveForwardTo(next[0],next[1],next[2]);
 			}
+			
+			//this->pacman->moveForward();
 			
 		}
 		// Ghosts
@@ -126,6 +125,13 @@ void Game::moveObjects(){
 			}
 			*/
 		}
+	}
+}
 
+
+void Game::MainLoop(){
+	while (true){
+		moveObjects();
+		Sleep(10);
 	}
 }

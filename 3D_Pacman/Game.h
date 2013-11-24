@@ -25,6 +25,7 @@ public:
 	
 	void draw();
 	void moveObjects();
+	void MainLoop();
 private:
 	bool gamePaused;
 	void initGame();

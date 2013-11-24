@@ -37,7 +37,6 @@ void Agent::moveBack(){
 }
 
 void Agent::moveForward(){
-	moving = true;
 	for (size_t i = 0; i < 3; i++){
 		posmtx.lock();
 		ormtx.lock();
@@ -45,7 +44,6 @@ void Agent::moveForward(){
 		ormtx.unlock();
 		posmtx.unlock();
 	}
-	moving = false;
 }
 
 void Agent::moveForwardTo(float x, float y, float z){

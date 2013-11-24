@@ -40,7 +40,6 @@
 // 2. Optimizations
 
 // DO:
-	// Color3 class is of no use
 	// Start Screen
 	// Console Controls - Debug Statements
 	// Initial Camera Rotation
@@ -61,6 +60,7 @@
 	// Texture mapping on walls
 	// Object loading for ghosts
 	// Points on screen
+	// Warp Gate
 
 // Not Do
 	// Multiplayer
@@ -85,9 +85,9 @@ bool SHIFT = false, ALT = false, CTRL = false;
 // Optimization Variables
 vf pacPosition;
 
-
-// If reflection is on
-bool IS_REFLECT = false;
+// Extras
+bool first = true;
+bool IS_REFLECT = false; // If reflection is on
 
 // Main Init Function
 void mInit(){
@@ -340,35 +340,12 @@ void reshape (int width, int height) {
 	glMatrixMode(GL_MODELVIEW);   
 }
 
-void display (void) {		
-	// KeyBoard Operations
-	keyOperations();
-	keySpecialOperations();
-
-	// Write FPS
-	if (iterations==0){
-		cout<<"FPS: "<<frames<<endl;
-		thread fps(frameCalculatorLoop);
-		fps.detach();
-	}
-	iterations++;
-
-	// Background Color: Black
-	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
-	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
-
-	//glMatrixMode(GL_MODELVIEW);
-	glPushMatrix();
-	glLoadIdentity(); 
-
+void adjustCamera(){
 	// Cache pacman position
 	game->pacman->posmtx.lock();
 	pacPosition = game->pacman->position;
 	game->pacman->posmtx.unlock();
 	
-
-	game->pacman->ormtx.lock();
-	game->pacman->ormtx.unlock();
 	// SetCamera Postion	
 	// Camera is Ariel: Full view of board from top at an angle
 	if (cam->cameratype==ARIEL){
@@ -410,12 +387,9 @@ void display (void) {
 	else if (cam->cameratype==NOTFIXED){
 		gluLookAt(cam->eyex, cam->eyey, cam->eyez,pacPosition[0],pacPosition[1],pacPosition[2], cam->upx, cam->upy, cam->upz);
 	}
+}
 
-	// Solid Cylinder
-	/*glColor3f(1.0, 0.0, 0.0);
-	glutSolidCylinder(0.2, 1.0, 10, 10);*/
-
-	/*************************************************************reflection*************************************************/
+void primaryView(){
 	if (IS_REFLECT){
 
 		/* Don't update color or depth. */
@@ -467,10 +441,54 @@ void display (void) {
 		glEnd();
 		glDisable(GL_BLEND);
 	}
-	/*********************************************************reflection end*************************************************/
-
 	game->draw();
-	glPopMatrix();
+}
+
+void secondaryView(){
+	glDisable(GL_DEPTH_TEST);
+	gluLookAt(0.,max(game->maze->size[0],game->maze->size[2]),0.,0.,0.,0.,0.,0.,-1.);
+	primaryView();
+}
+
+void scissor_viewport(GLint x, GLint y, GLsizei w, GLsizei h){
+    glScissor(x,y,w,h);
+    glViewport(x,y,w,h);
+}
+
+void display (void) {
+	// KeyBoard Operations
+	keyOperations();
+	keySpecialOperations();
+
+	// Write FPS
+	if (iterations==0){
+		cout<<"FPS: "<<frames<<endl;
+		thread fps(frameCalculatorLoop);
+		fps.detach();
+	}
+	iterations++;
+	
+	// Background Color: Black
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
+	glLoadIdentity();
+	GLint m_viewport[4];
+	glGetIntegerv( GL_VIEWPORT, m_viewport );
+	
+	glLoadIdentity();
+	adjustCamera();
+	glEnable(GL_SCISSOR_TEST);
+	glEnable(GL_DEPTH_TEST);
+    scissor_viewport(m_viewport[0],m_viewport[1],m_viewport[2],m_viewport[3]);
+	//glScissor(m_viewport[0],(m_viewport[1]*4)/5,m_viewport[2],m_viewport[3]);
+    primaryView();
+
+	glLoadIdentity();
+	glClear(GL_DEPTH_BUFFER_BIT);
+    scissor_viewport(m_viewport[0],(m_viewport[1]*4)/5,m_viewport[2]/5,m_viewport[3]/5);
+    secondaryView();
+
+	scissor_viewport(m_viewport[0],m_viewport[1],m_viewport[2],m_viewport[3]);
 	glutSwapBuffers();  
 }
 
@@ -492,6 +510,7 @@ int main(int argc, char** argv){
 
 	glEnable(GL_NORMALIZE);
 	glEnable (GL_LIGHTING);
+
     
 	/*GLfloat ambient2[] = {.2f, .2f, .2f, 1};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient2) ;*/
@@ -542,7 +561,10 @@ int main(int argc, char** argv){
 
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	// Start Main Loop
+	thread t1(&Game::MainLoop,game);
+	t1.detach();
 	glutMainLoop();
+	// Move them
 	
 	return 0;
 }

@@ -132,9 +132,9 @@ void Pac::draw(){
 	//eyes
 	vf y_direction(3);
 	y_direction[0] = 0.0f; y_direction[1] = 1.0f; y_direction[2] = 0.0f;
+	this->ormtx.lock();
 	vf orientn_unit = orientn;
 	float orientn_value = magnitue(orientn);
-	this->ormtx.lock();
 	orientn_unit[0] = orientn[0]/orientn_value; orientn_unit[1] = orientn[1]/orientn_value; orientn_unit[2] = orientn[2]/orientn_value;
 	this->ormtx.unlock();
 
