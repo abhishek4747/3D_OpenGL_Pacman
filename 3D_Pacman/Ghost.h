@@ -13,7 +13,7 @@ public:
 	bool weak, eaten;
 	
 	Ghost();
-	Ghost(color4 col, Maze *maze, Pac *pacman);
+	Ghost(color4 col, Maze *maze, Pac *pacman, vf pos);
 	Ghost(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze, Pac *pacman);
 	void draw();
 

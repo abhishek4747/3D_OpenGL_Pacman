@@ -94,8 +94,8 @@ void Agent::moveSomewhere(float totaldegree, int fast){
 	ormtx.unlock();
 	
 	//integralPosition();
-	thread t1(&Agent::translate,this,getIntegralPosition(),200);
-	t1.detach();
+	//thread t1(&Agent::translate,this,getIntegralPosition(),200);
+	//t1.detach();
 }
 
 void Agent::translate(vf destination, int millisecs){

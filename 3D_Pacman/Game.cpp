@@ -13,16 +13,16 @@ void Game::togglePause(){
 }
 
 void Game::initGame(){
-	this->gamePaused = false;
+	this->gamePaused = true;
 	this->level = 1;
 	this->ghostsMoving = false;
 	maze = new Maze("TheGameMatrix.txt");
-	pacman = new Pac(maze);
+	pacman = new Pac(maze, maze->pacInitPos);
 	ghost.resize(0);
-	ghost.push_back(new Ghost(yellow, maze, pacman));
-	ghost.push_back(new Ghost(purple, maze, pacman));
-	ghost.push_back(new Ghost(pink, maze, pacman));
-	ghost.push_back(new Ghost(green, maze, pacman));
+	ghost.push_back(new Ghost(yellow, maze, pacman, maze->ghostInitPos[0]));
+	ghost.push_back(new Ghost(purple, maze, pacman, maze->ghostInitPos[1]));
+	ghost.push_back(new Ghost(pink, maze, pacman,  maze->ghostInitPos[2]));
+	ghost.push_back(new Ghost(green, maze, pacman, maze->ghostInitPos[3]));
 	this->timer = 0;
 }
 

@@ -12,7 +12,7 @@ public:
 	bool strong;
 
 	Pac();
-	Pac(Maze *maze);
+	Pac(Maze *maze, vf pos);
 	Pac(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color, Maze *maze);
 	void draw();
 

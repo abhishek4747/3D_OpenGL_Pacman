@@ -5,9 +5,8 @@ Pac::Pac(){
 	this->maze = new Maze();
 }
 
-Pac::Pac(Maze *maze){
-	vf pos, or, ver, dim;
-	pos.push_back(0.f), pos.push_back(0.f), pos.push_back(0.f);
+Pac::Pac(Maze *maze, vf pos){
+	vf or, ver, dim;
 	or.push_back(0.f),  or.push_back(0.f),  or.push_back(-1.f);
 	ver.push_back(0.f), ver.push_back(1.f), ver.push_back(0.f);
 	dim.push_back(1.f);

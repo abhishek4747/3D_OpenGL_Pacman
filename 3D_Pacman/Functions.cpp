@@ -56,4 +56,3 @@ void DrawEllipsoid(float fA, float fB, float fC, unsigned int uiStacks, unsigned
 		glEnd();
 	}
 }
-  

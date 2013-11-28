@@ -9,10 +9,9 @@ Ghost::Ghost(){
 	this->maze = new Maze(), this->pacman = new Pac();
 }
 
-Ghost::Ghost(color4 col, Maze *maze, Pac *pacman){
-	vf pos, or, ver, dim;
+Ghost::Ghost(color4 col, Maze *maze, Pac *pacman, vf pos){
+	vf or, ver, dim;
 	// pos.push_back(randomm(-maze->size[0]/2, maze->size[0]/2)), pos.push_back(0.f), pos.push_back(randomm(-maze->size[2]/2, maze->size[2]/2));
-	pos.push_back(0.f), pos.push_back(0.f),pos.push_back(0.f);
 	or.push_back(0.f),  or.push_back(0.f),  or.push_back(-1.f);
 	ver.push_back(0.f), ver.push_back(1.f), ver.push_back(0.f);
 	dim.push_back(.4f), dim.push_back(1.f);

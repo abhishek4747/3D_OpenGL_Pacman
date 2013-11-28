@@ -49,7 +49,7 @@
 	// Eyes for Ghosts
 	// Pacman Mouth Animation
 	// Abort Error Fix
-	// Initial position of ghosts and pacman
+	// Collision pac and ghost
 
 // DO:
 	// Start Screen

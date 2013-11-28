@@ -109,8 +109,28 @@ void Maze::mazeReader(string filename){
 			case '1':
 				this->mazeMat[i][j] = 1;
 				break;
+			case 'P':
+				pacInitPos = getPosxyfromij(i,j);
+				this->mazeMat[i][j] = 0;
+				break;
+			case 'A':
+				ghostInitPos[0]= getPosxyfromij(i,j);
+				this->mazeMat[i][j] = 0;
+				break;
+			case 'B':
+				ghostInitPos[1]= getPosxyfromij(i,j);
+				this->mazeMat[i][j] = 0;
+				break;
+			case 'C':
+				ghostInitPos[2]= getPosxyfromij(i,j);
+				this->mazeMat[i][j] = 0;
+				break;
+			case 'D':
+				ghostInitPos[3]= getPosxyfromij(i,j);
+				this->mazeMat[i][j] = 0;
+				break;
 			default:
-				this->mazeMat[i][j] = static_cast<int> (feature);
+				this->mazeMat[i][j] = 0; //static_cast<int> (feature);
 				break;
 			}
 		}
@@ -307,4 +327,21 @@ void Maze::init(vf size){
 	this->position = pos;
 	this->normal = norm;
 	this->gravity = grav;
+	pacInitPos.resize(3);
+	for (int i = 0; i < 4; i++){
+		ghostInitPos[i].resize(3);
+	}
+}
+
+vf Maze::getPosxyfromij(int i, int j){
+	vf pos;
+	pos.push_back(j - this->size[0]/2);
+	pos.push_back(0.f);
+	pos.push_back(i - this->size[2]/2);
+	for (int i = 0; i < 3; i++){
+		if (i!=1){
+			pos[i] = static_cast<float>(static_cast<int>(pos[i]+(pos[i]<0?-0.5f:0.5f)));
+		}
+	}
+	return pos;
 }
