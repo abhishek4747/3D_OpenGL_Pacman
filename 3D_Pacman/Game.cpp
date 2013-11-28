@@ -24,6 +24,7 @@ void Game::initGame(){
 	ghost.push_back(new Ghost(pink, maze, pacman,  maze->ghostInitPos[2]));
 	ghost.push_back(new Ghost(green, maze, pacman, maze->ghostInitPos[3]));
 	this->timer = 0;
+	this->lives = 3;
 }
 
 void Game::startGame(){
@@ -73,6 +74,29 @@ vf Game::canAgentMove(Agent *p, Maze *m){
 			}	
 		}
 	}
+	bool collision = false;
+	for (size_t i = 0; i < ghost.size(); i++){
+		vf ppos = this->pacman->getIntegralPosition();
+		vf gpos = this->ghost[i]->getIntegralPosition();
+		if (ppos[0]==gpos[0] && ppos[1]==gpos[1]&& ppos[2]==gpos[2]){
+			collision = true;
+			if (this->ghost[i]->weak){
+				ghost[i]->position = maze->ghostInitPos[i];
+				ghost[i]->weak = false;
+			}else{
+				if (lives){
+					if (!isPaused()) togglePause();
+					pacman->position = maze->pacInitPos;
+					for (size_t k = 0; k < ghost.size(); k++){
+						ghost[k]->position = maze->ghostInitPos[k];
+					}
+					lives--;
+				}
+			}
+			//cout<<"collision found"<<endl;
+			break;
+		}
+	}
 	if(m->mazeMat[z][x] > 0 && m->mazeMat[z][x]<6){
 		for (size_t i = 0; i < m->mazeMat.size(); i++){
 			for (size_t j = 0; j < m->mazeMat[0].size(); j++){
@@ -83,7 +107,7 @@ vf Game::canAgentMove(Agent *p, Maze *m){
 					p->position[2] = i - m->size[2]/2 + 2*p->orientn[2];
 					p->posmtx.unlock();
 					p->ormtx.unlock();
-					p->integralPosition();
+					//p->integralPosition();
 					
 					return canAgentMove(p,m);
 				}

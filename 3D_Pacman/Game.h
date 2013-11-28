@@ -12,6 +12,7 @@ public:
 	Maze *maze;
 	bool ghostsMoving;
 	int timer;
+	int lives;
 
 	Game();
 	

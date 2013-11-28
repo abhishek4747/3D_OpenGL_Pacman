@@ -854,7 +854,7 @@ void drawHUD(float SCREEN_WIDTH, float SCREEN_HEIGHT ){
 	string HUD_text1 = "FPS: "+to_string(frames);
 	printText(40,SCREEN_HEIGHT - 20.f,black.r,black.g,black.b,&HUD_text1[0]);
 
-	string HUD_text2 = "Pallets: ***      Lives: $$$  ";
+	string HUD_text2 = "Pallets: ***    Lives: " + to_string(game->lives);
 	printText(240,SCREEN_HEIGHT - 20.f,black.r,black.g,black.b,&HUD_text2[0]);
 
 	string HUD_text3 = "Timer: "+ to_string(game->timer);
