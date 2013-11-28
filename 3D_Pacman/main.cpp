@@ -71,7 +71,7 @@
 	// Documentation
 	// Presentations
 
-// Not Do
+// Not Doing
 	// Multiplayer
 	// Height Map
 	// Sounds
@@ -85,6 +85,16 @@
 // Global Variables
 Camera *cam = new Camera();;
 Game *game = new Game();
+
+// Main Global Variables
+BOOL fullscreen = TRUE;
+
+// Constants
+const int W_WIDTH = 1350;
+const int W_HEIGHT = 690;
+const int W_POS_X = 0;
+const int W_POS_Y = 0;
+
 
 // Keys Capture
 bool keyStates[256];// = new bool[256];
@@ -302,6 +312,17 @@ void keySpecialOperations(void) {
 		keySpecialStates[GLUT_KEY_F5] = false;
 		mInit();
 	}
+
+	if (keySpecialStates[GLUT_KEY_F11]){
+		keySpecialStates[GLUT_KEY_F11] = false;
+		fullscreen = !fullscreen;
+		if (fullscreen){
+			glutFullScreen();
+		}else{
+			glutPositionWindow(W_POS_X,W_POS_Y);
+			glutReshapeWindow(W_WIDTH, W_HEIGHT);
+		}
+	}
 }
 
 void keyPressed (unsigned char key, int x, int y) {  
@@ -484,7 +505,8 @@ void printText(int x, int y, float r, float g, float b, void *font, char *string
 	glPopMatrix();	
 }
 
-void drawText(const char *text, int x, int y){
+
+void drawText(const char *text){
 	int length = strlen(text);
 	//glMatrixMode(GL_PROJECTION); // change the current matrix to PROJECTION
 	//double matrix[16]; // 16 doubles in stack memory
@@ -494,8 +516,15 @@ void drawText(const char *text, int x, int y){
 	//glMatrixMode(GL_MODELVIEW); // change current matrix to MODELVIEW matrix again
 	//glLoadIdentity(); // reset it to identity matrix
 	glPushMatrix(); // push current state of MODELVIEW matrix to stack
-	glLoadIdentity(); // reset it again. (may not be required, but it my convention)
-	glRasterPos2i(x, y); // raster position in 2D
+	//glLoadIdentity(); // reset it again. (may not be required, but it my convention)
+	if (cam->cameratype==FOLLOW && false){
+		glRasterPos3f(game->pacman->position[0],game->pacman->position[1],game->pacman->position[2]); // raster position in 2D
+	}else{
+		glPopMatrix();
+		return;
+	}
+	
+		
 	glColor3f(red.r,red.g,red.b);
 	for(int i=0; i<length; i++){
 		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, (int)text[i]); // generation of characters in our text with 9 by 15 GLU font
@@ -504,6 +533,21 @@ void drawText(const char *text, int x, int y){
 	//glMatrixMode(GL_PROJECTION); // change current matrix mode to PROJECTION
 	//glLoadMatrixd(matrix); // reset
 	//glMatrixMode(GL_MODELVIEW); // change current matrix mode to MODELVIEW
+}
+
+void drawText2(const char * message){
+	/* raster pos sets the current raster position
+	 * mapped via the modelview and projection matrices
+	 */
+	glRasterPos3f((GLfloat)0, (GLfloat)0,0);
+
+	/*
+	 * write using bitmap and stroke chars
+	 */
+	while (*message) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *message);
+		glutStrokeCharacter(GLUT_STROKE_ROMAN,*message++);
+	}
 }
 
 void display (void) {
@@ -524,11 +568,11 @@ void display (void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
 	glLoadIdentity();
 
-	printText(10,12,1.f,0.f,0.f,GLUT_BITMAP_9_BY_15,"Pacman pacman");
+	//printText(10,12,1.f,0.f,0.f,GLUT_BITMAP_9_BY_15,"Pacman pacman");
 	//drawText("Pacman yo",2,2);
 	GLint m_viewport[4];
 	glGetIntegerv( GL_VIEWPORT, m_viewport );
-
+	
 	glLoadIdentity();
 	adjustCamera();
 	glEnable(GL_SCISSOR_TEST);
@@ -542,23 +586,33 @@ void display (void) {
 		scissor_viewport(m_viewport[0],(m_viewport[1]*4)/5,m_viewport[2]/5,m_viewport[3]/5);
 		secondaryView();
 	}
-	
-
 	scissor_viewport(m_viewport[0],m_viewport[1],m_viewport[2],m_viewport[3]);
+	drawText("Hello Pacman");
 	glutSwapBuffers();  
 }
 
 int main(int argc, char** argv){
+
+	// Ask User to switch to full screen or not
+	if (MessageBox(NULL,"Would You Like To Run In Fullscreen Mode?", "Start FullScreen?",MB_YESNO|MB_ICONQUESTION)==IDNO){
+		fullscreen=FALSE;							// Windowed Mode
+	}
+	
 	fInit();	// functions.h init
 	mInit();	// main.cpp init
 
 	// Initialise Glut Variables
 	glutInit(&argc, argv);
 	glutInitDisplayMode (GLUT_DOUBLE| GLUT_RGBA | GLUT_DEPTH ); // | GLUT_STENCIL 
-	glutInitWindowSize (1350, 690);
-	glutInitWindowPosition (0, 0); 
+	glutInitWindowSize (W_WIDTH, W_HEIGHT);
+	glutInitWindowPosition (W_POS_X, W_POS_Y); 
 	glutCreateWindow ("3D Pacman");
+
+	if (fullscreen){
+		glutFullScreen();
+	}
 	
+
 	// Enable Glut Features
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);	//glShadeModel(GL_FLAT);
@@ -567,7 +621,7 @@ int main(int argc, char** argv){
 	glEnable(GL_NORMALIZE);
 	glEnable (GL_LIGHTING);
 
-    
+		
 	/*GLfloat ambient2[] = {.2f, .2f, .2f, 1};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient2) ;*/
 
@@ -609,6 +663,8 @@ int main(int argc, char** argv){
 	glutIdleFunc(display);
 	glutReshapeFunc(reshape);
 	
+	
+
 	// KeyBoard Triggers
 	glutKeyboardFunc(keyPressed); // Tell GLUT to use the method "keyPressed" for key presses  
 	glutKeyboardUpFunc(keyUp); // Tell GLUT to use the method "keyUp" for key up events    
