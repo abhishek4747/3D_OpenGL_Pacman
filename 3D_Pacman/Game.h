@@ -11,11 +11,14 @@ public:
 	vector<Ghost*> ghost;
 	Maze *maze;
 	bool ghostsMoving;
-	
+	int timer;
+
 	Game();
 	
 	void startGame();
 	void changeLevel();
+	
+	void startTimer();
 	
 	bool isPaused();
 	void togglePause();

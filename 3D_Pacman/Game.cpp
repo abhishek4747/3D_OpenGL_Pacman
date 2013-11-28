@@ -23,7 +23,7 @@ void Game::initGame(){
 	ghost.push_back(new Ghost(purple, maze, pacman));
 	ghost.push_back(new Ghost(pink, maze, pacman));
 	ghost.push_back(new Ghost(green, maze, pacman));
-
+	this->timer = 0;
 }
 
 void Game::startGame(){
@@ -38,7 +38,7 @@ vf Game::canAgentMove(Agent *p, Maze *m){
 	for (int i = 0; i < 3; i++){
 		p->posmtx.lock();
 		p->ormtx.lock();
-		next[i] = p->position[i] + p->orientn[i]*p->dimentions[0]/2;
+		next[i] = p->position[i] + p->orientn[i]*0.5f;
 		nextP[i] = p->position[i] + p->orientn[i]*p->speed;
 		p->ormtx.unlock();
 		p->posmtx.unlock();
@@ -55,22 +55,33 @@ vf Game::canAgentMove(Agent *p, Maze *m){
 	}
 	x = static_cast<int>(nextP[0]+m->size[0]/2) ;
 	z = static_cast<int>(nextP[2]+m->size[2]/2) ;
-
-	if(m->mazeMat[z][x]==6){
-		m->mazeMat[z][x] = 0;
-	}else if(m->mazeMat[z][x] > 0 && m->mazeMat[z][x]<6){
-		cout<<"yo: "<<m->mazeMat[z][x]<<" -- "<<z<<" "<<x<<endl;
+	if (p==this->pacman){
+		if(m->mazeMat[z][x]==6){
+			m->mazeMat[z][x] = 0;
+		}else if(m->mazeMat[z][x]==8){
+			m->mazeMat[z][x] = 0;
+			for (size_t i = 0; i < ghost.size(); i++){
+				ghost[i]->weak = true;
+			}
+			if (this->timer==0){
+				this->timer = 15;
+				thread t1(&Game::startTimer,this);
+				t1.detach();
+				//startTimer();
+			}else{
+				this->timer = 15;
+			}	
+		}
+	}
+	if(m->mazeMat[z][x] > 0 && m->mazeMat[z][x]<6){
 		for (size_t i = 0; i < m->mazeMat.size(); i++){
 			for (size_t j = 0; j < m->mazeMat[0].size(); j++){
 				if (!(i==z && j==x) && m->mazeMat[i][j]==m->mazeMat[z][x]){
-					cout<<i<<" "<<j<<endl;
 					p->ormtx.lock();
 					p->posmtx.lock();
 					p->position[0] = j - m->size[0]/2 + 2*p->orientn[0];
 					p->position[2] = i - m->size[2]/2 + 2*p->orientn[2];
 					p->posmtx.unlock();
-					/*p->orientn[0] = -p->orientn[0];
-					p->orientn[2] = -p->orientn[2];*/
 					p->ormtx.unlock();
 					p->integralPosition();
 					
@@ -84,7 +95,7 @@ vf Game::canAgentMove(Agent *p, Maze *m){
 
 void Game::randomMoveGhost(int i,int turn){
 	if (!ghost[i]->moving){
-		int m = 30;
+		int m = 100;
 		int r = random(0,m);
 		if (r==0){
 			thread t1(&Ghost::moveLeft,ghost[i]);
@@ -136,18 +147,17 @@ void Game::moveObjects(){
 		}
 		// Ghosts
 		for (size_t i = 0; i < this->ghost.size(); i++){
-			/*
-			if (!this->isPaused() && this->canAgentMove(this->ghost[i],this->maze)) {
-				thread t1(&Ghost::moveForward,this->ghost[i]);
-				t1.detach();
-				//ghost[i]->moveForward();
+			vf next = this->canAgentMove(this->ghost[i],this->maze);
+			if (next.size()==3) {
+				//thread t1(&Ghost::moveForward,this->ghost[i]);
+				//t1.detach();
+				ghost[i]->moveForwardTo(next[0],next[1],next[2]);
 			}
 			if (!this->ghostsMoving & !this->isPaused()){
-				this->randomMoveGhost(i,0);
 				//thread t1 (randomMoveGhost,i,0);
 				//t1.detach();
-			}
-			*/
+				this->randomMoveGhost(i,0);
+			}		
 		}
 	}
 }
@@ -157,5 +167,16 @@ void Game::MainLoop(){
 	while (true){
 		moveObjects();
 		Sleep(10);
+	}
+}
+
+void Game::startTimer(){
+	while(this->timer){
+		cout<<this->timer<<endl;
+		this->timer--;
+		Sleep(1000);
+	}
+	for (size_t i = 0; i < ghost.size(); i++){
+		ghost[i]->weak = false;
 	}
 }

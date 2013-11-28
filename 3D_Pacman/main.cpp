@@ -39,29 +39,37 @@
 // 1. Game.cpp
 // 2. Optimizations
 // 3. Minimap
+// 4. Warp Gate
 
 
 // DO:
+	// [1 hour]
 	// Start Screen
+	// Points on screen
 	// Console Controls - Debug Statements
+	
+	// [3 hour]
 	// Initial Camera Rotation
 	// Skybox
-	// Performance Optimizations
-	// Sun
-	// Water
+	// Ghosts movement Algorithms
+	// Object loading for ghosts
+
+	// [2]
+	// Level 2
+	// Texture mapping on walls
+
+	//// Sun
+	//// Water
 	// Shadows
+	// Shaders
 	// Environment mapping
+	
+	// [2 hour]
+	// Finishing
+
+	// [1 hour]
 	// Documentation
 	// Presentations
-	// Class game - Object oriented 
-	// Level 2
-	// Power Up pallets
-	// Ghosts movement Algorithms
-	// Sun
-	// Texture mapping on walls
-	// Object loading for ghosts
-	// Points on screen
-	// Warp Gate
 
 // Not Do
 	// Multiplayer
@@ -341,7 +349,7 @@ void reshape (int width, int height) {
 	
 	// Set the Field of view angle (in degrees), the aspect ratio of our 
 	// window, and the new and far planes (fovy,W,H,Znear,Zfar)
-	gluPerspective(60, (GLfloat)width / (GLfloat)height, .1, 100.0); 	
+	gluPerspective(60, (GLfloat)width / (GLfloat)height, .1, 1000.0); 	
 	
 	// Switch back to the model view matrix, so that we can start drawing 
 	// shapes correctly
@@ -463,6 +471,41 @@ void scissor_viewport(GLint x, GLint y, GLsizei w, GLsizei h){
     glViewport(x,y,w,h);
 }
 
+void printText(int x, int y, float r, float g, float b, void *font, char *string){
+	glPushMatrix();
+	//glLoadIdentity();
+	glColor3f( r, g, b );
+	glRasterPos2f(0, 0);
+	int len, i;
+	len = (int)strlen(string);
+	for (i = 0; i < len; i++) {
+	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, string[i]);
+	}
+	glPopMatrix();	
+}
+
+void drawText(const char *text, int x, int y){
+	int length = strlen(text);
+	//glMatrixMode(GL_PROJECTION); // change the current matrix to PROJECTION
+	//double matrix[16]; // 16 doubles in stack memory
+	//glGetDoublev(GL_PROJECTION_MATRIX, matrix); // get the values from PROJECTION matrix to local variable
+	//glLoadIdentity(); // reset PROJECTION matrix to identity matrix
+	//glOrtho(0, 800, 0, 600, -5, 5); // orthographic perspective
+	//glMatrixMode(GL_MODELVIEW); // change current matrix to MODELVIEW matrix again
+	//glLoadIdentity(); // reset it to identity matrix
+	glPushMatrix(); // push current state of MODELVIEW matrix to stack
+	glLoadIdentity(); // reset it again. (may not be required, but it my convention)
+	glRasterPos2i(x, y); // raster position in 2D
+	glColor3f(red.r,red.g,red.b);
+	for(int i=0; i<length; i++){
+		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, (int)text[i]); // generation of characters in our text with 9 by 15 GLU font
+	}
+	glPopMatrix(); // get MODELVIEW matrix value from stack
+	//glMatrixMode(GL_PROJECTION); // change current matrix mode to PROJECTION
+	//glLoadMatrixd(matrix); // reset
+	//glMatrixMode(GL_MODELVIEW); // change current matrix mode to MODELVIEW
+}
+
 void display (void) {
 	// KeyBoard Operations
 	keyOperations();
@@ -480,15 +523,17 @@ void display (void) {
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
 	glLoadIdentity();
+
+	printText(10,12,1.f,0.f,0.f,GLUT_BITMAP_9_BY_15,"Pacman pacman");
+	//drawText("Pacman yo",2,2);
 	GLint m_viewport[4];
 	glGetIntegerv( GL_VIEWPORT, m_viewport );
-	
+
 	glLoadIdentity();
 	adjustCamera();
 	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
     scissor_viewport(m_viewport[0],m_viewport[1],m_viewport[2],m_viewport[3]);
-	//glScissor(m_viewport[0],(m_viewport[1]*4)/5,m_viewport[2],m_viewport[3]);
     primaryView();
 
 	if (miniMapOn){
@@ -513,7 +558,7 @@ int main(int argc, char** argv){
 	glutInitWindowSize (1350, 690);
 	glutInitWindowPosition (0, 0); 
 	glutCreateWindow ("3D Pacman");
-
+	
 	// Enable Glut Features
 	glEnable(GL_DEPTH_TEST);
 	glShadeModel(GL_SMOOTH);	//glShadeModel(GL_FLAT);
