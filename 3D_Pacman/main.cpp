@@ -49,7 +49,6 @@
 	// Eyes for Ghosts
 	// Pacman Mouth Animation
 	// Abort Error Fix
-	// Collision pac and ghost
 
 // DO:
 	// Start Screen
@@ -98,6 +97,7 @@ bool first = true;
 bool IS_REFLECT = false; // If reflection is on
 bool miniMapOn = true;
 bool skyBoxOn = false;
+string message = "";
 
 // 0. Tex
 // 1. Front
@@ -374,6 +374,7 @@ void keySpecialOperations(void) {
 
 void keyPressed (unsigned char key, int x, int y) {  
 	keyStates[key] = true; // Set the state of the current key to pressed 
+
 	if (glutGetModifiers() & GLUT_ACTIVE_SHIFT){
 		SHIFT = true;
 	}else {
@@ -397,6 +398,7 @@ void keyUp (unsigned char key, int x, int y) {
 
 void keySpecial (int key, int x, int y) {
 	keySpecialStates[key] = true;
+	if (game->isPaused()) game->togglePause();
 } 
 
 void keySpecialUp (int key, int x, int y) {  
@@ -550,50 +552,6 @@ void printText(int x, int y, float r, float g, float b, char *string){
 		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, string[i]);
 	}
 	glPopMatrix();	
-}
-
-void drawText(const char *text){
-	int length = strlen(text);
-	//glMatrixMode(GL_PROJECTION); // change the current matrix to PROJECTION
-	//double matrix[16]; // 16 doubles in stack memory
-	//glGetDoublev(GL_PROJECTION_MATRIX, matrix); // get the values from PROJECTION matrix to local variable
-	//glLoadIdentity(); // reset PROJECTION matrix to identity matrix
-	//glOrtho(0, 800, 0, 600, -5, 5); // orthographic perspective
-	//glMatrixMode(GL_MODELVIEW); // change current matrix to MODELVIEW matrix again
-	//glLoadIdentity(); // reset it to identity matrix
-	glPushMatrix(); // push current state of MODELVIEW matrix to stack
-	//glLoadIdentity(); // reset it again. (may not be required, but it my convention)
-	if (cam->cameratype==FOLLOW && false){
-		glRasterPos3f(game->pacman->position[0],game->pacman->position[1],game->pacman->position[2]); // raster position in 2D
-	}else{
-		glPopMatrix();
-		return;
-	}
-	
-		
-	glColor3f(red.r,red.g,red.b);
-	for(int i=0; i<length; i++){
-		glutBitmapCharacter(GLUT_BITMAP_9_BY_15, (int)text[i]); // generation of characters in our text with 9 by 15 GLU font
-	}
-	glPopMatrix(); // get MODELVIEW matrix value from stack
-	//glMatrixMode(GL_PROJECTION); // change current matrix mode to PROJECTION
-	//glLoadMatrixd(matrix); // reset
-	//glMatrixMode(GL_MODELVIEW); // change current matrix mode to MODELVIEW
-}
-
-void drawText2(const char * message){
-	/* raster pos sets the current raster position
-	 * mapped via the modelview and projection matrices
-	 */
-	glRasterPos2f((GLfloat)0, (GLfloat)0);
-
-	/*
-	 * write using bitmap and stroke chars
-	 */
-	while (*message) {
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_12, *message);
-		glutStrokeCharacter(GLUT_STROKE_ROMAN,*message++);
-	}
 }
 
 AUX_RGBImageRec *LoadBMP(char *Filename){				// Loads A Bitmap Image
@@ -852,13 +810,25 @@ void drawHUD(float SCREEN_WIDTH, float SCREEN_HEIGHT ){
 	glEnd();
 	//drawText("Hello Pacman");
 	string HUD_text1 = "FPS: "+to_string(frames);
-	printText(40,SCREEN_HEIGHT - 20.f,black.r,black.g,black.b,&HUD_text1[0]);
+	printText(40,SCREEN_HEIGHT - 12.f,black.r,black.g,black.b,&HUD_text1[0]);
 
-	string HUD_text2 = "Pallets: ***    Lives: " + to_string(game->lives);
-	printText(240,SCREEN_HEIGHT - 20.f,black.r,black.g,black.b,&HUD_text2[0]);
+	string HUD_text2 = "Lives: " + to_string(game->lives);
+	printText(240,SCREEN_HEIGHT - 12.f,black.r,black.g,black.b,&HUD_text2[0]);
 
 	string HUD_text3 = "Timer: "+ to_string(game->timer);
-	printText(640,SCREEN_HEIGHT - 20.f,black.r,black.g,black.b,&HUD_text3[0]);
+	printText(440,SCREEN_HEIGHT - 12.f,black.r,black.g,black.b,&HUD_text3[0]);
+
+	string HUD_text4 = "Score: "+ to_string(game->score);
+	printText(640,SCREEN_HEIGHT - 12.f,black.r,black.g,black.b,&HUD_text4[0]);
+
+	if (game->isPaused()){
+		message = "Press any key to continue...";
+	}else{
+		message = "Press space to pause.";
+	}
+
+	string HUD_text5 = " "+ message;
+	printText(840,SCREEN_HEIGHT - 12.f,black.r,black.g,black.b,&HUD_text5[0]);
 
 
 

@@ -25,6 +25,7 @@ void Game::initGame(){
 	ghost.push_back(new Ghost(green, maze, pacman, maze->ghostInitPos[3]));
 	this->timer = 0;
 	this->lives = 3;
+	this->score = 0;
 }
 
 void Game::startGame(){
@@ -59,8 +60,10 @@ vf Game::canAgentMove(Agent *p, Maze *m){
 	if (p==this->pacman){
 		if(m->mazeMat[z][x]==6){
 			m->mazeMat[z][x] = 0;
+			score += 1;
 		}else if(m->mazeMat[z][x]==8){
 			m->mazeMat[z][x] = 0;
+			score += 5;
 			for (size_t i = 0; i < ghost.size(); i++){
 				ghost[i]->weak = true;
 			}
@@ -74,6 +77,7 @@ vf Game::canAgentMove(Agent *p, Maze *m){
 			}	
 		}
 	}
+
 	bool collision = false;
 	for (size_t i = 0; i < ghost.size(); i++){
 		vf ppos = this->pacman->getIntegralPosition();
@@ -83,6 +87,7 @@ vf Game::canAgentMove(Agent *p, Maze *m){
 			if (this->ghost[i]->weak){
 				ghost[i]->position = maze->ghostInitPos[i];
 				ghost[i]->weak = false;
+				score += 10;
 			}else{
 				if (lives){
 					if (!isPaused()) togglePause();
@@ -155,16 +160,15 @@ void Game::draw(){
 }
 
 void Game::moveObjects(){
-	if (!this->isPaused()){
+	if (!this->isPaused() && lives>-1){
 		// Pacman
-		if (this->pacman && !this->pacman->moving) {
-			
+		if (this->pacman && !this->pacman->moving) {		
 			vf next = this->canAgentMove(this->pacman,this->maze);
 			if (next.size()==3){
 				//thread t1(&Pac::moveForwardTo,this->pacman,next[0],next[1],next[2]);
 				//t1.detach();
-				//this->pacman->moveForwardTo(next[0],next[1],next[2]);
-				this->pacman->moveForward();
+				this->pacman->moveForwardTo(next[0],next[1],next[2]);
+				//this->pacman->moveForward();
 			}
 			
 			//this->pacman->moveForward();

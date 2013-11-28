@@ -13,6 +13,7 @@ public:
 	bool ghostsMoving;
 	int timer;
 	int lives;
+	int score;
 
 	Game();
 	
