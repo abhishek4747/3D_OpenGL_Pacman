@@ -36,10 +36,10 @@ void Ghost::draw(){
 		else
 			glColor4f(this->color.r, this->color.g, this->color.b, this->color.a);
 		if (this->shape=="cylinder"){
-			glutSolidCylinder(this->dimentions[0], this->dimentions[1], 32, 32);
+			glutSolidCylinder(this->dimentions[0], this->dimentions[1], 8, 1);
 		}
 		glTranslatef(0.f, 0.f, this->dimentions[1]);
-		glutSolidSphere(this->dimentions[0], 32, 32);
+		glutSolidSphere(this->dimentions[0], 8, 8);
 		//glTranslatef(0.f, 0.f, -this->dimentions[1]);
 		//glRotatef(-90.f, -1.f, 0.f, 0.f);
 		//glTranslatef(-this->position[0], -this->position[1], -this->position[2]);

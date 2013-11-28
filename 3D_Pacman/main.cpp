@@ -88,6 +88,8 @@ Game *game = new Game();
 
 // Main Global Variables
 BOOL fullscreen = TRUE;
+bool polygonModal = false;
+GLuint	texture[1];
 
 // Constants
 const int W_WIDTH = 1350;
@@ -198,14 +200,26 @@ void keyOperations (void) {
 
 	// Reflection
 	if (keyStates['r']){
-		keyStates['r']=false;
+		keyStates['r'] = false;
 		IS_REFLECT = !IS_REFLECT;
 	}
 
 	// Minimap
 	if (keyStates['v']){
-		keyStates['v']=false;
+		keyStates['v'] = false;
 		miniMapOn = !miniMapOn;
+	}
+
+	// Polygon Modal
+	if (keyStates['p']){
+		keyStates['p'] = false;
+		polygonModal = !polygonModal;
+		// Polygon Modal
+		if (polygonModal){
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		}else{
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		}
 	}
 } 
 
@@ -505,7 +519,6 @@ void printText(int x, int y, float r, float g, float b, void *font, char *string
 	glPopMatrix();	
 }
 
-
 void drawText(const char *text){
 	int length = strlen(text);
 	//glMatrixMode(GL_PROJECTION); // change the current matrix to PROJECTION
@@ -550,6 +563,105 @@ void drawText2(const char * message){
 	}
 }
 
+AUX_RGBImageRec *LoadBMP(char *Filename){				// Loads A Bitmap Image
+	FILE *File=NULL;									// File Handle
+
+	if (!Filename)										// Make Sure A Filename Was Given
+	{
+		return NULL;									// If Not Return NULL
+	}
+
+	File=fopen(Filename,"r");							// Check To See If The File Exists
+
+	if (File)											// Does The File Exist?
+	{
+		fclose(File);									// Close The Handle
+		return auxDIBImageLoad(Filename);				// Load The Bitmap And Return A Pointer
+	}
+
+	return NULL;										// If Load Failed Return NULL
+}
+
+int LoadGLTextures(){									// Load Bitmaps And Convert To Textures
+
+	int Status=FALSE;									// Status Indicator
+
+	AUX_RGBImageRec *TextureImage[1];					// Create Storage Space For The Texture
+
+	memset(TextureImage,0,sizeof(void *)*1);           	// Set The Pointer To NULL
+
+	// Load The Bitmap, Check For Errors, If Bitmap's Not Found Quit
+	if (TextureImage[0]=LoadBMP("images/tex.bmp"))
+	{
+		Status=TRUE;									// Set The Status To TRUE
+
+		glGenTextures(1, &texture[0]);					// Create The Texture
+
+		// Typical Texture Generation Using Data From The Bitmap
+		glBindTexture(GL_TEXTURE_2D, texture[0]);
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[0]->sizeX, TextureImage[0]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[0]->data);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+	}
+
+	if (TextureImage[0])									// If Texture Exists
+	{
+		if (TextureImage[0]->data)							// If Texture Image Exists
+		{
+			free(TextureImage[0]->data);					// Free The Texture Image Memory
+		}
+
+		free(TextureImage[0]);								// Free The Image Structure
+	}
+
+	return Status;										// Return The Status
+}
+
+int drawBox(GLvoid){									// Here's Where We Do All The Drawing
+	//return 0;
+	//glPushMatrix();
+	//glLoadIdentity();
+	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
+	//glLoadIdentity();									// Reset The View
+
+	glBindTexture(GL_TEXTURE_2D, texture[0]);
+
+	glBegin(GL_QUADS);
+		// Front Face
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
+		// Back Face
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
+		// Top Face
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
+		// Bottom Face
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
+		// Right face
+		glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
+		// Left Face
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
+	glEnd();
+	//glPopMatrix();
+	return TRUE;										// Keep Going
+}
+
 void display (void) {
 	// KeyBoard Operations
 	keyOperations();
@@ -561,8 +673,8 @@ void display (void) {
 		thread fps(frameCalculatorLoop);
 		fps.detach();
 	}
-	iterations++;
-	
+	iterations++;	
+
 	// Background Color: Black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
@@ -587,8 +699,42 @@ void display (void) {
 		secondaryView();
 	}
 	scissor_viewport(m_viewport[0],m_viewport[1],m_viewport[2],m_viewport[3]);
-	drawText("Hello Pacman");
+	//drawText("Hello Pacman");
+	drawBox();
 	glutSwapBuffers();  
+}
+
+bool glInit(int argc, char** argv){
+	// Initialise Glut Variables
+	glutInit(&argc, argv);
+	glutInitDisplayMode (GLUT_DOUBLE| GLUT_RGBA | GLUT_DEPTH ); // | GLUT_STENCIL 
+	if (fullscreen){
+		glutCreateWindow ("3D Pacman");
+		glutFullScreen();
+	}else{
+		glutInitWindowSize (W_WIDTH, W_HEIGHT);
+		glutInitWindowPosition (W_POS_X, W_POS_Y); 
+		glutCreateWindow ("3D Pacman");
+	}
+	if (!LoadGLTextures()){
+		cout<<"Unable to load textures!!"<<endl;
+		return false;
+	}
+	glEnable(GL_TEXTURE_2D);
+	glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
+	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);				// Black Background
+	glClearDepth(1.0f);									// Depth Buffer Setup
+	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
+	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+	
+	glEnable(GL_DEPTH_TEST);
+	glShadeModel(GL_SMOOTH);	//glShadeModel(GL_FLAT);
+	glEnable(GL_CULL_FACE);
+
+	glEnable(GL_NORMALIZE);
+	glEnable (GL_LIGHTING);
+	return true;
 }
 
 int main(int argc, char** argv){
@@ -600,26 +746,10 @@ int main(int argc, char** argv){
 	
 	fInit();	// functions.h init
 	mInit();	// main.cpp init
-
-	// Initialise Glut Variables
-	glutInit(&argc, argv);
-	glutInitDisplayMode (GLUT_DOUBLE| GLUT_RGBA | GLUT_DEPTH ); // | GLUT_STENCIL 
-	glutInitWindowSize (W_WIDTH, W_HEIGHT);
-	glutInitWindowPosition (W_POS_X, W_POS_Y); 
-	glutCreateWindow ("3D Pacman");
-
-	if (fullscreen){
-		glutFullScreen();
+	if (!glInit(argc, argv)){
+		cout<<"Unable to Initialize gl Window"<<endl;
+		return 0;
 	}
-	
-
-	// Enable Glut Features
-	glEnable(GL_DEPTH_TEST);
-	glShadeModel(GL_SMOOTH);	//glShadeModel(GL_FLAT);
-	glEnable(GL_CULL_FACE);
-
-	glEnable(GL_NORMALIZE);
-	glEnable (GL_LIGHTING);
 
 		
 	/*GLfloat ambient2[] = {.2f, .2f, .2f, 1};
@@ -670,12 +800,10 @@ int main(int argc, char** argv){
 	glutKeyboardUpFunc(keyUp); // Tell GLUT to use the method "keyUp" for key up events    
 	glutSpecialFunc(keySpecial); // Tell GLUT to use the method "keySpecial" for special key presses  
 	glutSpecialUpFunc(keySpecialUp); // Tell GLUT to use the method "keySpecialUp" for special up key events  
-
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-	// Start Main Loop
-	game->startGame();
-	glutMainLoop();
-	// Move them
 	
+	// Two Most Important Main Loops
+	game->startGame();	// Game movement in one thread
+	glutMainLoop();		// Game display in other thread
+
 	return 0;
 }
