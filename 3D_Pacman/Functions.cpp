@@ -24,7 +24,7 @@ int random (int low, int high) {
     return low + (std::rand() % (high - low + 1));
 }
 
-void fInit(){
+bool fInit(){
 	for (int i = 0; i < 3; i++)
 		origin.push_back(0.f);
 	red		= color4(1.f,0.f,0.f);
@@ -37,8 +37,7 @@ void fInit(){
 	navyblue= color4(0.f,	0.f,	128.f,	255.f,	255.f);
 	white	= color4(1.f,1.f,1.f);
 	black   = color4(0.f,0.f,0.f);
-
-
+	return true;
 }
 
 void newl(){

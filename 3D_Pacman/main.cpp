@@ -9,15 +9,18 @@
 
 ******************************************************************************/
 
-// TIPS:
+// Controls:
 	// [Esc] [q] [Q]				--> Quit
 	// [F5]							--> Restart
+	// [F11]						--> Full Screen
 	// [Arrow Keys]					--> Controls Pacman
 	// [W] [A] [S] [D]				--> Controls Camera
 	// [1] [2] [3] [4] [5] [6] [7]	--> Camera Modes
 	// [Enter] [Space]				--> Pause
-	
-	// Drag Mouse to change direction of camera // TODO: NOT SURE IF SHOULD BE DONE
+	// [r] [R]						--> Reflection
+	// [v] [V]						--> Minimap
+	// [p] [P]						--> Polygon Modal
+	// [k] [K]						--> Sky Box
 
 // RULES: 
 	// Code should be well documented and well formatted
@@ -28,8 +31,8 @@
 	
 // TODO: Before Mid Evaluation
 	// [Done] Create Maze	
-	// [Done] Create Ghost   -> .obj
-	// [Done] Create Pac	 ->.obj
+	// [Done] Create Ghost   
+	// [Done] Create Pac
 	// [Done] Movement
 	// [Done] Animation	
 	// [Done] Reflection
@@ -41,40 +44,41 @@
 // 3. Minimap
 // 4. Warp Gate
 
+// Finishing: 
+	// Eyes for pacman
+	// Eyes for Ghosts
+	// Pacman Mouth Animation
+	// Abort Error Fix
+	// Initial position of ghosts and pacman
 
 // DO:
-	// [1 hour]
 	// Start Screen
-	// Points on screen
-	// Console Controls - Debug Statements
-	
-	// [3 hour]
 	// Initial Camera Rotation
-	// Skybox
 	// Ghosts movement Algorithms
-	// Object loading for ghosts
 
-	// [2]
 	// Level 2
 	// Texture mapping on walls
 
-	//// Sun
-	//// Water
+	// Sun
+	// Water
 	// Shadows
 	// Shaders
 	// Environment mapping
-	
-	// [2 hour]
-	// Finishing
+	// Fog
 
-	// [1 hour]
+	// [3 hour] [Post 12 PM]
+	// Finishing
 	// Documentation
 	// Presentations
 
 // Not Doing
-	// Multiplayer
-	// Height Map
-	// Sounds
+	// Multiplayer : Less Time
+	// AI : Less Time 
+	// Height Map :  
+	// Sounds : Do not use opengl So didn't do
+	
+	// Drag Mouse Change camera
+	// Object Loading for Ghosts
 
 // includes all common headers
 #include "Headers.h" 
@@ -89,14 +93,26 @@ Game *game = new Game();
 // Main Global Variables
 BOOL fullscreen = TRUE;
 bool polygonModal = false;
-GLuint	texture[1];
+GLuint	texture[10];
+bool first = true;
+bool IS_REFLECT = false; // If reflection is on
+bool miniMapOn = true;
+bool skyBoxOn = false;
+
+// 0. Tex
+// 1. Front
+// 2. Back
+// 3. Top
+// 4. Bottom
+// 5. Right
+// 6. Left
 
 // Constants
 const int W_WIDTH = 1350;
 const int W_HEIGHT = 690;
 const int W_POS_X = 0;
 const int W_POS_Y = 0;
-
+const float heightHUD = 40.f;
 
 // Keys Capture
 bool keyStates[256];// = new bool[256];
@@ -106,20 +122,21 @@ bool SHIFT = false, ALT = false, CTRL = false;
 // Optimization Variables
 vf pacPosition;
 
-// Extras
-bool first = true;
-bool IS_REFLECT = false; // If reflection is on
-bool miniMapOn = false;
-
 // Main Init Function
-void mInit(){
+bool mInit(){
 	cam = new Camera();
 	game = new Game();
 	pacPosition.resize(3);
 	pacPosition = game->pacman->position;
+
+	// Ask User to switch to full screen or not
+	if (MessageBox(NULL,"Would You Like To Run In Fullscreen Mode?", "Start FullScreen?",MB_YESNO|MB_ICONQUESTION)==IDNO){
+		fullscreen=FALSE;							// Windowed Mode
+	}
+	return true;
 }
 
-// Fram Calulation
+// Frame Calulation
 unsigned int iterations = 0, frames = 0;
 
 void frameCalculatorLoop(void){
@@ -175,19 +192,26 @@ void keyOperations (void) {
 	}
 
 	// Camera Modes
-	if (keyStates['1']) { 
+	if (keyStates['1']) {
+		keyStates['1'] = false;
 		cam->cameratype = ARIEL;
 	}else if (keyStates['2']) { 
+		keyStates['2'] = false;
 		cam->cameratype = FREE;
 	}else if (keyStates['3']) { 
+		keyStates['3'] = false;
 		cam->cameratype = FOLLOW;
 	}else if (keyStates['4']) { 
+		keyStates['4'] = false;
 		cam->cameratype = TOP;
 	}else if (keyStates['5']) { 
+		keyStates['5'] = false;
 		cam->cameratype = FRONT;
 	}else if (keyStates['6']) { 
+		keyStates['6'] = false;
 		cam->cameratype = C_FIXED;
 	}else if (keyStates['7']){
+		keyStates['7'] = false;
 		cam->cameratype = NOTFIXED;
 	}
 	
@@ -199,22 +223,31 @@ void keyOperations (void) {
 	}
 
 	// Reflection
-	if (keyStates['r']){
+	if (keyStates['r'] || keyStates['R']){
 		keyStates['r'] = false;
+		keyStates['R'] = false;
 		IS_REFLECT = !IS_REFLECT;
 	}
 
 	// Minimap
-	if (keyStates['v']){
+	if (keyStates['v'] || keyStates['V']){
 		keyStates['v'] = false;
+		keyStates['V'] = false;
 		miniMapOn = !miniMapOn;
 	}
 
+	// SkyBox
+	if (keyStates['k'] || keyStates['K']){
+		keyStates['k'] = false;
+		keyStates['K'] = false;
+		skyBoxOn = !skyBoxOn;
+	}
+
 	// Polygon Modal
-	if (keyStates['p']){
+	if (keyStates['p'] || keyStates['P']){
 		keyStates['p'] = false;
+		keyStates['P'] = false;
 		polygonModal = !polygonModal;
-		// Polygon Modal
 		if (polygonModal){
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		}else{
@@ -440,8 +473,8 @@ void adjustCamera(){
 	}
 }
 
-void primaryView(){
-	if (IS_REFLECT){
+void primaryView(bool called_from_secondary = false){
+	if (IS_REFLECT && !called_from_secondary){
 
 		/* Don't update color or depth. */
 		glDisable(GL_DEPTH_TEST);
@@ -498,7 +531,7 @@ void primaryView(){
 void secondaryView(){
 	glDisable(GL_DEPTH_TEST);
 	gluLookAt(0.,max(game->maze->size[0],game->maze->size[2]),0.,0.,0.,0.,0.,0.,-1.);
-	primaryView();
+	primaryView(true);
 }
 
 void scissor_viewport(GLint x, GLint y, GLsizei w, GLsizei h){
@@ -506,15 +539,15 @@ void scissor_viewport(GLint x, GLint y, GLsizei w, GLsizei h){
     glViewport(x,y,w,h);
 }
 
-void printText(int x, int y, float r, float g, float b, void *font, char *string){
+void printText(int x, int y, float r, float g, float b, char *string){
 	glPushMatrix();
 	//glLoadIdentity();
 	glColor3f( r, g, b );
-	glRasterPos2f(0, 0);
+	glRasterPos2f(x, y);
 	int len, i;
 	len = (int)strlen(string);
 	for (i = 0; i < len; i++) {
-	glutBitmapCharacter(GLUT_BITMAP_8_BY_13, string[i]);
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, string[i]);
 	}
 	glPopMatrix();	
 }
@@ -552,7 +585,7 @@ void drawText2(const char * message){
 	/* raster pos sets the current raster position
 	 * mapped via the modelview and projection matrices
 	 */
-	glRasterPos3f((GLfloat)0, (GLfloat)0,0);
+	glRasterPos2f((GLfloat)0, (GLfloat)0);
 
 	/*
 	 * write using bitmap and stroke chars
@@ -565,101 +598,277 @@ void drawText2(const char * message){
 
 AUX_RGBImageRec *LoadBMP(char *Filename){				// Loads A Bitmap Image
 	FILE *File=NULL;									// File Handle
-
-	if (!Filename)										// Make Sure A Filename Was Given
-	{
+	if (!Filename){										// Make Sure A Filename Was Given
 		return NULL;									// If Not Return NULL
 	}
 
 	File=fopen(Filename,"r");							// Check To See If The File Exists
 
-	if (File)											// Does The File Exist?
-	{
+	if (File){											// Does The File Exist?
 		fclose(File);									// Close The Handle
 		return auxDIBImageLoad(Filename);				// Load The Bitmap And Return A Pointer
 	}
-
 	return NULL;										// If Load Failed Return NULL
 }
 
-int LoadGLTextures(){									// Load Bitmaps And Convert To Textures
-
-	int Status=FALSE;									// Status Indicator
-
+bool LoadGLTextures(){									// Load Bitmaps And Convert To Textures
+	bool Status = true;									// Status Indicator
 	AUX_RGBImageRec *TextureImage[1];					// Create Storage Space For The Texture
+	char *textureFileNames[] = {"images/tex.bmp","images/front.bmp","images/back.bmp","images/up.bmp","images/down.bmp","images/right.bmp","images/left.bmp"};
+	int textureFilesCount = sizeof(textureFileNames)/sizeof(textureFileNames[0]);
+	for (int i = 0; i <textureFilesCount && Status ; i++){
+		memset(TextureImage,0,sizeof(void *)*1);           	// Set The Pointer To NULL
+		// Load The Bitmap, Check For Errors, If Bitmap's Not Found Quit
+		if (TextureImage[0]=LoadBMP(textureFileNames[i])){
+			glGenTextures(1, &texture[i]);					// Create The Texture
 
-	memset(TextureImage,0,sizeof(void *)*1);           	// Set The Pointer To NULL
-
-	// Load The Bitmap, Check For Errors, If Bitmap's Not Found Quit
-	if (TextureImage[0]=LoadBMP("images/tex.bmp"))
-	{
-		Status=TRUE;									// Set The Status To TRUE
-
-		glGenTextures(1, &texture[0]);					// Create The Texture
-
-		// Typical Texture Generation Using Data From The Bitmap
-		glBindTexture(GL_TEXTURE_2D, texture[0]);
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[0]->sizeX, TextureImage[0]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[0]->data);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-	}
-
-	if (TextureImage[0])									// If Texture Exists
-	{
-		if (TextureImage[0]->data)							// If Texture Image Exists
-		{
-			free(TextureImage[0]->data);					// Free The Texture Image Memory
+			// Typical Texture Generation Using Data From The Bitmap
+			glBindTexture(GL_TEXTURE_2D, texture[i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[0]->sizeX, TextureImage[0]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[0]->data);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		}else{
+			cout<<textureFileNames[i]<<" Unable to read!!"<<endl;
+			Status = false;
 		}
 
-		free(TextureImage[0]);								// Free The Image Structure
+		if (TextureImage[0]){									// If Texture Exists
+			if (TextureImage[0]->data){							// If Texture Image Exists
+				free(TextureImage[0]->data);					// Free The Texture Image Memory
+			}
+			free(TextureImage[0]);								// Free The Image Structure
+		}
 	}
-
+	
 	return Status;										// Return The Status
 }
 
-int drawBox(GLvoid){									// Here's Where We Do All The Drawing
-	//return 0;
-	//glPushMatrix();
+bool skyBox(float siz){
+	// Save Current Matrix
+	glPushMatrix();
+	glPushAttrib(GL_ENABLE_BIT);
+	
+	glColor4f(1.0, 1.0, 1.0,1.0f);
+	int rn = -1; // reverse normal
+	// Second Move the render space to the correct position (Translate)
+	//glTranslatef(position.x,position.y,position.z);
+
+	glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+    glEnable(GL_TEXTURE_2D);        
+    glBindTexture(GL_TEXTURE_2D,texture[2]);  
+    glBegin(GL_QUADS);      
+            //back face
+            glTexCoord2f(0,0);
+            glVertex3f(siz/2,siz/2,siz/2);
+			glNormal3f(0.f,0.f,rn*1.f);
+            
+			glTexCoord2f(1,0);      
+            glVertex3f(-siz/2,siz/2,siz/2);
+            glNormal3f(0.f,0.f,rn*1.f);
+
+			glTexCoord2f(1,1);
+            glVertex3f(-siz/2,-siz/2,siz/2);
+            glNormal3f(0.f,0.f,rn*1.f);
+			
+			glTexCoord2f(0,1);
+            glVertex3f(siz/2,-siz/2,siz/2);
+			glNormal3f(0.f,0.f,rn*1.f);
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D,texture[6]);
+    glBegin(GL_QUADS);     
+            //left face
+            glTexCoord2f(0,0);
+            glVertex3f(-siz/2,siz/2,siz/2);
+			glNormal3f(-1.f*rn,0.f,0.f);
+
+            glTexCoord2f(1,0);
+            glVertex3f(-siz/2,siz/2,-siz/2);
+            glNormal3f(-1.f*rn,0.f,0.f);
+
+			glTexCoord2f(1,1);
+            glVertex3f(-siz/2,-siz/2,-siz/2);
+            glNormal3f(-1.f*rn,0.f,0.f);
+
+			glTexCoord2f(0,1);
+            glVertex3f(-siz/2,-siz/2,siz/2);
+			glNormal3f(-1.f*rn,0.f,0.f);
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D,texture[1]);
+    glBegin(GL_QUADS);     
+            //front face
+            glTexCoord2f(1,0);
+            glVertex3f(siz/2,siz/2,-siz/2);
+			glNormal3f(0.f,0.f,-1.f*rn);
+
+            glTexCoord2f(0,0);
+            glVertex3f(-siz/2,siz/2,-siz/2);
+            glNormal3f(0.f,0.f,-1.f*rn);
+
+			glTexCoord2f(0,1);
+            glVertex3f(-siz/2,-siz/2,-siz/2);
+            glNormal3f(0.f,0.f,-1.f*rn);
+
+			glTexCoord2f(1,1);
+            glVertex3f(siz/2,-siz/2,-siz/2);
+			glNormal3f(0.f,0.f,-1.f*rn);
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D,texture[5]);
+    glBegin(GL_QUADS);     
+            //right face
+            glTexCoord2f(0,0);
+            glVertex3f(siz/2,siz/2,-siz/2);
+			glNormal3f(1.f*rn,0.f,0.f);
+
+            glTexCoord2f(1,0);
+            glVertex3f(siz/2,siz/2,siz/2);
+			glNormal3f(1.f*rn,0.f,0.f);
+
+            glTexCoord2f(1,1);
+            glVertex3f(siz/2,-siz/2,siz/2);
+			glNormal3f(1.f*rn,0.f,0.f);
+
+            glTexCoord2f(0,1);
+            glVertex3f(siz/2,-siz/2,-siz/2);
+			glNormal3f(1.f*rn,0.f,0.f);
+    glEnd();
+    glBindTexture(GL_TEXTURE_2D,texture[3]);          
+    glBegin(GL_QUADS);                      //top face
+            glTexCoord2f(1,0);
+            glVertex3f(siz/2,siz/2,siz/2);
+			glNormal3f(0.f,1.f*rn,0.f);
+
+            glTexCoord2f(0,0);
+            glVertex3f(-siz/2,siz/2,siz/2);
+			glNormal3f(0.f,1.f*rn,0.f);
+
+            glTexCoord2f(0,1);
+            glVertex3f(-siz/2,siz/2,-siz/2);
+			glNormal3f(0.f,1.f*rn,0.f);
+
+            glTexCoord2f(1,1);
+            glVertex3f(siz/2,siz/2,-siz/2);
+			glNormal3f(0.f,1.f*rn,0.f);
+    glEnd();
+	glBindTexture(GL_TEXTURE_2D,texture[4]);               
+    glBegin(GL_QUADS);     
+            //bottom face
+            glTexCoord2f(1,1);
+            glVertex3f(siz/2,-10.f,siz/2);
+			//glVertex3f(siz/2,-siz/2,siz/2);
+			glNormal3f(0.f,-1.f*rn,0.f);
+
+            glTexCoord2f(0,1);
+            glVertex3f(-siz/2,-10.f,siz/2);
+			//glVertex3f(-siz/2,-siz/2,siz/2);
+			glNormal3f(0.f,-1.f*rn,0.f);
+
+            glTexCoord2f(0,0);
+            glVertex3f(-siz/2,-10.f,-siz/2);
+			//glVertex3f(-siz/2,-siz/2,-siz/2);
+			glNormal3f(0.f,-1.f*rn,0.f);
+
+            glTexCoord2f(1,0);
+            glVertex3f(siz/2,-10.f,-siz/2);
+			//glVertex3f(siz/2,-siz/2,-siz/2);
+			glNormal3f(0.f,-1.f*rn,0.f);
+    glEnd();
+	glDisable(GL_TEXTURE_2D);
+    glEnable(GL_LIGHTING);
+    glEnable(GL_DEPTH_TEST);
+
+	// Load Saved Matrix
+	glPopAttrib();
+	glPopMatrix();
+	return true;
+}
+
+bool drawBox(GLvoid){									// Here's Where We Do All The Drawing
+	glPushMatrix();
 	//glLoadIdentity();
 	//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
 	//glLoadIdentity();									// Reset The View
 
-	glBindTexture(GL_TEXTURE_2D, texture[0]);
-
+	glBindTexture(GL_TEXTURE_2D, texture[0]); //
+	vf one, two;
+	one.push_back(1.f); one.push_back(1.f); one.push_back(1.f);
+	two.push_back(-1.f); two.push_back(-1.f); two.push_back(-1.f);
+	glColor3f(1.f,1.f,1.f);
 	glBegin(GL_QUADS);
 		// Front Face
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
-		glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
-		glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
-		glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f); glNormal3f(0.0f, 0.0f,  1.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f); glNormal3f(0.0f, 0.0f,  1.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f); glNormal3f(0.0f, 0.0f,  1.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f); glNormal3f(0.0f, 0.0f,  1.0f);
 		// Back Face
-		glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
-		glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
-		glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
-		glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f); glNormal3f(0.0f, 0.0f,  -1.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f); glNormal3f(0.0f, 0.0f,  -1.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f); glNormal3f(0.0f, 0.0f,  -1.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f); glNormal3f(0.0f, 0.0f,  -1.0f);
 		// Top Face
-		glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
-		glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
-		glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f); glNormal3f(0.0f, 1.0f,  0.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f,  1.0f,  1.0f); glNormal3f(0.0f, 1.0f,  0.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f,  1.0f,  1.0f); glNormal3f(0.0f, 1.0f,  0.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f); glNormal3f(0.0f, 1.0f,  0.0f);
 		// Bottom Face
-		glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
-		glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
-		glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
-		glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f, -1.0f, -1.0f); glNormal3f(0.0f, -1.0f,  0.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f, -1.0f, -1.0f); glNormal3f(0.0f, -1.0f,  0.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f); glNormal3f(0.0f, -1.0f,  0.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f); glNormal3f(0.0f, -1.0f,  0.0f);
 		// Right face
-		glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f);
-		glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f);
-		glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f);
-		glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f( 1.0f, -1.0f, -1.0f); glNormal3f(1.0f, 0.0f,  0.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f( 1.0f,  1.0f, -1.0f); glNormal3f(1.0f, 0.0f,  0.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f( 1.0f,  1.0f,  1.0f); glNormal3f(1.0f, 0.0f,  0.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f( 1.0f, -1.0f,  1.0f); glNormal3f(1.0f, 0.0f,  0.0f);
 		// Left Face
-		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f);
-		glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f);
-		glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f);
-		glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f);
+		glTexCoord2f(0.0f, 0.0f); glVertex3f(-1.0f, -1.0f, -1.0f); glNormal3f(-1.0f, 0.0f,  0.0f);
+		glTexCoord2f(1.0f, 0.0f); glVertex3f(-1.0f, -1.0f,  1.0f); glNormal3f(-1.0f, 0.0f,  0.0f);
+		glTexCoord2f(1.0f, 1.0f); glVertex3f(-1.0f,  1.0f,  1.0f); glNormal3f(-1.0f, 0.0f,  0.0f);
+		glTexCoord2f(0.0f, 1.0f); glVertex3f(-1.0f,  1.0f, -1.0f); glNormal3f(-1.0f, 0.0f,  0.0f);
 	glEnd();
-	//glPopMatrix();
-	return TRUE;										// Keep Going
+	glPopMatrix();
+	return true;										// Keep Going
+}
+
+void drawHUD(float SCREEN_WIDTH, float SCREEN_HEIGHT ){
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	glOrtho(0.0, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0, -1.0, 10.0);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();  //      ----Not sure if I need this
+	glLoadIdentity();
+	//glDisable(GL_CULL_FACE);
+
+	glClear(GL_DEPTH_BUFFER_BIT);
+
+
+	glBegin(GL_QUADS);
+		glColor3f(green.r, green.g, green.b);
+		glVertex2f(0.0, SCREEN_HEIGHT - heightHUD);
+		glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT - heightHUD);
+		glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
+		glVertex2f(0.0, SCREEN_HEIGHT);
+	glEnd();
+	//drawText("Hello Pacman");
+	string HUD_text1 = "FPS: "+to_string(frames);
+	printText(40,SCREEN_HEIGHT - 20.f,black.r,black.g,black.b,&HUD_text1[0]);
+
+	string HUD_text2 = "Pallets: ***      Lives: $$$  ";
+	printText(240,SCREEN_HEIGHT - 20.f,black.r,black.g,black.b,&HUD_text2[0]);
+
+	string HUD_text3 = "Timer: "+ to_string(game->timer);
+	printText(640,SCREEN_HEIGHT - 20.f,black.r,black.g,black.b,&HUD_text3[0]);
+
+
+
+
+
+	// Making sure we can render 3d again
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glPopMatrix();     //   ----and this?
 }
 
 void display (void) {
@@ -669,7 +878,7 @@ void display (void) {
 
 	// Write FPS
 	if (iterations==0){
-		cout<<"FPS: "<<frames<<endl;
+		// cout<<"FPS: "<<frames<<endl;
 		thread fps(frameCalculatorLoop);
 		fps.detach();
 	}
@@ -687,6 +896,10 @@ void display (void) {
 	
 	glLoadIdentity();
 	adjustCamera();
+	if (skyBoxOn){
+		skyBox(game->maze->size[0]*4);
+	}
+	
 	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
     scissor_viewport(m_viewport[0],m_viewport[1],m_viewport[2],m_viewport[3]);
@@ -695,17 +908,16 @@ void display (void) {
 	if (miniMapOn){
 		glLoadIdentity();
 		glClear(GL_DEPTH_BUFFER_BIT);
-		scissor_viewport(m_viewport[0],(m_viewport[1]*4)/5,m_viewport[2]/5,m_viewport[3]/5);
+		scissor_viewport(m_viewport[0],(m_viewport[1]*4)/5 + heightHUD,m_viewport[2]/5,m_viewport[3]/5);
 		secondaryView();
 	}
 	scissor_viewport(m_viewport[0],m_viewport[1],m_viewport[2],m_viewport[3]);
-	//drawText("Hello Pacman");
-	drawBox();
+	drawHUD(m_viewport[2],m_viewport[3]);
 	glutSwapBuffers();  
 }
 
 bool glInit(int argc, char** argv){
-	// Initialise Glut Variables
+	// Initialise Glut Window
 	glutInit(&argc, argv);
 	glutInitDisplayMode (GLUT_DOUBLE| GLUT_RGBA | GLUT_DEPTH ); // | GLUT_STENCIL 
 	if (fullscreen){
@@ -716,42 +928,33 @@ bool glInit(int argc, char** argv){
 		glutInitWindowPosition (W_POS_X, W_POS_Y); 
 		glutCreateWindow ("3D Pacman");
 	}
+
+	// Load Textures to be used later
 	if (!LoadGLTextures()){
 		cout<<"Unable to load textures!!"<<endl;
 		return false;
 	}
-	glEnable(GL_TEXTURE_2D);
-	glShadeModel(GL_SMOOTH);							// Enable Smooth Shading
-	glClearColor(0.0f, 0.0f, 0.0f, 0.5f);				// Black Background
-	glClearDepth(1.0f);									// Depth Buffer Setup
-	glEnable(GL_DEPTH_TEST);							// Enables Depth Testing
-	glDepthFunc(GL_LEQUAL);								// The Type Of Depth Testing To Do
-	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
-	
+
+	// Enable required parameters for glut
+	glEnable(GL_TEXTURE_2D);	
 	glEnable(GL_DEPTH_TEST);
-	glShadeModel(GL_SMOOTH);	//glShadeModel(GL_FLAT);
-	glEnable(GL_CULL_FACE);
-
-	glEnable(GL_NORMALIZE);
+	glShadeModel(GL_SMOOTH);	//or glShadeModel(GL_FLAT);
+	//glEnable(GL_CULL_FACE);
+	//glEnable(GL_NORMALIZE);
 	glEnable (GL_LIGHTING);
-	return true;
-}
 
-int main(int argc, char** argv){
-
-	// Ask User to switch to full screen or not
-	if (MessageBox(NULL,"Would You Like To Run In Fullscreen Mode?", "Start FullScreen?",MB_YESNO|MB_ICONQUESTION)==IDNO){
-		fullscreen=FALSE;							// Windowed Mode
-	}
+	// Set display and reshape Triggers
+	glutDisplayFunc(display);
+	glutIdleFunc(display);
+	glutReshapeFunc(reshape);
 	
-	fInit();	// functions.h init
-	mInit();	// main.cpp init
-	if (!glInit(argc, argv)){
-		cout<<"Unable to Initialize gl Window"<<endl;
-		return 0;
-	}
+	// KeyBoard Triggers
+	glutKeyboardFunc(keyPressed); // Tell GLUT to use the method "keyPressed" for key presses  
+	glutKeyboardUpFunc(keyUp); // Tell GLUT to use the method "keyUp" for key up events    
+	glutSpecialFunc(keySpecial); // Tell GLUT to use the method "keySpecial" for special key presses  
+	glutSpecialUpFunc(keySpecialUp); // Tell GLUT to use the method "keySpecialUp" for special up key events  
 
-		
+	////////////// Lighting ////////////////////
 	/*GLfloat ambient2[] = {.2f, .2f, .2f, 1};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient2) ;*/
 
@@ -788,22 +991,42 @@ int main(int argc, char** argv){
 	glEnable(GL_COLOR_MATERIAL);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
-	// Set display and reshape Triggers
-	glutDisplayFunc(display);
-	glutIdleFunc(display);
-	glutReshapeFunc(reshape);
-	
-	
+	return true;
+}
 
-	// KeyBoard Triggers
-	glutKeyboardFunc(keyPressed); // Tell GLUT to use the method "keyPressed" for key presses  
-	glutKeyboardUpFunc(keyUp); // Tell GLUT to use the method "keyUp" for key up events    
-	glutSpecialFunc(keySpecial); // Tell GLUT to use the method "keySpecial" for special key presses  
-	glutSpecialUpFunc(keySpecialUp); // Tell GLUT to use the method "keySpecialUp" for special up key events  
-	
+/******************************************************************************
+ * main() : is called when program starts
+ *	Initializes functions.h variables
+ *  Initializes global main variables
+ *	Initializes opengl window and set different glut variables
+ *  starts game display and movement
+******************************************************************************/
+int main(int argc, char** argv){
+
+	if (!fInit()){	// functions.h init
+		cout<<"Unable to Initialize Functions in function.cpp"<<endl;
+		getchar();
+		return 0;
+	}
+	if (!mInit()){	// main.cpp init
+		cout<<"Unable to Initialize Functions in main.cpp"<<endl;
+		getchar();
+		return 0;
+	}
+	if (!glInit(argc, argv)){ // glFunctions Init
+		cout<<"Unable to Initialize gl Window"<<endl;
+		getchar();
+		return 0;
+	}
+
 	// Two Most Important Main Loops
 	game->startGame();	// Game movement in one thread
 	glutMainLoop();		// Game display in other thread
 
 	return 0;
 }
+
+/******************************************************************************
+ * Documentation Template
+ * 
+******************************************************************************/

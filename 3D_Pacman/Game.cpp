@@ -139,7 +139,8 @@ void Game::moveObjects(){
 			if (next.size()==3){
 				//thread t1(&Pac::moveForwardTo,this->pacman,next[0],next[1],next[2]);
 				//t1.detach();
-				this->pacman->moveForwardTo(next[0],next[1],next[2]);
+				//this->pacman->moveForwardTo(next[0],next[1],next[2]);
+				this->pacman->moveForward();
 			}
 			
 			//this->pacman->moveForward();
@@ -172,7 +173,7 @@ void Game::MainLoop(){
 
 void Game::startTimer(){
 	while(this->timer){
-		cout<<this->timer<<endl;
+		// cout<<"Timer: "<<this->timer<<endl;
 		this->timer--;
 		Sleep(1000);
 	}

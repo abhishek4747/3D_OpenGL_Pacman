@@ -10,7 +10,7 @@ typedef vector<float>  vf;
 
 extern vf origin;
 
-void fInit();
+bool fInit();
 
 void newl();
 
