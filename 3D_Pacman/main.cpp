@@ -98,6 +98,8 @@ bool IS_REFLECT = false; // If reflection is on
 bool miniMapOn = true;
 bool skyBoxOn = false;
 string message = "";
+bool motionBlur = false;
+
 
 // 0. Tex
 // 1. Front
@@ -113,6 +115,8 @@ const int W_HEIGHT = 690;
 const int W_POS_X = 0;
 const int W_POS_Y = 0;
 const float heightHUD = 40.f;
+
+GLuint FFrameBuffer;
 
 GLfloat LightAmbient[]=		{ 0.5f, 0.5f, 0.5f, 1.0f };
 GLfloat LightDiffuse[]=		{ 1.0f, 1.0f, 1.0f, 1.0f };
@@ -245,6 +249,20 @@ void keyOperations (void) {
 		keyStates['k'] = false;
 		keyStates['K'] = false;
 		skyBoxOn = !skyBoxOn;
+	}
+
+	// static Environment map
+	if (keyStates['n'] || keyStates['N']){
+		keyStates['n'] = false;
+		keyStates['N'] = false;
+		fraudEnv = !fraudEnv;
+	}
+
+	// motion Blur
+	if (keyStates['m'] || keyStates['M']){
+		keyStates['m'] = false;
+		keyStates['M'] = false;
+		motionBlur = !motionBlur;
 	}
 
 	// Polygon Modal
@@ -540,71 +558,6 @@ void secondaryView(){
 	primaryView(true);
 }
 
-void scissor_viewport(GLint x, GLint y, GLsizei w, GLsizei h){
-    glScissor(x,y,w,h);
-    glViewport(x,y,w,h);
-}
-
-void printText(int x, int y, float r, float g, float b, char *string){
-	glPushMatrix();
-	//glLoadIdentity();
-	glColor3f( r, g, b );
-	glRasterPos2f(x, y);
-	int len, i;
-	len = (int)strlen(string);
-	for (i = 0; i < len; i++) {
-		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, string[i]);
-	}
-	glPopMatrix();	
-}
-
-AUX_RGBImageRec *LoadBMP(char *Filename){				// Loads A Bitmap Image
-	FILE *File=NULL;									// File Handle
-	if (!Filename){										// Make Sure A Filename Was Given
-		return NULL;									// If Not Return NULL
-	}
-
-	File=fopen(Filename,"r");							// Check To See If The File Exists
-
-	if (File){											// Does The File Exist?
-		fclose(File);									// Close The Handle
-		return auxDIBImageLoad(Filename);				// Load The Bitmap And Return A Pointer
-	}
-	return NULL;										// If Load Failed Return NULL
-}
-
-bool LoadGLTextures(){									// Load Bitmaps And Convert To Textures
-	bool Status = true;									// Status Indicator
-	AUX_RGBImageRec *TextureImage[1];					// Create Storage Space For The Texture
-	char *textureFileNames[] = {"images/tex.bmp","images/front.bmp","images/back.bmp","images/up.bmp","images/down.bmp","images/right.bmp","images/left.bmp", "images/Reflect.bmp"};
-	int textureFilesCount = sizeof(textureFileNames)/sizeof(textureFileNames[0]);
-	for (int i = 0; i <textureFilesCount && Status ; i++){
-		memset(TextureImage,0,sizeof(void *)*1);           	// Set The Pointer To NULL
-		// Load The Bitmap, Check For Errors, If Bitmap's Not Found Quit
-		if (TextureImage[0]=LoadBMP(textureFileNames[i])){
-			glGenTextures(1, &texture[i]);					// Create The Texture
-
-			// Typical Texture Generation Using Data From The Bitmap
-			glBindTexture(GL_TEXTURE_2D, texture[i]);
-			glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[0]->sizeX, TextureImage[0]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[0]->data);
-			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-		}else{
-			cout<<textureFileNames[i]<<" Unable to read!!"<<endl;
-			Status = false;
-		}
-
-		if (TextureImage[0]){									// If Texture Exists
-			if (TextureImage[0]->data){							// If Texture Image Exists
-				free(TextureImage[0]->data);					// Free The Texture Image Memory
-			}
-			free(TextureImage[0]);								// Free The Image Structure
-		}
-	}
-	
-	return Status;										// Return The Status
-}
-
 bool skyBox(float siz){
 	// Save Current Matrix
 	glPushMatrix();
@@ -745,6 +698,135 @@ bool skyBox(float siz){
 	return true;
 }
 
+
+void CreateDynamicCubeMap(void)
+{
+//	return;
+	//Set viewport. and fov.
+	glViewport(0, 0, 256, 256);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+	//MUST USE 90 degree FOV!
+    gluPerspective (90, 1.0f, 0.1, 5000);
+
+	glMatrixMode(GL_MODELVIEW);
+
+	
+	for(GLuint i=0; i<6; i++)
+	{
+		//Clear the depth buffer!
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); 
+
+		//Reset modelview matrix.
+		glLoadIdentity();
+
+		
+		//Rotate required amount.
+		glRotatef(CubeMapRots[i][0], CubeMapRots[i][1], CubeMapRots[i][2], CubeMapRots[i][3]);
+
+		//Hack to invert Xpos and Xneg renders.
+		if(i == 0  ||  i == 1)
+		{
+			glRotatef(180.0f, 0.0f, 0.0f, 1.0f);
+		}
+
+		primaryView();		
+
+		//skyBox(game->maze->size[0]*4);
+
+		//Now we need to grab the backbuffer into the texture.
+		glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+
+		//Bind the cube map.		
+		glBindTexture(GL_TEXTURE_2D, g_cubemap);
+		//glBindFramebuffer( GL_FRAMEBUFFER, FFrameBuffer );
+		//glFramebufferTexture2D( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, CubeMapDefines[i], g_cubemap, 0);
+		//g_cubemap->Update(CubeMapDefines[i]);
+		
+		glFlush();
+		//Disable cube mapping.
+		glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+
+		//Sleep(2000);
+		//g_engine.FlipBuffers();
+		
+
+	}
+
+	
+	//Reset back to what it should be!
+	reshape(W_WIDTH, W_HEIGHT);
+}
+
+
+
+void scissor_viewport(GLint x, GLint y, GLsizei w, GLsizei h){
+    glScissor(x,y,w,h);
+    glViewport(x,y,w,h);
+}
+
+void printText(int x, int y, float r, float g, float b, char *string){
+	glPushMatrix();
+	//glLoadIdentity();
+	glColor3f( r, g, b );
+	glRasterPos2f(x, y);
+	int len, i;
+	len = (int)strlen(string);
+	for (i = 0; i < len; i++) {
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, string[i]);
+	}
+	glPopMatrix();	
+}
+
+AUX_RGBImageRec *LoadBMP(char *Filename){				// Loads A Bitmap Image
+	FILE *File=NULL;									// File Handle
+	if (!Filename){										// Make Sure A Filename Was Given
+		return NULL;									// If Not Return NULL
+	}
+
+	File=fopen(Filename,"r");							// Check To See If The File Exists
+
+	if (File){											// Does The File Exist?
+		fclose(File);									// Close The Handle
+		return auxDIBImageLoad(Filename);				// Load The Bitmap And Return A Pointer
+	}
+	return NULL;										// If Load Failed Return NULL
+}
+
+bool LoadGLTextures(){									// Load Bitmaps And Convert To Textures
+	bool Status = true;									// Status Indicator
+	AUX_RGBImageRec *TextureImage[1];					// Create Storage Space For The Texture
+	char *textureFileNames[] = {"images/tex.bmp","images/front.bmp","images/back.bmp","images/up.bmp","images/down.bmp","images/right.bmp","images/left.bmp", "images/Reflect.bmp"};
+	int textureFilesCount = sizeof(textureFileNames)/sizeof(textureFileNames[0]);
+	for (int i = 0; i <textureFilesCount && Status ; i++){
+		memset(TextureImage,0,sizeof(void *)*1);           	// Set The Pointer To NULL
+		// Load The Bitmap, Check For Errors, If Bitmap's Not Found Quit
+		if (TextureImage[0]=LoadBMP(textureFileNames[i])){
+			glGenTextures(1, &texture[i]);					// Create The Texture
+
+			// Typical Texture Generation Using Data From The Bitmap
+			glBindTexture(GL_TEXTURE_2D, texture[i]);
+			glTexImage2D(GL_TEXTURE_2D, 0, 3, TextureImage[0]->sizeX, TextureImage[0]->sizeY, 0, GL_RGB, GL_UNSIGNED_BYTE, TextureImage[0]->data);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+		}else{
+			cout<<textureFileNames[i]<<" Unable to read!!"<<endl;
+			Status = false;
+		}
+
+		if (TextureImage[0]){									// If Texture Exists
+			if (TextureImage[0]->data){							// If Texture Image Exists
+				free(TextureImage[0]->data);					// Free The Texture Image Memory
+			}
+			free(TextureImage[0]);								// Free The Image Structure
+		}
+	}
+	
+	return Status;										// Return The Status
+}
+
 bool drawBox(GLvoid){									// Here's Where We Do All The Drawing
 	glPushMatrix();
 	//glLoadIdentity();
@@ -834,10 +916,6 @@ void drawHUD(float SCREEN_WIDTH, float SCREEN_HEIGHT ){
 	string HUD_text5 = " "+ message;
 	printText(840,SCREEN_HEIGHT - 12.f,black.r,black.g,black.b,&HUD_text5[0]);
 
-
-
-
-
 	// Making sure we can render 3d again
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
@@ -858,11 +936,15 @@ void display (void) {
 	}
 	iterations++;	
 
+
+	CreateDynamicCubeMap();
+
 	// Background Color: Black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
+	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
-
+	
 	GLint m_viewport[4];
 	glGetIntegerv( GL_VIEWPORT, m_viewport );
 	
@@ -871,9 +953,38 @@ void display (void) {
 	if (skyBoxOn){
 		skyBox(game->maze->size[0]*4);
 	}
-	
 	glEnable(GL_SCISSOR_TEST);
 	glEnable(GL_DEPTH_TEST);
+	//Enable cube mapping.
+	/*
+	glEnable(GL_TEXTURE_CUBE_MAP_ARB);
+
+	
+	//bind the texture.
+	
+	glBindTexture(GL_TEXTURE_CUBE_MAP, g_cubemap);
+
+	//Enable cube mapping
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+	glEnable(GL_TEXTURE_GEN_R);
+
+	glMatrixMode(GL_TEXTURE);
+	
+	glPushMatrix();
+
+	//Render the main sphere!
+	//gluSphere(sphere, 2.0f, 16, 16);
+	
+	//Restore texture matrix.
+	glPopMatrix();
+
+	glMatrixMode(GL_MODELVIEW);
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
+	glDisable(GL_TEXTURE_GEN_R);
+	glDisable(GL_TEXTURE_CUBE_MAP_ARB);
+	*/
     scissor_viewport(m_viewport[0],m_viewport[1],m_viewport[2],m_viewport[3]);
     primaryView();
 
@@ -886,6 +997,12 @@ void display (void) {
 	scissor_viewport(m_viewport[0],m_viewport[1],m_viewport[2],m_viewport[3]);
 
 	drawHUD(m_viewport[2],m_viewport[3]);
+	if (motionBlur){
+		float q = 0.3;
+		glAccum(GL_MULT, q);
+		glAccum(GL_ACCUM, 1-q);
+		glAccum(GL_RETURN, 1.0);
+		glFlush();	}
 	glutSwapBuffers();  
 }
 
@@ -909,26 +1026,34 @@ bool glInit(int argc, char** argv){
 	}
 
 	// Enable required parameters for glut
-	glEnable(GL_TEXTURE_2D);	
+	
 	glEnable(GL_DEPTH_TEST);
+	//glGenFramebuffers( 1, &FFrameBuffer );
+	//glBindFramebuffer( GL_FRAMEBUFFER, FFrameBuffer );
+	glGenTextures(1, &g_cubemap);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, g_cubemap);
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	
+	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	//N.B.!! LOOK HERE! Auto mipmap extension used.
+	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+
+	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+	glEnable(GL_TEXTURE_2D);	
 	glShadeModel(GL_SMOOTH);	//or glShadeModel(GL_FLAT);
 	//glEnable(GL_CULL_FACE);
 	//glEnable(GL_NORMALIZE);
 	glEnable(GL_LIGHTING);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
 
 	glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);		// Setup The Ambient Light
 	glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);		// Setup The Diffuse Light
 	glLightfv(GL_LIGHT1, GL_POSITION,LightPosition);	// Position The Light
 	glEnable(GL_LIGHT1);								// Enable Light One
-
-	quadratic=gluNewQuadric();							// Create A Pointer To The Quadric Object (Return 0 If No Memory)
-	gluQuadricNormals(quadratic, GLU_SMOOTH);			// Create Smooth Normals 
-	gluQuadricTexture(quadratic, GL_TRUE);				// Create Texture Coords 
-
-	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP); // Set The Texture Generation Mode For S To Sphere Mapping (NEW)
-	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP); // Set The Texture Generation Mode For T To Sphere Mapping (NEW)
-
 
 	// Set display and reshape Triggers
 	glutDisplayFunc(display);
@@ -977,6 +1102,24 @@ bool glInit(int argc, char** argv){
 
 	glEnable(GL_COLOR_MATERIAL);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+
+	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+	glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+
+	sphere = gluNewQuadric();
+	gluQuadricNormals(sphere, GLU_SMOOTH);
+	gluQuadricDrawStyle(sphere, GLU_FILL);
+
+	quadratic=gluNewQuadric();							// Create A Pointer To The Quadric Object (Return 0 If No Memory)
+	gluQuadricNormals(quadratic, GLU_SMOOTH);			// Create Smooth Normals 
+	gluQuadricTexture(quadratic, GL_TRUE);				// Create Texture Coords 
+
+	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP); // Set The Texture Generation Mode For S To Sphere Mapping (NEW)
+	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP); // Set The Texture Generation Mode For T To Sphere Mapping (NEW)
 
 	return true;
 }

@@ -14,8 +14,10 @@
 #include <gl\GLU.h>
 #include <gl\glaux.h>
 #include <gl\freeglut.h>
-#include <gl\wglew.h>
+#include <hl_core.h>
+#include <hl_texture.h>
 #include <mutex>
+#include <assert.h>
 
 using namespace std;
 

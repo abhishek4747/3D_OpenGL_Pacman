@@ -5,6 +5,32 @@ color4 red, blue, green, yellow, purple, pink, white, black, grey, navyblue;
 
 GLuint texture[10];
 GLUquadricObj *quadratic;	// Storage For Our Quadratic Objects
+GLUquadric *sphere;
+
+bool fraudEnv;
+
+GLuint g_cubemap; 
+
+GLuint CubeMapDefines[6] = {
+
+GL_TEXTURE_CUBE_MAP_POSITIVE_X_ARB,
+GL_TEXTURE_CUBE_MAP_NEGATIVE_X_ARB,
+GL_TEXTURE_CUBE_MAP_POSITIVE_Y_ARB,
+GL_TEXTURE_CUBE_MAP_NEGATIVE_Y_ARB,
+GL_TEXTURE_CUBE_MAP_POSITIVE_Z_ARB,
+GL_TEXTURE_CUBE_MAP_NEGATIVE_Z_ARB
+};
+
+float CubeMapRots[6][4] = {			//4, cos it's angle, then XYZ component of that angle.
+	{	-90.0f,		0.0f,	1.0f,	0.0f	},
+	{	90.0f,		0.0f,	1.0f,	0.0f	},
+
+	{	-90.0f,		1.0f,	0.0f,	0.0f	},
+	{	90.0f,		1.0f,	0.0f,	0.0f	},
+
+	{	180.0f,		1.0f,	0.0f,	0.0f	},
+	{	180.0f,		0.0f,	0.0f,	1.0f	},
+};
 
 color4::color4(){
 	this->init(0.,0.,0.,1.,1.);
@@ -58,4 +84,45 @@ void DrawEllipsoid(float fA, float fB, float fC, unsigned int uiStacks, unsigned
 		}
 		glEnd();
 	}
+}
+
+bool IsExtensionSupported(const char *const _string){
+	const char
+		*ptr, *src_ptr;
+
+	bool
+		found = FALSE;
+
+	src_ptr = (const char*) glGetString(GL_EXTENSIONS);
+	
+	while((ptr = strchr((const char*) src_ptr, 'G')) != NULL)
+	{
+		if(strncmp(_string, ptr, strlen(_string)) == 0)
+		{
+			found = TRUE;
+			break;
+		}
+		else
+		{
+			src_ptr = ptr+1;
+		}
+	}
+
+	return found;
+}
+
+void RenderSphere(void){
+	//Disable cube maps, so 2D textures take over.
+	glDisable(GL_TEXTURE_CUBE_MAP_ARB);	
+
+	//Enable some auto texture coords.
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+
+	//Draw sphere.
+	gluSphere(sphere, 2.0f, 32, 32);
+
+
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);	
 }

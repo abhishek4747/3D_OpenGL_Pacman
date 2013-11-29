@@ -5,12 +5,25 @@
 
 #define PI 3.14159265
 
+//AUTO MIPMAPPING EXTENSION
+#define GL_GENERATE_MIPMAP_SGIS					0x8191
+
+//GL_EXT_texture_edge_clamp define.
+#define GL_CLAMP_TO_EDGE_EXT					0x812F
+
 typedef vector<double> vd;
 typedef vector<float>  vf;
 
 extern vf origin;
+
 extern GLuint texture[10];
 extern GLUquadricObj *quadratic;	// Storage For Our Quadratic Objects
+extern float CubeMapRots[6][4];
+extern GLuint g_cubemap;
+extern GLUquadric *sphere;
+extern GLuint CubeMapDefines[6];
+
+extern bool fraudEnv;
 
 bool fInit();
 
@@ -109,6 +122,10 @@ private:
 };
 
 void DrawEllipsoid(float fA, float fB, float fC, unsigned int uiStacks = 32, unsigned int uiSlices = 32);
+
+bool IsExtensionSupported(const char *const _string);
+
+void RenderSphere(void);
 
 /*******************************COLOR TABLE************************************
 			http://gucky.uni-muenster.de/cgi-bin/rgbtab-en					  
