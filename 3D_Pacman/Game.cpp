@@ -112,7 +112,7 @@ vf Game::canAgentMove(Agent *p, Maze *m){
 					p->position[2] = i - m->size[2]/2 + 2*p->orientn[2];
 					p->posmtx.unlock();
 					p->ormtx.unlock();
-					//p->integralPosition();
+					p->integralPosition();
 					
 					return canAgentMove(p,m);
 				}

@@ -698,10 +698,8 @@ bool skyBox(float siz){
 	return true;
 }
 
-
 void CreateDynamicCubeMap(void)
 {
-//	return;
 	//Set viewport. and fov.
 	glViewport(0, 0, 256, 256);
 
@@ -759,8 +757,6 @@ void CreateDynamicCubeMap(void)
 	//Reset back to what it should be!
 	reshape(W_WIDTH, W_HEIGHT);
 }
-
-
 
 void scissor_viewport(GLint x, GLint y, GLsizei w, GLsizei h){
     glScissor(x,y,w,h);
@@ -937,7 +933,7 @@ void display (void) {
 	iterations++;	
 
 
-	CreateDynamicCubeMap();
+	//CreateDynamicCubeMap();
 
 	// Background Color: Black
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); 
@@ -1030,17 +1026,17 @@ bool glInit(int argc, char** argv){
 	glEnable(GL_DEPTH_TEST);
 	//glGenFramebuffers( 1, &FFrameBuffer );
 	//glBindFramebuffer( GL_FRAMEBUFFER, FFrameBuffer );
-	glGenTextures(1, &g_cubemap);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, g_cubemap);
+	//glGenTextures(1, &g_cubemap);
+	//glBindTexture(GL_TEXTURE_CUBE_MAP, g_cubemap);
 
-	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-	
-	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	//N.B.!! LOOK HERE! Auto mipmap extension used.
-	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
+	//glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	//
+	//glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	////N.B.!! LOOK HERE! Auto mipmap extension used.
+	//glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_GENERATE_MIPMAP_SGIS, GL_TRUE);
 
-	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP);
-	glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	//glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	//glTexParameteri(GL_TEXTURE_CUBE_MAP_ARB, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
 	glEnable(GL_TEXTURE_2D);	
 	glShadeModel(GL_SMOOTH);	//or glShadeModel(GL_FLAT);
@@ -1050,10 +1046,10 @@ bool glInit(int argc, char** argv){
 	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
 
-	glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);		// Setup The Ambient Light
-	glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);		// Setup The Diffuse Light
-	glLightfv(GL_LIGHT1, GL_POSITION,LightPosition);	// Position The Light
-	glEnable(GL_LIGHT1);								// Enable Light One
+	//glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);		// Setup The Ambient Light
+	//glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);		// Setup The Diffuse Light
+	//glLightfv(GL_LIGHT1, GL_POSITION,LightPosition);	// Position The Light
+	//glEnable(GL_LIGHT1);								// Enable Light One
 
 	// Set display and reshape Triggers
 	glutDisplayFunc(display);
@@ -1070,45 +1066,44 @@ bool glInit(int argc, char** argv){
 	/*GLfloat ambient2[] = {.2f, .2f, .2f, 1};
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient2) ;*/
 
+	GLfloat diffuse[] = {.1,.1,.1,1};
+	GLfloat ambient[] = {1.f,1.f,1.f,1.f};
+	GLfloat specular[] = {1,1,1,1};
+	GLfloat shine[]= {250};
 
-	//GLfloat diffuse[] = {0,1,0,1};
-	//GLfloat ambient[] = {.5,.5,0,1};
-	//GLfloat specular[] = {.3,.3,.3,1};
-	//GLfloat shine[]= {100};
+	glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuse) ;
+	glLightfv (GL_LIGHT0, GL_AMBIENT, ambient) ;
+	glLightfv (GL_LIGHT0, GL_SPECULAR, specular) ;
 
-	////glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuse) ;
-	////glLightfv (GL_LIGHT0, GL_AMBIENT, ambient) ;
-	////glLightfv (GL_LIGHT0, GL_SPECULAR, specular) ;
+	glEnable (GL_LIGHT0);
+	GLfloat lightpos1[] = {0., 5., 0., 1.};
+	glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
 
-	//glEnable (GL_LIGHT0);
-	//GLfloat lightpos1[] = {0., 10., 100., 1.};
-	//glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
+	/*glEnable (GL_LIGHT1);
+	GLfloat lightpos2[] = {-5., 5., 5., 1.};
+	glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
+	
+	glEnable (GL_LIGHT2);
+	GLfloat lightpos3[] = {-5., 5.,-5., 1.};
+	glLightfv(GL_LIGHT2, GL_POSITION, lightpos3);
 
-	//glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, ambient) ;
-	//glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
-	//glMaterialfv(GL_FRONT, GL_SHININESS, shine);
-
-	///*glEnable (GL_LIGHT1);
-	//GLfloat lightpos2[] = {-5., 5., 5., 1.};
-	//glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
-
-	//glEnable (GL_LIGHT2);
-	//GLfloat lightpos3[] = {-5., 5.,-5., 1.};
-	//glLightfv(GL_LIGHT2, GL_POSITION, lightpos3);
-
-	//glEnable (GL_LIGHT3);
-	//GLfloat lightpos4[] = {5., 5., -5., 1.};
-	//glLightfv(GL_LIGHT3, GL_POSITION, lightpos4);*/
+	glEnable (GL_LIGHT3);
+	GLfloat lightpos4[] = {5., 5., -5., 1.};
+	glLightfv(GL_LIGHT3, GL_POSITION, lightpos4);*/
 
 	glEnable(GL_COLOR_MATERIAL);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);
 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, ambient) ;
+	glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+	glMaterialfv(GL_FRONT, GL_SHININESS, shine);
+
+	/*glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
 
 	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
 	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
-	glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);
+	glTexGeni(GL_R, GL_TEXTURE_GEN_MODE, GL_REFLECTION_MAP_ARB);*/
 
 	sphere = gluNewQuadric();
 	gluQuadricNormals(sphere, GLU_SMOOTH);
