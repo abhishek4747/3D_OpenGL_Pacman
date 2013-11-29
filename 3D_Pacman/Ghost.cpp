@@ -39,6 +39,20 @@ void Ghost::draw(){
 		}
 		glTranslatef(0.f, 0.f, this->dimentions[1]);
 		glutSolidSphere(this->dimentions[0], 8, 8);
+		//glTranslatef(0.f, 0.f, -this->dimentions[0]*2);
+		this->ormtx.lock();
+		vf or = this->orientn;
+		this->ormtx.unlock();
+		glTranslatef(or[0]*this->dimentions[0],or[2]*(this->dimentions[0]*7/8), or[1]*this->dimentions[0]);
+		glColor3f(white.r,white.g,white.b);
+		glPushMatrix();
+		glTranslatef(0.1f*or[2],0.1f*or[0],0.f);
+		glutSolidSphere(this->dimentions[0]/4, 8, 8);
+		glPopMatrix();
+		glPushMatrix();
+		glTranslatef(-0.1f*or[2],-0.1f*or[0],0.f);
+		glutSolidSphere(this->dimentions[0]/4, 8, 8);
+		glPopMatrix();
 		//glTranslatef(0.f, 0.f, -this->dimentions[1]);
 		//glRotatef(-90.f, -1.f, 0.f, 0.f);
 		//glTranslatef(-this->position[0], -this->position[1], -this->position[2]);

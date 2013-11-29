@@ -49,13 +49,13 @@
 	// Eyes for Ghosts
 	// Pacman Mouth Animation
 	// Abort Error Fix
+	// Level 2
 
 // DO:
 	// Start Screen
 	// Initial Camera Rotation
 	// Ghosts movement Algorithms
 
-	// Level 2
 	// Texture mapping on walls
 
 	// Sun
@@ -802,7 +802,7 @@ void drawHUD(float SCREEN_WIDTH, float SCREEN_HEIGHT ){
 
 
 	glBegin(GL_QUADS);
-		glColor3f(green.r, green.g, green.b);
+		glColor3f(yellow.r, yellow.g, yellow.b);
 		glVertex2f(0.0, SCREEN_HEIGHT - heightHUD);
 		glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT - heightHUD);
 		glVertex2f(SCREEN_WIDTH, SCREEN_HEIGHT);
