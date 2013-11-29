@@ -89,7 +89,7 @@ vf Game::canAgentMove(Agent *p, Maze *m){
 				ghost[i]->weak = false;
 				score += 10;
 			}else{
-				if (lives){
+				if (lives>-1){
 					if (!isPaused()) togglePause();
 					pacman->position = maze->pacInitPos;
 					for (size_t k = 0; k < ghost.size(); k++){

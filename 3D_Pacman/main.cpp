@@ -49,7 +49,7 @@
 	// Eyes for Ghosts
 	// Pacman Mouth Animation
 	// Abort Error Fix
-	// Level 2
+	// Level 2 
 
 // DO:
 	// Start Screen
@@ -92,7 +92,7 @@ Game *game = new Game();
 // Main Global Variables
 BOOL fullscreen = TRUE;
 bool polygonModal = false;
-GLuint	texture[10];
+
 bool first = true;
 bool IS_REFLECT = false; // If reflection is on
 bool miniMapOn = true;
@@ -113,6 +113,10 @@ const int W_HEIGHT = 690;
 const int W_POS_X = 0;
 const int W_POS_Y = 0;
 const float heightHUD = 40.f;
+
+GLfloat LightAmbient[]=		{ 0.5f, 0.5f, 0.5f, 1.0f };
+GLfloat LightDiffuse[]=		{ 1.0f, 1.0f, 1.0f, 1.0f };
+GLfloat LightPosition[]=	{ 0.0f, 0.0f, 2.0f, 1.0f };
 
 // Keys Capture
 bool keyStates[256];// = new bool[256];
@@ -572,7 +576,7 @@ AUX_RGBImageRec *LoadBMP(char *Filename){				// Loads A Bitmap Image
 bool LoadGLTextures(){									// Load Bitmaps And Convert To Textures
 	bool Status = true;									// Status Indicator
 	AUX_RGBImageRec *TextureImage[1];					// Create Storage Space For The Texture
-	char *textureFileNames[] = {"images/tex.bmp","images/front.bmp","images/back.bmp","images/up.bmp","images/down.bmp","images/right.bmp","images/left.bmp"};
+	char *textureFileNames[] = {"images/tex.bmp","images/front.bmp","images/back.bmp","images/up.bmp","images/down.bmp","images/right.bmp","images/left.bmp", "images/Reflect.bmp"};
 	int textureFilesCount = sizeof(textureFileNames)/sizeof(textureFileNames[0]);
 	for (int i = 0; i <textureFilesCount && Status ; i++){
 		memset(TextureImage,0,sizeof(void *)*1);           	// Set The Pointer To NULL
@@ -859,8 +863,6 @@ void display (void) {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT); 
 	glLoadIdentity();
 
-	//printText(10,12,1.f,0.f,0.f,GLUT_BITMAP_9_BY_15,"Pacman pacman");
-	//drawText("Pacman yo",2,2);
 	GLint m_viewport[4];
 	glGetIntegerv( GL_VIEWPORT, m_viewport );
 	
@@ -882,6 +884,7 @@ void display (void) {
 		secondaryView();
 	}
 	scissor_viewport(m_viewport[0],m_viewport[1],m_viewport[2],m_viewport[3]);
+
 	drawHUD(m_viewport[2],m_viewport[3]);
 	glutSwapBuffers();  
 }
@@ -911,7 +914,21 @@ bool glInit(int argc, char** argv){
 	glShadeModel(GL_SMOOTH);	//or glShadeModel(GL_FLAT);
 	//glEnable(GL_CULL_FACE);
 	//glEnable(GL_NORMALIZE);
-	glEnable (GL_LIGHTING);
+	glEnable(GL_LIGHTING);
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);	// Really Nice Perspective Calculations
+
+	glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);		// Setup The Ambient Light
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);		// Setup The Diffuse Light
+	glLightfv(GL_LIGHT1, GL_POSITION,LightPosition);	// Position The Light
+	glEnable(GL_LIGHT1);								// Enable Light One
+
+	quadratic=gluNewQuadric();							// Create A Pointer To The Quadric Object (Return 0 If No Memory)
+	gluQuadricNormals(quadratic, GLU_SMOOTH);			// Create Smooth Normals 
+	gluQuadricTexture(quadratic, GL_TRUE);				// Create Texture Coords 
+
+	glTexGeni(GL_S, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP); // Set The Texture Generation Mode For S To Sphere Mapping (NEW)
+	glTexGeni(GL_T, GL_TEXTURE_GEN_MODE, GL_SPHERE_MAP); // Set The Texture Generation Mode For T To Sphere Mapping (NEW)
+
 
 	// Set display and reshape Triggers
 	glutDisplayFunc(display);
@@ -929,34 +946,34 @@ bool glInit(int argc, char** argv){
 	glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient2) ;*/
 
 
-	GLfloat diffuse[] = {0,1,0,1};
-	GLfloat ambient[] = {.5,.5,0,1};
-	GLfloat specular[] = {.3,.3,.3,1};
-	GLfloat shine[]= {100};
+	//GLfloat diffuse[] = {0,1,0,1};
+	//GLfloat ambient[] = {.5,.5,0,1};
+	//GLfloat specular[] = {.3,.3,.3,1};
+	//GLfloat shine[]= {100};
 
-	//glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuse) ;
-	//glLightfv (GL_LIGHT0, GL_AMBIENT, ambient) ;
-	//glLightfv (GL_LIGHT0, GL_SPECULAR, specular) ;
+	////glLightfv (GL_LIGHT0, GL_DIFFUSE, diffuse) ;
+	////glLightfv (GL_LIGHT0, GL_AMBIENT, ambient) ;
+	////glLightfv (GL_LIGHT0, GL_SPECULAR, specular) ;
 
-	glEnable (GL_LIGHT0);
-	GLfloat lightpos1[] = {0., 10., 100., 1.};
-	glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
+	//glEnable (GL_LIGHT0);
+	//GLfloat lightpos1[] = {0., 10., 100., 1.};
+	//glLightfv(GL_LIGHT0, GL_POSITION, lightpos1);
 
-	glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, ambient) ;
-	glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
-	glMaterialfv(GL_FRONT, GL_SHININESS, shine);
+	//glMaterialfv(GL_FRONT, GL_AMBIENT_AND_DIFFUSE, ambient) ;
+	//glMaterialfv(GL_FRONT, GL_SPECULAR, specular);
+	//glMaterialfv(GL_FRONT, GL_SHININESS, shine);
 
-	/*glEnable (GL_LIGHT1);
-	GLfloat lightpos2[] = {-5., 5., 5., 1.};
-	glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
+	///*glEnable (GL_LIGHT1);
+	//GLfloat lightpos2[] = {-5., 5., 5., 1.};
+	//glLightfv(GL_LIGHT1, GL_POSITION, lightpos2);
 
-	glEnable (GL_LIGHT2);
-	GLfloat lightpos3[] = {-5., 5.,-5., 1.};
-	glLightfv(GL_LIGHT2, GL_POSITION, lightpos3);
+	//glEnable (GL_LIGHT2);
+	//GLfloat lightpos3[] = {-5., 5.,-5., 1.};
+	//glLightfv(GL_LIGHT2, GL_POSITION, lightpos3);
 
-	glEnable (GL_LIGHT3);
-	GLfloat lightpos4[] = {5., 5., -5., 1.};
-	glLightfv(GL_LIGHT3, GL_POSITION, lightpos4);*/
+	//glEnable (GL_LIGHT3);
+	//GLfloat lightpos4[] = {5., 5., -5., 1.};
+	//glLightfv(GL_LIGHT3, GL_POSITION, lightpos4);*/
 
 	glEnable(GL_COLOR_MATERIAL);
 	glLightModeli(GL_LIGHT_MODEL_TWO_SIDE, GL_TRUE);

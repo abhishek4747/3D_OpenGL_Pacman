@@ -297,12 +297,25 @@ void Maze::draw(){
 				break;
 			
 			case 8:
+				glEnable(GL_TEXTURE_GEN_S);							// Enable Texture Coord Generation For S (NEW)
+				glEnable(GL_TEXTURE_GEN_T);							// Enable Texture Coord Generation For T (NEW)
+				glColor3f(white.r, white.g, white.b);
+				glBindTexture(GL_TEXTURE_2D, texture[7]); // This Will Select The Sphere Map
+				glPushMatrix();
+				glTranslatef((float)j-wd, 0.25f, (float)i-ln);
+					gluSphere(quadratic,0.3f,32,32);				// Draw A Sphere With A Radius Of 1 And 16 Longitude And 16 Latitude Segments
+				glTranslatef(-((float)j-wd), -0.25, -((float)i-ln));
+				glPopMatrix();
+				glDisable(GL_TEXTURE_GEN_S);
+				glDisable(GL_TEXTURE_GEN_T);
+				/*
 				glColor3f(yellow.r, yellow.g, yellow.b);
 				glPushMatrix();	
 				glTranslatef((float)j-wd, 0.25f, (float)i-ln);
 				glutSolidSphere(0.3f, 8, 8);
 				glTranslatef(-((float)j-wd), -0.25, -((float)i-ln));
 				glPopMatrix();
+				*/
 				break;
 			case 1:
 				glColor3f(red.r, red.g, red.b);

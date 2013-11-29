@@ -9,6 +9,8 @@ typedef vector<double> vd;
 typedef vector<float>  vf;
 
 extern vf origin;
+extern GLuint texture[10];
+extern GLUquadricObj *quadratic;	// Storage For Our Quadratic Objects
 
 bool fInit();
 

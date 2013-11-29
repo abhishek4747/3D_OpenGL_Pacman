@@ -3,6 +3,9 @@
 vf origin;
 color4 red, blue, green, yellow, purple, pink, white, black, grey, navyblue;
 
+GLuint texture[10];
+GLUquadricObj *quadratic;	// Storage For Our Quadratic Objects
+
 color4::color4(){
 	this->init(0.,0.,0.,1.,1.);
 }
