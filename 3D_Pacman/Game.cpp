@@ -85,15 +85,21 @@ vf Game::canAgentMove(Agent *p, Maze *m){
 		if (ppos[0]==gpos[0] && ppos[1]==gpos[1]&& ppos[2]==gpos[2]){
 			collision = true;
 			if (this->ghost[i]->weak){
+				ghost[i]->posmtx.lock();
 				ghost[i]->position = maze->ghostInitPos[i];
+				ghost[i]->posmtx.unlock();
 				ghost[i]->weak = false;
 				score += 10;
 			}else{
 				if (lives>-1){
 					if (!isPaused()) togglePause();
+					pacman->posmtx.lock();
 					pacman->position = maze->pacInitPos;
+					pacman->posmtx.unlock();
 					for (size_t k = 0; k < ghost.size(); k++){
+						ghost[k]->posmtx.lock();
 						ghost[k]->position = maze->ghostInitPos[k];
+						ghost[k]->posmtx.unlock();
 					}
 					lives--;
 				}

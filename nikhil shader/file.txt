@@ -1,0 +1,135 @@
+void setShaders() {
+
+	char *vs = NULL,*fs = NULL;
+	char log[] = "0";
+	int l = 0;
+	int *len = &l;
+
+	v = glCreateShader(GL_VERTEX_SHADER);
+	f = glCreateShader(GL_FRAGMENT_SHADER);
+
+	vs = textFileRead("color.vert");
+	fs = textFileRead("color.frag");
+
+	const char * vv = vs;
+	const char * ff = fs;
+
+	glShaderSource(v, 1, &vv,NULL);
+	glShaderSource(f, 1, &ff,NULL);
+
+	free(vs);free(fs);
+
+	glCompileShader(v);
+	glCompileShader(f);
+
+	p = glCreateProgram();
+	glAttachShader(p,f);
+	glAttachShader(p,v);
+
+	glLinkProgram(p);
+}
+
+void setFBO(){
+	
+	glGenTextures(1, &textureId);
+	glBindTexture(GL_TEXTURE_2D, textureId);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE); 
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, TEXTURE_WIDTH, TEXTURE_HEIGHT, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+
+	if ((error=glGetError()) != GL_NO_ERROR)
+	{
+	cerr << "OpenGL err: " << error << endl;
+	}
+	
+	glGenRenderbuffersEXT(1, &rboId);
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, rboId);
+	glRenderbufferStorageEXT(GL_RENDERBUFFER_EXT, GL_DEPTH_COMPONENT, TEXTURE_WIDTH, TEXTURE_HEIGHT);
+	glBindRenderbufferEXT(GL_RENDERBUFFER_EXT, 0);
+
+	
+	glGenFramebuffersEXT(1, &fboId);
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
+
+	glDrawBuffer(GL_NONE);
+	glReadBuffer(GL_NONE);
+
+	glFramebufferTexture2DEXT(GL_FRAMEBUFFER_EXT, GL_COLOR_ATTACHMENT0_EXT, GL_TEXTURE_2D, textureId, 0);                 
+
+	glFramebufferRenderbufferEXT(GL_FRAMEBUFFER_EXT, GL_DEPTH_ATTACHMENT_EXT, GL_RENDERBUFFER_EXT, rboId);            
+	
+	GLenum status = glCheckFramebufferStatusEXT(GL_FRAMEBUFFER_EXT);
+	if(status != GL_FRAMEBUFFER_COMPLETE_EXT){
+		cout << "error" << endl;
+	}
+
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+
+	return;
+}
+
+void display (void) {
+
+	keyOperations();
+	/*
+	glClear (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+	//glUseProgram(p);
+	
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, fboId);
+	glPushAttrib(GL_VIEWPORT_BIT | GL_ENABLE_BIT);
+	//glPushMatrix();
+	glViewport(0, 0, 1395, 690);
+	gluPerspective(60, 1395/690, 1.0, 100.0);
+	
+	glMatrixMode(GL_MODELVIEW);
+	gluLookAt(xc,yc,zc, 0.0,0.0,-1.0, 0.0f,1.0f,0.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	glTranslatef(0.0f, 0.0f, -5.0f); // Push eveything 5 units back into the scene, otherwise we won't see the primitive
+	glColor3f(0.0f, 1.0f, 0.0f);
+	glutSolidTeapot(2.0);
+	
+	glPopAttrib();
+	//glPopMatrix();
+	glBindFramebufferEXT(GL_FRAMEBUFFER_EXT, 0);
+	/////////////
+	
+	glUseProgram(p);
+
+	glActiveTexture(GL_TEXTURE0 );
+	glBindTexture(GL_TEXTURE_2D, textureId);
+	
+	GLuint pass = glGetUniformLocation(p, "tex");
+	glUniform1i(pass, 0);
+
+	GLuint wid = glGetUniformLocation(p, "w");
+	GLuint ht = glGetUniformLocation(p, "h");
+	
+	//GLuvec2 texc = glGetUniformLocation(p, "texcoordOffset");
+
+	glUniform1i(wid, 1395);
+	glUniform1i(ht, 690);
+	
+	//glUniform1i(h 1);
+	*/
+	/////////
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Clear the background of our window to red
+	glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT); //Clear the colour buffer (more buffers later on)
+	glLoadIdentity(); // Load the Identity Matrix to reset our drawing locations
+	
+	gluLookAt(xc,yc,zc, 0.0,0.0,-5.0, 0.0f,1.0f,0.0f);
+	
+	renderPrimitive(); // Render the primitive
+	/*
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+	
+	glUseProgram(0);
+	*/
+	glutSwapBuffers(); 
+}

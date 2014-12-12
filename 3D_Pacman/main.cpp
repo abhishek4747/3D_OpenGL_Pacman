@@ -65,11 +65,6 @@
 	// Environment mapping
 	// Fog
 
-	// [3 hour] [Post 12 PM]
-	// Finishing
-	// Documentation
-	// Presentations
-
 // Not Doing
 	// Multiplayer : Less Time
 	// AI : Less Time 
@@ -342,33 +337,41 @@ void keySpecialOperations(void) {
 		if (keySpecialStates[GLUT_KEY_LEFT] && !( game->pacman->orientn[0] == -1 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == 0)) { 
 			// If the left arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_LEFT] = false;
+			game->pacman->ormtx.lock();
 			game->pacman->orientn[0] = -1;
 			game->pacman->orientn[1] = 0;
 			game->pacman->orientn[2] = 0;
+			game->pacman->ormtx.unlock();
 			game->pacman->integralPosition();
 		}
 		if (keySpecialStates[GLUT_KEY_RIGHT] && !( game->pacman->orientn[0] == 1 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == 0)) { 
 			// If the right arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_RIGHT] = false;
+			game->pacman->ormtx.lock();
 			game->pacman->orientn[0] = 1;
 			game->pacman->orientn[1] = 0;
 			game->pacman->orientn[2] = 0;
+			game->pacman->ormtx.unlock();
 			game->pacman->integralPosition();
 		}
 		if (keySpecialStates[GLUT_KEY_UP] && !( game->pacman->orientn[0] == 0 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == -1)) { 
 			// If the up arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_UP] = false;
+			game->pacman->ormtx.lock();
 			game->pacman->orientn[0] = 0;
 			game->pacman->orientn[1] = 0;
 			game->pacman->orientn[2] = -1;
+			game->pacman->ormtx.unlock();
 			game->pacman->integralPosition();
 		}
 		if (keySpecialStates[GLUT_KEY_DOWN] && !( game->pacman->orientn[0] == 0 && game->pacman->orientn[1] == 0 && game->pacman->orientn[2] == 1)) { 
 			// If the down arrow key has been pressed  
 			keySpecialStates[GLUT_KEY_DOWN] = false;
+			game->pacman->ormtx.lock();
 			game->pacman->orientn[0] = 0;
 			game->pacman->orientn[1] = 0;
 			game->pacman->orientn[2] = 1;
+			game->pacman->ormtx.unlock();
 			game->pacman->integralPosition();
 		}
 	}
@@ -994,7 +997,7 @@ void display (void) {
 
 	drawHUD(m_viewport[2],m_viewport[3]);
 	if (motionBlur){
-		float q = 0.3;
+		float q = 0.5;
 		glAccum(GL_MULT, q);
 		glAccum(GL_ACCUM, 1-q);
 		glAccum(GL_RETURN, 1.0);

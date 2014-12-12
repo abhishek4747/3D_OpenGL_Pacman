@@ -115,7 +115,8 @@ void Agent::translate(vf destination, int millisecs){
 	}
 }
 
-void Agent::init(vf position, vf orientn, vf vertical, string shape,	vf dimentions, float speed, color4 color){
+void Agent::init(vf position, vf 
+				 , vf vertical, string shape,	vf dimentions, float speed, color4 color){
 	this->position = position, this->orientn = orientn, this->vertical = vertical;
 	this->shape = shape, this->dimentions = dimentions;
 	this->speed = speed;

@@ -135,9 +135,9 @@ void Pac::draw(){
 	vf orientn_unit = orientn;
 	float orientn_value = magnitue(orientn);
 	orientn_unit[0] = orientn[0]/orientn_value; orientn_unit[1] = orientn[1]/orientn_value; orientn_unit[2] = orientn[2]/orientn_value;
-	this->ormtx.unlock();
 
 	vf orient_Normal = crossproduct(y_direction, orientn);
+	this->ormtx.unlock();
 
 	float dbweye = R/2;
 
@@ -151,12 +151,12 @@ void Pac::draw(){
 	glutSolidSphere(R/4, 16, 16);
 	glTranslatef(0.f,dbweye,0.f);
 	glColor3f(black.r,black.g,black.b);
-	
+	/*
 	glRotatef(90.f, this->orientn[0], this->orientn[1], this->orientn[2]);
-	DrawEllipsoid(rEyebrow,rEyebrow,2*rEyebrow);
+	//DrawEllipsoid(rEyebrow,rEyebrow,2*rEyebrow);
 	glTranslatef(0.f,-dbweye,0.f);
 	glRotatef(90.f, -this->orientn[0], -this->orientn[1], -this->orientn[2]);
-
+	*/
 	glPopMatrix();
 	glPushMatrix();
 	glTranslatef(dist_orn*orientn_unit[0] - dist_orn_norm*orient_Normal[0], 4*R/5, dist_orn*orientn_unit[2] - dist_orn_norm*orient_Normal[2]);
